@@ -73,6 +73,21 @@ export function setupUI(initialState) {
     listeners: new Set(),
   };
 
+  // Setup panel minimize/maximize
+  const uiPanel = document.getElementById("uiPanel");
+  const togglePanelButton = document.getElementById("togglePanelButton");
+  const minimizePanelButton = document.getElementById("minimizePanelButton");
+
+  minimizePanelButton.addEventListener("click", () => {
+    uiPanel.classList.add("minimized");
+    togglePanelButton.classList.remove("hidden");
+  });
+
+  togglePanelButton.addEventListener("click", () => {
+    uiPanel.classList.remove("minimized");
+    togglePanelButton.classList.add("hidden");
+  });
+
   const optionContainer = document.getElementById("optionToggles");
   optionContainer.textContent = "";
 

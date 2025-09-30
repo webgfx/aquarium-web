@@ -63,6 +63,43 @@
         flex-direction: column;
         gap: 16px;
         backdrop-filter: blur(8px);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      #uiPanel.minimized {
+        transform: translateX(calc(100% + 12px));
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #togglePanelButton {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 48px;
+        height: 48px;
+        border: none;
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+        transition: background 0.2s ease, transform 0.2s ease;
+        z-index: 10;
+      }
+
+      #togglePanelButton:hover {
+        background: rgba(0, 0, 0, 0.7);
+        transform: scale(1.05);
+      }
+
+      #togglePanelButton.hidden {
+        display: none;
       }
 
       #uiPanel h1 {
@@ -72,6 +109,25 @@
         letter-spacing: 0.02em;
         text-transform: uppercase;
         color: #9ec9ff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      #uiPanel h1 button {
+        background: none;
+        border: none;
+        color: #9ec9ff;
+        cursor: pointer;
+        font-size: 20px;
+        padding: 4px;
+        line-height: 1;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+      }
+
+      #uiPanel h1 button:hover {
+        opacity: 1;
       }
 
       #uiPanel section {
@@ -171,6 +227,7 @@
   </head>
   <body>
     <canvas id="aquarium"></canvas>
+    <button id="togglePanelButton" class="hidden" aria-label="Show control panel">☰</button>
     <div class="hud" aria-live="polite">
       <div><strong>FPS</strong><span id="fpsValue">—</span></div>
       <div><strong>Canvas</strong><span id="canvasInfo">— × —</span></div>
@@ -178,7 +235,10 @@
     </div>
 
     <aside id="uiPanel">
-      <h1>WebGPU Aquarium</h1>
+      <h1>
+        <span>WebGPU Aquarium</span>
+        <button id="minimizePanelButton" aria-label="Minimize panel">✕</button>
+      </h1>
       <section>
         <div class="horizontal-buttons">
           <button id="toggleOptions">Options</button>
