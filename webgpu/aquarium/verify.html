@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Verification - WebGPU Aquarium</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            margin: 0 0 30px 0;
+            font-size: 32px;
+            text-align: center;
+        }
+        .status {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .check-item.pass {
+            background: rgba(76, 175, 80, 0.3);
+            border-left: 4px solid #4caf50;
+        }
+        .check-item.fail {
+            background: rgba(244, 67, 54, 0.3);
+            border-left: 4px solid #f44336;
+        }
+        .check-item.pending {
+            background: rgba(255, 193, 7, 0.3);
+            border-left: 4px solid #ffc107;
+        }
+        .icon {
+            font-size: 24px;
+            min-width: 30px;
+            text-align: center;
+        }
+        .message {
+            flex: 1;
+        }
+        .label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .detail {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary {
+            background: rgba(76, 175, 80, 0.4);
+            border-color: #4caf50;
+        }
+        .info-box {
+            background: rgba(33, 150, 243, 0.2);
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌊 Deployment Verification</h1>
+        
+        <div class="status" id="statusContainer">
+            <div class="check-item pending">
+                <div class="icon">⏳</div>
+                <div class="message">
+                    <div class="label">Running checks...</div>
+                    <div class="detail">Please wait while we verify the deployment</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="./index.html" class="btn btn-primary">Launch Aquarium</a>
+            <a href="./test-tank.html" class="btn">Run Tests</a>
+        </div>
+
+        <div class="info-box">
+            <strong>📍 Current Location</strong>
+            This page is being served from: <span class="code" id="currentPath"></span>
+        </div>
+    </div>
+
+    <script type="module">
+        const statusContainer = document.getElementById('statusContainer');
+        const currentPathEl = document.getElementById('currentPath');
+
+        // Show current path
+        currentPathEl.textContent = window.location.href;
+
+        const checks = [];
+
+        function addCheck(label, detail, status, icon) {
+            const item = document.createElement('div');
+            item.className = `check-item ${status}`;
+            item.innerHTML = `
+                <div class="icon">${icon}</div>
+                <div class="message">
+                    <div class="label">${label}</div>
+                    <div class="detail">${detail}</div>
+                </div>
+            `;
+            checks.push(item);
+        }
+
+        async function runChecks() {
+            statusContainer.innerHTML = '';
+
+            // Check 1: WebGPU Support
+            if (navigator.gpu) {
+                addCheck('WebGPU Support', 'Your browser supports WebGPU', 'pass', '✅');
+            } else {
+                addCheck('WebGPU Support', 'WebGPU is not available in this browser', 'fail', '❌');
+            }
+
+            // Check 2: Secure Context
+            if (window.isSecureContext) {
+                addCheck('Secure Context', 'Running on HTTPS or localhost', 'pass', '✅');
+            } else {
+                addCheck('Secure Context', 'WebGPU requires HTTPS in production', 'fail', '❌');
+            }
+
+            // Check 3: Module Import
+            try {
+                const { AQUARIUM_BASE } = await import('./path-config.js');
+                addCheck('Path Configuration', `Base URL detected: ${AQUARIUM_BASE}`, 'pass', '✅');
+            } catch (err) {
+                addCheck('Path Configuration', `Failed to load path-config.js: ${err.message}`, 'fail', '❌');
+            }
+
+            // Check 4: Core Module Access
+            try {
+                const module = await import('../core/gpu-context.js');
+                addCheck('Core Modules', 'Successfully imported core/gpu-context.js', 'pass', '✅');
+            } catch (err) {
+                addCheck('Core Modules', `Failed to load core modules: ${err.message}`, 'fail', '❌');
+            }
+
+            // Check 5: Config Access
+            try {
+                const config = await import('./config.js');
+                addCheck('Configuration', 'Successfully loaded aquarium configuration', 'pass', '✅');
+            } catch (err) {
+                addCheck('Configuration', `Failed to load config.js: ${err.message}`, 'fail', '❌');
+            }
+
+            // Check 6: Asset Accessibility
+            try {
+                const response = await fetch('./assets/SeaweedA.js');
+                if (response.ok) {
+                    addCheck('Asset Files', 'Sample asset file accessible', 'pass', '✅');
+                } else {
+                    addCheck('Asset Files', `Asset file returned status ${response.status}`, 'fail', '❌');
+                }
+            } catch (err) {
+                addCheck('Asset Files', `Cannot access assets: ${err.message}`, 'fail', '❌');
+            }
+
+            // Check 7: Shader Files
+            try {
+                const response = await fetch('./shaders/seaweed.wgsl');
+                if (response.ok) {
+                    addCheck('Shader Files', 'Sample shader file accessible', 'pass', '✅');
+                } else {
+                    addCheck('Shader Files', `Shader file returned status ${response.status}`, 'fail', '❌');
+                }
+            } catch (err) {
+                addCheck('Shader Files', `Cannot access shaders: ${err.message}`, 'fail', '❌');
+            }
+
+            // Render all checks
+            checks.forEach(check => statusContainer.appendChild(check));
+
+            // Summary
+            const passCount = checks.filter(c => c.className.includes('pass')).length;
+            const totalCount = checks.length;
+            
+            const summary = document.createElement('div');
+            summary.className = passCount === totalCount ? 'check-item pass' : 'check-item fail';
+            summary.innerHTML = `
+                <div class="icon">${passCount === totalCount ? '🎉' : '⚠️'}</div>
+                <div class="message">
+                    <div class="label">Summary: ${passCount} / ${totalCount} checks passed</div>
+                    <div class="detail">${
+                        passCount === totalCount 
+                            ? 'Your deployment is ready! Click "Launch Aquarium" to start.' 
+                            : 'Some checks failed. See details above and review DEPLOYMENT.md'
+                    }</div>
+                </div>
+            `;
+            statusContainer.appendChild(summary);
+        }
+
+        runChecks();
+    </script>
+</body>
+</html>
