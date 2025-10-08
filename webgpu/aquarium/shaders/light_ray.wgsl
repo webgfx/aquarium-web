@@ -3,14 +3,22 @@
 
 struct FrameUniforms {
   viewProjection: mat4x4<f32>,
+  viewInverse: mat4x4<f32>,
+  lightWorldPos: vec4<f32>,
+  lightColor: vec4<f32>,
+  ambient: vec4<f32>,
+  fogColor: vec4<f32>,
+  fogParams: vec4<f32>,
 };
 
 struct ModelUniforms {
   world: mat4x4<f32>,
+  worldInverse: mat4x4<f32>,
+  worldInverseTranspose: mat4x4<f32>,
 };
 
 struct VertexInput {
-  @location(0) position: vec3<f32>,
+  @location(0) position: vec2<f32>,
   @location(1) texCoord: vec2<f32>,
 };
 
@@ -27,11 +35,13 @@ struct VertexOutput {
 @vertex
 fn vertexMain(input: VertexInput) -> VertexOutput {
   var output: VertexOutput;
-  
-  let worldPosition = modelUniforms.world * vec4<f32>(input.position, 1.0);
+
+  // Expand 2D position to 3D: X=input.x, Y=input.y, Z=0 (vertical plane)
+  let localPos = vec4<f32>(input.position.x, input.position.y, 0.0, 1.0);
+  let worldPosition = modelUniforms.world * localPos;
   output.position = frameUniforms.viewProjection * worldPosition;
   output.texCoord = input.texCoord;
-  
+
   return output;
 }
 

@@ -29,14 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains objects to manage models.
  */
 
-tdl.provide('tdl.models');
+tdl.provide("tdl.models");
 
-tdl.require('tdl.buffers');
+tdl.require("tdl.buffers");
 
 /**
  * A module for models.
@@ -56,28 +55,28 @@ tdl.models = tdl.models || {};
  * @param {number} opt_mode Mode to call drawElements with. Default =
  *        gl.TRIANGLES
  */
-tdl.models.Model = function(program, arrays, textures, opt_mode) {
-  this.buffers = { };
+tdl.models.Model = function (program, arrays, textures, opt_mode) {
+  this.buffers = {};
   this.setBuffers(arrays);
 
-  var textureUnits = { }
+  var textureUnits = {};
   var unit = 0;
   for (var texture in program.textures) {
     textureUnits[texture] = unit++;
   }
 
-  this.mode = (opt_mode === undefined) ? gl.TRIANGLES : opt_mode;
+  this.mode = opt_mode === undefined ? gl.TRIANGLES : opt_mode;
   this.textures = textures;
   this.textureUnits = textureUnits;
   this.setProgram(program);
-}
+};
 
-tdl.models.Model.prototype.setProgram = function(program) {
+tdl.models.Model.prototype.setProgram = function (program) {
   this.program = program;
-}
+};
 
-tdl.models.Model.prototype.setBuffer = function(name, array, opt_newBuffer) {
-  var target = (name == 'indices') ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+tdl.models.Model.prototype.setBuffer = function (name, array, opt_newBuffer) {
+  var target = name == "indices" ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
   var b = this.buffers[name];
   if (!b || opt_newBuffer) {
     b = new tdl.buffers.Buffer(array, target);
@@ -87,28 +86,33 @@ tdl.models.Model.prototype.setBuffer = function(name, array, opt_newBuffer) {
   this.buffers[name] = b;
 };
 
-tdl.models.Model.prototype.setBuffers = function(arrays, opt_newBuffers) {
+tdl.models.Model.prototype.setBuffers = function (arrays, opt_newBuffers) {
   var that = this;
   for (var name in arrays) {
     this.setBuffer(name, arrays[name], opt_newBuffers);
   }
   if (this.buffers.indices) {
     this.baseBuffer = this.buffers.indices;
-    this.drawFunc = function(totalComponents, startOffset) {
-      gl.drawElements(that.mode, totalComponents, gl.UNSIGNED_SHORT, startOffset);
-    }
+    this.drawFunc = function (totalComponents, startOffset) {
+      gl.drawElements(
+        that.mode,
+        totalComponents,
+        gl.UNSIGNED_SHORT,
+        startOffset,
+      );
+    };
   } else {
     for (var key in this.buffers) {
       this.baseBuffer = this.buffers[key];
       break;
     }
-    this.drawFunc = function(totalComponents, startOffset) {
+    this.drawFunc = function (totalComponents, startOffset) {
       gl.drawArrays(that.mode, startOffset, totalComponents);
-    }
+    };
   }
 };
 
-tdl.models.Model.prototype.applyUniforms_ = function(opt_uniforms) {
+tdl.models.Model.prototype.applyUniforms_ = function (opt_uniforms) {
   if (opt_uniforms) {
     var program = this.program;
     for (var uniform in opt_uniforms) {
@@ -126,7 +130,7 @@ tdl.models.Model.prototype.applyUniforms_ = function(opt_uniforms) {
  * @param {!Object.<string, *>} opt_textures An object of names to
  *     textures to set on this models uniforms.
  */
-tdl.models.Model.prototype.drawPrep = function() {
+tdl.models.Model.prototype.drawPrep = function () {
   var program = this.program;
   var buffers = this.buffers;
   var textures = this.textures;
@@ -134,7 +138,7 @@ tdl.models.Model.prototype.drawPrep = function() {
   program.use();
   for (var buffer in buffers) {
     var b = buffers[buffer];
-    if (buffer == 'indices') {
+    if (buffer == "indices") {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, b.buffer());
     } else {
       var attrib = program.attrib[buffer];
@@ -161,24 +165,26 @@ tdl.models.Model.prototype.drawPrep = function() {
  * @param {!Object.<string, *>} opt_textures An object of names to
  *     textures to set on this models uniforms.
  */
-tdl.models.Model.prototype.draw = function() {
+tdl.models.Model.prototype.draw = function () {
   var buffers = this.buffers;
   // if no indices buffer then assume drawFunc is drawArrays and thus
   // totalComponents is the number of vertices (not indices).
-  var totalComponents = buffers.indices? buffers.indices.totalComponents(): buffers.position.numElements();
+  var totalComponents = buffers.indices
+    ? buffers.indices.totalComponents()
+    : buffers.position.numElements();
   var startOffset = 0;
   for (var ii = 0; ii < arguments.length; ++ii) {
     var arg = arguments[ii];
-    if (typeof arg == 'number') {
+    if (typeof arg == "number") {
       switch (ii) {
-      case 0:
-        totalComponents = arg;
-        break;
-      case 1:
-        startOffset = arg;
-        break;
-      default:
-        throw 'unvalid argument';
+        case 0:
+          totalComponents = arg;
+          break;
+        case 1:
+          startOffset = arg;
+          break;
+        default:
+          throw "unvalid argument";
       }
     } else {
       this.applyUniforms_(arg);

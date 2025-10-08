@@ -9,11 +9,11 @@ const ATTRIBUTE_SLOTS = {
 export class AquariumModel {
   constructor(device, modelData) {
     this.device = device;
-  this.fields = modelData.fields;
-  this.textureNames = { ...modelData.textures };
-  this.vertexBuffers = new Map();
-  this.vertexBufferLayouts = [];
-  this.sortedVertexBuffers = [];
+    this.fields = modelData.fields;
+    this.textureNames = { ...modelData.textures };
+    this.vertexBuffers = new Map();
+    this.vertexBufferLayouts = [];
+    this.sortedVertexBuffers = [];
     this.indexBuffer = null;
     this.indexCount = 0;
     this.indexFormat = "uint16";
@@ -39,10 +39,18 @@ export class AquariumModel {
       new typedArray.constructor(buffer.getMappedRange()).set(typedArray);
       buffer.unmap();
       const slot = ATTRIBUTE_SLOTS[name] ?? ATTRIBUTE_SLOTS.position;
-      this.vertexBuffers.set(name, { buffer, stride, numComponents, format: vertexFormat(type, numComponents), slot });
+      this.vertexBuffers.set(name, {
+        buffer,
+        stride,
+        numComponents,
+        format: vertexFormat(type, numComponents),
+        slot,
+      });
     });
 
-    this.sortedVertexBuffers = Array.from(this.vertexBuffers.values()).sort((a, b) => a.slot - b.slot);
+    this.sortedVertexBuffers = Array.from(this.vertexBuffers.values()).sort(
+      (a, b) => a.slot - b.slot,
+    );
 
     this.vertexBufferLayouts = this.sortedVertexBuffers.map((entry) => ({
       arrayStride: entry.stride,
@@ -59,7 +67,9 @@ export class AquariumModel {
 
   createIndexBuffer() {
     if (!this.fields.indices) {
-      this.indexCount = (this.fields.position?.data.length ?? 0) / (this.fields.position?.numComponents ?? 3);
+      this.indexCount =
+        (this.fields.position?.data.length ?? 0) /
+        (this.fields.position?.numComponents ?? 3);
       this.indexBuffer = null;
       return;
     }
@@ -105,7 +115,9 @@ function vertexFormat(type, numComponents) {
         case 4:
           return "float32x4";
         default:
-          throw new Error(`Unsupported float component count: ${numComponents}`);
+          throw new Error(
+            `Unsupported float component count: ${numComponents}`,
+          );
       }
     default:
       throw new Error(`Unsupported vertex attribute type: ${type}`);

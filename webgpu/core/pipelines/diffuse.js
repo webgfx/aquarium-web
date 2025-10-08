@@ -1,14 +1,21 @@
 import { PipelineBuilder } from "./base-pipeline.js";
 import { loadShaderModule } from "../shader-loader.js";
 
-export async function createDiffusePipeline(device, {
-  frameLayout,
-  modelLayout,
-  materialLayout,
-}, colorFormat, vertexBuffers, baseUrl) {
+export async function createDiffusePipeline(
+  device,
+  { frameLayout, modelLayout, materialLayout },
+  colorFormat,
+  vertexBuffers,
+  baseUrl,
+) {
   const pipelineBuilder = new PipelineBuilder(device);
 
-  const vertexModule = await loadShaderModule(device, "shaders/diffuse.wgsl", "diffuse-vertex", baseUrl);
+  const vertexModule = await loadShaderModule(
+    device,
+    "shaders/diffuse.wgsl",
+    "diffuse-vertex",
+    baseUrl,
+  );
   const fragmentModule = vertexModule;
 
   const layout = device.createPipelineLayout({

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -63,7 +63,9 @@
         flex-direction: column;
         gap: 16px;
         backdrop-filter: blur(8px);
-        transition: transform 0.3s ease, opacity 0.3s ease;
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
       }
 
       #uiPanel.minimized {
@@ -89,7 +91,9 @@
         justify-content: center;
         backdrop-filter: blur(8px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        transition: background 0.2s ease, transform 0.2s ease;
+        transition:
+          background 0.2s ease,
+          transform 0.2s ease;
         z-index: 10;
       }
 
@@ -192,7 +196,9 @@
         border-radius: 6px;
         padding: 6px 10px;
         cursor: pointer;
-        transition: transform 120ms ease, box-shadow 120ms ease;
+        transition:
+          transform 120ms ease,
+          box-shadow 120ms ease;
       }
 
       .presets button:hover,
@@ -227,7 +233,13 @@
   </head>
   <body>
     <canvas id="aquarium"></canvas>
-    <button id="togglePanelButton" class="hidden" aria-label="Show control panel">☰</button>
+    <button
+      id="togglePanelButton"
+      class="hidden"
+      aria-label="Show control panel"
+    >
+      ☰
+    </button>
     <div class="hud" aria-live="polite">
       <div><strong>FPS</strong><span id="fpsValue">—</span></div>
       <div><strong>Canvas</strong><span id="canvasInfo">— × —</span></div>
@@ -256,8 +268,8 @@
 
       <section class="footer">
         <span
-          >Powered by <a href="https://gpuweb.github.io/gpuweb/">WebGPU</a>
-          • Ported from the classic WebGL aquarium demo.</span
+          >Powered by <a href="https://gpuweb.github.io/gpuweb/">WebGPU</a> •
+          Ported from the classic WebGL aquarium demo.</span
         >
       </section>
     </aside>

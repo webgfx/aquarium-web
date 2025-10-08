@@ -29,7 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains matrix/vector math functions.
  * It adds them to the "math" module on the tdl object.
@@ -99,7 +98,7 @@
  *
  */
 
-tdl.provide('tdl.math');
+tdl.provide("tdl.math");
 
 /**
  * A module for math for tdl.math.
@@ -198,17 +197,19 @@ tdl.math.Matrix = goog.typedef;
  * Returns a deterministic pseudorandom number between 0 and 1
  * @return {number} a random number between 0 and 1
  */
-tdl.math.pseudoRandom = function() {
+tdl.math.pseudoRandom = function () {
   var math = tdl.math;
-  return (math.randomSeed_ =
-          (134775813 * math.randomSeed_ + 1) %
-          math.RANDOM_RANGE_) / math.RANDOM_RANGE_;
+  return (
+    (math.randomSeed_ =
+      (134775813 * math.randomSeed_ + 1) % math.RANDOM_RANGE_) /
+    math.RANDOM_RANGE_
+  );
 };
 
 /**
  * Resets the pseudoRandom function sequence.
  */
-tdl.math.resetPseudoRandom = function() {
+tdl.math.resetPseudoRandom = function () {
   tdl.math.randomSeed_ = 0;
 };
 
@@ -216,17 +217,17 @@ tdl.math.resetPseudoRandom = function() {
  * Return a random integer between 0 and n-1
  * @param {number} n
  */
-tdl.math.randomInt = function(n) {
+tdl.math.randomInt = function (n) {
   return Math.floor(Math.random() * n);
-}
+};
 
 /**
  * Converts degrees to radians.
  * @param {number} degrees A value in degrees.
  * @return {number} the value in radians.
  */
-tdl.math.degToRad = function(degrees) {
-  return degrees * Math.PI / 180;
+tdl.math.degToRad = function (degrees) {
+  return (degrees * Math.PI) / 180;
 };
 
 /**
@@ -234,8 +235,8 @@ tdl.math.degToRad = function(degrees) {
  * @param {number} radians A value in radians.
  * @return {number} the value in degrees.
  */
-tdl.math.radToDeg = function(radians) {
-  return radians * 180 / Math.PI;
+tdl.math.radToDeg = function (radians) {
+  return (radians * 180) / Math.PI;
 };
 
 /**
@@ -247,7 +248,7 @@ tdl.math.radToDeg = function(radians) {
  * @param {number} t Interpolation coefficient.
  * @return {number} The weighted sum of a and b.
  */
-tdl.math.lerpScalar = function(a, b, t) {
+tdl.math.lerpScalar = function (a, b, t) {
   return (1 - t) * a + t * b;
 };
 
@@ -257,11 +258,10 @@ tdl.math.lerpScalar = function(a, b, t) {
  * @param {!tdl.math.Vector} b Operand vector.
  * @return {!tdl.math.Vector} The sum of a and b.
  */
-tdl.math.addVector = function(a, b) {
+tdl.math.addVector = function (a, b) {
   var r = [];
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r[i] = a[i] + b[i];
+  for (var i = 0; i < aLength; ++i) r[i] = a[i] + b[i];
   return r;
 };
 
@@ -271,11 +271,10 @@ tdl.math.addVector = function(a, b) {
  * @param {!tdl.math.Vector} b Operand vector.
  * @return {!tdl.math.Vector} The difference of a and b.
  */
-tdl.math.subVector = function(a, b) {
+tdl.math.subVector = function (a, b) {
   var r = [];
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r[i] = a[i] - b[i];
+  for (var i = 0; i < aLength; ++i) r[i] = a[i] - b[i];
   return r;
 };
 
@@ -288,11 +287,10 @@ tdl.math.subVector = function(a, b) {
  * @param {number} t Interpolation coefficient.
  * @return {!tdl.math.Vector} The weighted sum of a and b.
  */
-tdl.math.lerpVector = function(a, b, t) {
+tdl.math.lerpVector = function (a, b, t) {
   var r = [];
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r[i] = (1 - t) * a[i] + t * b[i];
+  for (var i = 0; i < aLength; ++i) r[i] = (1 - t) * a[i] + t * b[i];
   return r;
 };
 
@@ -303,7 +301,7 @@ tdl.math.lerpVector = function(a, b, t) {
  * @param {number} opt_rangeStart start of range. Default = 0.
  * @return {number} Clamp modded value.
  */
-tdl.math.modClamp = function(v, range, opt_rangeStart) {
+tdl.math.modClamp = function (v, range, opt_rangeStart) {
   var start = opt_rangeStart || 0;
   if (range < 0.00001) {
     return start;
@@ -327,7 +325,7 @@ tdl.math.modClamp = function(v, range, opt_rangeStart) {
  * @param {number} range Range of circle.
  * @return {number} lerped result.
  */
-tdl.math.lerpCircular = function(a, b, t, range) {
+tdl.math.lerpCircular = function (a, b, t, range) {
   a = tdl.math.modClamp(a, range);
   b = tdl.math.modClamp(b, range);
   var delta = b - a;
@@ -348,7 +346,7 @@ tdl.math.lerpCircular = function(a, b, t, range) {
  * @param {number} t Amount to lerp (0 to 1).
  * @return {number} lerped result.
  */
-tdl.math.lerpRadian = function(a, b, t) {
+tdl.math.lerpRadian = function (a, b, t) {
   return tdl.math.lerpCircular(a, b, t, Math.PI * 2);
 };
 
@@ -358,11 +356,10 @@ tdl.math.lerpRadian = function(a, b, t) {
  * @param {number} k The scalar.
  * @return {!tdl.math.Vector} v The vector v divided by k.
  */
-tdl.math.divVectorScalar = function(v, k) {
+tdl.math.divVectorScalar = function (v, k) {
   var r = [];
   var vLength = v.length;
-  for (var i = 0; i < vLength; ++i)
-    r[i] = v[i] / k;
+  for (var i = 0; i < vLength; ++i) r[i] = v[i] / k;
   return r;
 };
 
@@ -373,11 +370,10 @@ tdl.math.divVectorScalar = function(v, k) {
  * @param {!tdl.math.Vector} b Operand vector.
  * @return {number} The dot product of a and b.
  */
-tdl.math.dot = function(a, b) {
+tdl.math.dot = function (a, b) {
   var r = 0.0;
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r += a[i] * b[i];
+  for (var i = 0; i < aLength; ++i) r += a[i] * b[i];
   return r;
 };
 
@@ -388,10 +384,12 @@ tdl.math.dot = function(a, b) {
  * @param {!tdl.math.Vector} b Operand vector.
  * @return {!tdl.math.Vector} The vector a cross b.
  */
-tdl.math.cross = function(a, b) {
-  return [a[1] * b[2] - a[2] * b[1],
-          a[2] * b[0] - a[0] * b[2],
-          a[0] * b[1] - a[1] * b[0]];
+tdl.math.cross = function (a, b) {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
 };
 
 /**
@@ -400,11 +398,10 @@ tdl.math.cross = function(a, b) {
  * @param {!tdl.math.Vector} a The vector.
  * @return {number} The length of a.
  */
-tdl.math.length = function(a) {
+tdl.math.length = function (a) {
   var r = 0.0;
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r += a[i] * a[i];
+  for (var i = 0; i < aLength; ++i) r += a[i] * a[i];
   return Math.sqrt(r);
 };
 
@@ -414,11 +411,10 @@ tdl.math.length = function(a) {
  * @param {!tdl.math.Vector} a The vector.
  * @return {number} The square of the length of a.
  */
-tdl.math.lengthSquared = function(a) {
+tdl.math.lengthSquared = function (a) {
   var r = 0.0;
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r += a[i] * a[i];
+  for (var i = 0; i < aLength; ++i) r += a[i] * a[i];
   return r;
 };
 
@@ -428,7 +424,7 @@ tdl.math.lengthSquared = function(a) {
  * @param {!tdl.math.Vector} b A vector.
  * @return {number} The distance between a and b.
  */
-tdl.math.distance = function(a, b) {
+tdl.math.distance = function (a, b) {
   var r = 0.0;
   var aLength = a.length;
   for (var i = 0; i < aLength; ++i) {
@@ -444,7 +440,7 @@ tdl.math.distance = function(a, b) {
  * @param {!tdl.math.Vector} b A vector.
  * @return {number} The distance between a and b.
  */
-tdl.math.distanceSquared = function(a, b) {
+tdl.math.distanceSquared = function (a, b) {
   var r = 0.0;
   var aLength = a.length;
   for (var i = 0; i < aLength; ++i) {
@@ -459,18 +455,16 @@ tdl.math.distanceSquared = function(a, b) {
  * @param {!tdl.math.Vector} a The vector.
  * @return {!tdl.math.Vector} The normalized vector.
  */
-tdl.math.normalize = function(a) {
+tdl.math.normalize = function (a) {
   var r = [];
   var n = 0.0;
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    n += a[i] * a[i];
+  for (var i = 0; i < aLength; ++i) n += a[i] * a[i];
   n = Math.sqrt(n);
   if (n > 0.00001) {
-    for (var i = 0; i < aLength; ++i)
-      r[i] = a[i] / n;
+    for (var i = 0; i < aLength; ++i) r[i] = a[i] / n;
   } else {
-    r = [0,0,0];
+    r = [0, 0, 0];
   }
   return r;
 };
@@ -481,7 +475,7 @@ tdl.math.normalize = function(a) {
  * @param {!tdl.math.Matrix} b Operand matrix.
  * @return {!tdl.math.Matrix} The sum of a and b.
  */
-tdl.math.addMatrix = function(a, b) {
+tdl.math.addMatrix = function (a, b) {
   var r = [];
   var aLength = a.length;
   var a0Length = a[0].length;
@@ -489,8 +483,7 @@ tdl.math.addMatrix = function(a, b) {
     var row = [];
     var ai = a[i];
     var bi = b[i];
-    for (var j = 0; j < a0Length; ++j)
-      row[j] = ai[j] + bi[j];
+    for (var j = 0; j < a0Length; ++j) row[j] = ai[j] + bi[j];
     r[i] = row;
   }
   return r;
@@ -502,7 +495,7 @@ tdl.math.addMatrix = function(a, b) {
  * @param {!tdl.math.Matrix} b Operand matrix.
  * @return {!tdl.math.Matrix} The sum of a and b.
  */
-tdl.math.subMatrix = function(a, b) {
+tdl.math.subMatrix = function (a, b) {
   var r = [];
   var aLength = a.length;
   var a0Length = a[0].length;
@@ -510,8 +503,7 @@ tdl.math.subMatrix = function(a, b) {
     var row = [];
     var ai = a[i];
     var bi = b[i];
-    for (var j = 0; j < a0Length; ++j)
-      row[j] = ai[j] - bi[j];
+    for (var j = 0; j < a0Length; ++j) row[j] = ai[j] - bi[j];
     r[i] = row;
   }
   return r;
@@ -526,7 +518,7 @@ tdl.math.subMatrix = function(a, b) {
  * @param {number} t Interpolation coefficient.
  * @return {!tdl.math.Matrix} The weighted of a and b.
  */
-tdl.math.lerpMatrix = function(a, b, t) {
+tdl.math.lerpMatrix = function (a, b, t) {
   var r = [];
   var aLength = a.length;
   for (var i = 0; i < aLength; ++i) {
@@ -541,7 +533,7 @@ tdl.math.lerpMatrix = function(a, b, t) {
  * @param {number} k The scalar.
  * @return {!tdl.math.Matrix} The matrix m divided by k.
  */
-tdl.math.divMatrixScalar = function(m, k) {
+tdl.math.divMatrixScalar = function (m, k) {
   var r = [];
   var mLength = m.length;
   for (var i = 0; i < mLength; ++i) {
@@ -555,8 +547,8 @@ tdl.math.divMatrixScalar = function(m, k) {
  * @param {number} a The scalar.
  * @return {number} -a.
  */
-tdl.math.negativeScalar = function(a) {
- return -a;
+tdl.math.negativeScalar = function (a) {
+  return -a;
 };
 
 /**
@@ -564,13 +556,13 @@ tdl.math.negativeScalar = function(a) {
  * @param {!tdl.math.Vector} v The vector.
  * @return {!tdl.math.Vector} -v.
  */
-tdl.math.negativeVector = function(v) {
- var r = [];
- var vLength = v.length;
- for (var i = 0; i < vLength; ++i) {
-   r[i] = -v[i];
- }
- return r;
+tdl.math.negativeVector = function (v) {
+  var r = [];
+  var vLength = v.length;
+  for (var i = 0; i < vLength; ++i) {
+    r[i] = -v[i];
+  }
+  return r;
 };
 
 /**
@@ -578,13 +570,13 @@ tdl.math.negativeVector = function(v) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Matrix} -m.
  */
-tdl.math.negativeMatrix = function(m) {
- var r = [];
- var mLength = m.length;
- for (var i = 0; i < mLength; ++i) {
-   r[i] = -m[i];
- }
- return r;
+tdl.math.negativeMatrix = function (m) {
+  var r = [];
+  var mLength = m.length;
+  for (var i = 0; i < mLength; ++i) {
+    r[i] = -m[i];
+  }
+  return r;
 };
 
 /**
@@ -592,7 +584,7 @@ tdl.math.negativeMatrix = function(m) {
  * @param {number} a The scalar.
  * @return {number} a.
  */
-tdl.math.copyScalar = function(a) {
+tdl.math.copyScalar = function (a) {
   return a;
 };
 
@@ -601,10 +593,9 @@ tdl.math.copyScalar = function(a) {
  * @param {!tdl.math.Vector} v The vector.
  * @return {!tdl.math.Vector} A copy of v.
  */
-tdl.math.copyVector = function(v) {
+tdl.math.copyVector = function (v) {
   var r = [];
-  for (var i = 0; i < v.length; i++)
-    r[i] = v[i];
+  for (var i = 0; i < v.length; i++) r[i] = v[i];
   return r;
 };
 
@@ -613,7 +604,7 @@ tdl.math.copyVector = function(v) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Matrix} A copy of m.
  */
-tdl.math.copyMatrix = function(m) {
+tdl.math.copyMatrix = function (m) {
   var r = [];
   var mLength = m.length;
   for (var i = 0; i < mLength; ++i) {
@@ -628,7 +619,7 @@ tdl.math.copyMatrix = function(m) {
  * @param {number} b Operand scalar.
  * @return {number} The product of a and b.
  */
-tdl.math.mulScalarScalar = function(a, b) {
+tdl.math.mulScalarScalar = function (a, b) {
   return a * b;
 };
 
@@ -638,7 +629,7 @@ tdl.math.mulScalarScalar = function(a, b) {
  * @param {!tdl.math.Vector} v The vector.
  * @return {!tdl.math.Vector} The product of k and v.
  */
-tdl.math.mulScalarVector = function(k, v) {
+tdl.math.mulScalarVector = function (k, v) {
   var r = [];
   var vLength = v.length;
   for (var i = 0; i < vLength; ++i) {
@@ -653,7 +644,7 @@ tdl.math.mulScalarVector = function(k, v) {
  * @param {number} k The scalar.
  * @return {!tdl.math.Vector} The product of k and v.
  */
-tdl.math.mulVectorScalar = function(v, k) {
+tdl.math.mulVectorScalar = function (v, k) {
   return tdl.math.mulScalarVector(k, v);
 };
 
@@ -663,7 +654,7 @@ tdl.math.mulVectorScalar = function(v, k) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Matrix} The product of m and k.
  */
-tdl.math.mulScalarMatrix = function(k, m) {
+tdl.math.mulScalarMatrix = function (k, m) {
   var r = [];
   var mLength = m.length;
   for (var i = 0; i < mLength; ++i) {
@@ -678,7 +669,7 @@ tdl.math.mulScalarMatrix = function(k, m) {
  * @param {number} k The scalar.
  * @return {!tdl.math.Matrix} The product of m and k.
  */
-tdl.math.mulMatrixScalar = function(m, k) {
+tdl.math.mulMatrixScalar = function (m, k) {
   return tdl.math.mulScalarMatrix(k, m);
 };
 
@@ -690,11 +681,10 @@ tdl.math.mulMatrixScalar = function(m, k) {
  * @return {!tdl.math.Vector} The vector of products of entries of a and
  *     b.
  */
-tdl.math.mulVectorVector = function(a, b) {
+tdl.math.mulVectorVector = function (a, b) {
   var r = [];
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r[i] = a[i] * b[i];
+  for (var i = 0; i < aLength; ++i) r[i] = a[i] * b[i];
   return r;
 };
 
@@ -706,11 +696,10 @@ tdl.math.mulVectorVector = function(a, b) {
  * @return {!tdl.math.Vector} The vector of quotients of entries of a and
  *     b.
  */
-tdl.math.divVectorVector = function(a, b) {
+tdl.math.divVectorVector = function (a, b) {
   var r = [];
   var aLength = a.length;
-  for (var i = 0; i < aLength; ++i)
-    r[i] = a[i] / b[i];
+  for (var i = 0; i < aLength; ++i) r[i] = a[i] / b[i];
   return r;
 };
 
@@ -721,12 +710,11 @@ tdl.math.divVectorVector = function(a, b) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Vector} The product of v and m as a row vector.
  */
-tdl.math.rowMajor.mulVectorMatrix4 = function(v, m) {
+tdl.math.rowMajor.mulVectorMatrix4 = function (v, m) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     r[i] = 0.0;
-    for (var j = 0; j < 4; ++j)
-      r[i] += v[j] * m[j * 4 + i];
+    for (var j = 0; j < 4; ++j) r[i] += v[j] * m[j * 4 + i];
   }
   return r;
 };
@@ -738,12 +726,11 @@ tdl.math.rowMajor.mulVectorMatrix4 = function(v, m) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Vector} The product of v and m as a row vector.
  */
-tdl.math.columnMajor.mulVectorMatrix = function(v, m) {
+tdl.math.columnMajor.mulVectorMatrix = function (v, m) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     r[i] = 0.0;
-    for (var j = 0; j < 4; ++j)
-      r[i] += v[j] * r[i * 4 +  j];
+    for (var j = 0; j < 4; ++j) r[i] += v[j] * r[i * 4 + j];
   }
   return r;
 };
@@ -763,12 +750,11 @@ tdl.math.mulVectorMatrix = null;
  * @param {!tdl.math.Vector} v The vector.
  * @return {!tdl.math.Vector} The product of m and v as a column vector.
  */
-tdl.math.rowMajor.mulMatrixVector = function(m, v) {
+tdl.math.rowMajor.mulMatrixVector = function (m, v) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     r[i] = 0.0;
-    for (var j = 0; j < 4; ++j)
-      r[i] += m[i * 4 + j] * v[j];
+    for (var j = 0; j < 4; ++j) r[i] += m[i * 4 + j] * v[j];
   }
   return r;
 };
@@ -780,12 +766,11 @@ tdl.math.rowMajor.mulMatrixVector = function(m, v) {
  * @param {!tdl.math.Vector} v The vector.
  * @return {!tdl.math.Vector} The product of m and v as a column vector.
  */
-tdl.math.columnMajor.mulMatrixVector = function(m, v) {
+tdl.math.columnMajor.mulMatrixVector = function (m, v) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     r[i] = 0.0;
-    for (var j = 0; j < 4; ++j)
-      r[i] += v[j] * m[j * 4 + i];
+    for (var j = 0; j < 4; ++j) r[i] += v[j] * m[j * 4 + i];
   }
   return r;
 };
@@ -805,17 +790,21 @@ tdl.math.mulMatrixVector = null;
  * @param {!tdl.math.Matrix2} b The matrix on the right.
  * @return {!tdl.math.Matrix2} The matrix product of a and b.
  */
-tdl.math.rowMajor.mulMatrixMatrix2 = function(a, b) {
-  var a00 = a[0*2+0];
-  var a01 = a[0*2+1];
-  var a10 = a[1*2+0];
-  var a11 = a[1*2+1];
-  var b00 = b[0*2+0];
-  var b01 = b[0*2+1];
-  var b10 = b[1*2+0];
-  var b11 = b[1*2+1];
-  return [a00 * b00 + a01 * b10, a00 * b01 + a01 * b11,
-          a10 * b00 + a11 * b10, a10 * b01 + a11 * b11];
+tdl.math.rowMajor.mulMatrixMatrix2 = function (a, b) {
+  var a00 = a[0 * 2 + 0];
+  var a01 = a[0 * 2 + 1];
+  var a10 = a[1 * 2 + 0];
+  var a11 = a[1 * 2 + 1];
+  var b00 = b[0 * 2 + 0];
+  var b01 = b[0 * 2 + 1];
+  var b10 = b[1 * 2 + 0];
+  var b11 = b[1 * 2 + 1];
+  return [
+    a00 * b00 + a01 * b10,
+    a00 * b01 + a01 * b11,
+    a10 * b00 + a11 * b10,
+    a10 * b01 + a11 * b11,
+  ];
 };
 
 /**
@@ -825,17 +814,21 @@ tdl.math.rowMajor.mulMatrixMatrix2 = function(a, b) {
  * @param {!tdl.math.Matrix2} b The matrix on the right.
  * @return {!tdl.math.Matrix2} The matrix product of a and b.
  */
-tdl.math.columnMajor.mulMatrixMatrix2 = function(a, b) {
-  var a00 = a[0*2+0];
-  var a01 = a[0*2+1];
-  var a10 = a[1*2+0];
-  var a11 = a[1*2+1];
-  var b00 = b[0*2+0];
-  var b01 = b[0*2+1];
-  var b10 = b[1*2+0];
-  var b11 = b[1*2+1];
-  return [a00 * b00 + a10 * b01, a01 * b00 + a11 * b01,
-          a00 * b10 + a10 * b11, a01 * b10 + a11 * b11];
+tdl.math.columnMajor.mulMatrixMatrix2 = function (a, b) {
+  var a00 = a[0 * 2 + 0];
+  var a01 = a[0 * 2 + 1];
+  var a10 = a[1 * 2 + 0];
+  var a11 = a[1 * 2 + 1];
+  var b00 = b[0 * 2 + 0];
+  var b01 = b[0 * 2 + 1];
+  var b10 = b[1 * 2 + 0];
+  var b11 = b[1 * 2 + 1];
+  return [
+    a00 * b00 + a10 * b01,
+    a01 * b00 + a11 * b01,
+    a00 * b10 + a10 * b11,
+    a01 * b10 + a11 * b11,
+  ];
 };
 
 /**
@@ -846,7 +839,6 @@ tdl.math.columnMajor.mulMatrixMatrix2 = function(a, b) {
  */
 tdl.math.mulMatrixMatrix2 = null;
 
-
 /**
  * Multiplies two 3-by-3 matrices; assumes that the given matrices are 3-by-3;
  * assumes matrix entries are accessed in [row][column] fashion.
@@ -854,34 +846,36 @@ tdl.math.mulMatrixMatrix2 = null;
  * @param {!tdl.math.Matrix3} b The matrix on the right.
  * @return {!tdl.math.Matrix3} The matrix product of a and b.
  */
-tdl.math.rowMajor.mulMatrixMatrix3 = function(a, b) {
-  var a00 = a[0*3+0];
-  var a01 = a[0*3+1];
-  var a02 = a[0*3+2];
-  var a10 = a[1*3+0];
-  var a11 = a[1*3+1];
-  var a12 = a[1*3+2];
-  var a20 = a[2*3+0];
-  var a21 = a[2*3+1];
-  var a22 = a[2*3+2];
-  var b00 = b[0*3+0];
-  var b01 = b[0*3+1];
-  var b02 = b[0*3+2];
-  var b10 = b[1*3+0];
-  var b11 = b[1*3+1];
-  var b12 = b[1*3+2];
-  var b20 = b[2*3+0];
-  var b21 = b[2*3+1];
-  var b22 = b[2*3+2];
-  return [a00 * b00 + a01 * b10 + a02 * b20,
-          a00 * b01 + a01 * b11 + a02 * b21,
-          a00 * b02 + a01 * b12 + a02 * b22,
-          a10 * b00 + a11 * b10 + a12 * b20,
-          a10 * b01 + a11 * b11 + a12 * b21,
-          a10 * b02 + a11 * b12 + a12 * b22,
-          a20 * b00 + a21 * b10 + a22 * b20,
-          a20 * b01 + a21 * b11 + a22 * b21,
-          a20 * b02 + a21 * b12 + a22 * b22];
+tdl.math.rowMajor.mulMatrixMatrix3 = function (a, b) {
+  var a00 = a[0 * 3 + 0];
+  var a01 = a[0 * 3 + 1];
+  var a02 = a[0 * 3 + 2];
+  var a10 = a[1 * 3 + 0];
+  var a11 = a[1 * 3 + 1];
+  var a12 = a[1 * 3 + 2];
+  var a20 = a[2 * 3 + 0];
+  var a21 = a[2 * 3 + 1];
+  var a22 = a[2 * 3 + 2];
+  var b00 = b[0 * 3 + 0];
+  var b01 = b[0 * 3 + 1];
+  var b02 = b[0 * 3 + 2];
+  var b10 = b[1 * 3 + 0];
+  var b11 = b[1 * 3 + 1];
+  var b12 = b[1 * 3 + 2];
+  var b20 = b[2 * 3 + 0];
+  var b21 = b[2 * 3 + 1];
+  var b22 = b[2 * 3 + 2];
+  return [
+    a00 * b00 + a01 * b10 + a02 * b20,
+    a00 * b01 + a01 * b11 + a02 * b21,
+    a00 * b02 + a01 * b12 + a02 * b22,
+    a10 * b00 + a11 * b10 + a12 * b20,
+    a10 * b01 + a11 * b11 + a12 * b21,
+    a10 * b02 + a11 * b12 + a12 * b22,
+    a20 * b00 + a21 * b10 + a22 * b20,
+    a20 * b01 + a21 * b11 + a22 * b21,
+    a20 * b02 + a21 * b12 + a22 * b22,
+  ];
 };
 
 /**
@@ -891,34 +885,36 @@ tdl.math.rowMajor.mulMatrixMatrix3 = function(a, b) {
  * @param {!tdl.math.Matrix3} b The matrix on the right.
  * @return {!tdl.math.Matrix3} The matrix product of a and b.
  */
-tdl.math.columnMajor.mulMatrixMatrix3 = function(a, b) {
-  var a00 = a[0*3+0];
-  var a01 = a[0*3+1];
-  var a02 = a[0*3+2];
-  var a10 = a[1*3+0];
-  var a11 = a[1*3+1];
-  var a12 = a[1*3+2];
-  var a20 = a[2*3+0];
-  var a21 = a[2*3+1];
-  var a22 = a[2*3+2];
-  var b00 = b[0*3+0];
-  var b01 = b[0*3+1];
-  var b02 = b[0*3+2];
-  var b10 = b[1*3+0];
-  var b11 = b[1*3+1];
-  var b12 = b[1*3+2];
-  var b20 = b[2*3+0];
-  var b21 = b[2*3+1];
-  var b22 = b[2*3+2];
-  return [a00 * b00 + a10 * b01 + a20 * b02,
-          a01 * b00 + a11 * b01 + a21 * b02,
-          a02 * b00 + a12 * b01 + a22 * b02,
-          a00 * b10 + a10 * b11 + a20 * b12,
-          a01 * b10 + a11 * b11 + a21 * b12,
-          a02 * b10 + a12 * b11 + a22 * b12,
-          a00 * b20 + a10 * b21 + a20 * b22,
-          a01 * b20 + a11 * b21 + a21 * b22,
-          a02 * b20 + a12 * b21 + a22 * b22];
+tdl.math.columnMajor.mulMatrixMatrix3 = function (a, b) {
+  var a00 = a[0 * 3 + 0];
+  var a01 = a[0 * 3 + 1];
+  var a02 = a[0 * 3 + 2];
+  var a10 = a[1 * 3 + 0];
+  var a11 = a[1 * 3 + 1];
+  var a12 = a[1 * 3 + 2];
+  var a20 = a[2 * 3 + 0];
+  var a21 = a[2 * 3 + 1];
+  var a22 = a[2 * 3 + 2];
+  var b00 = b[0 * 3 + 0];
+  var b01 = b[0 * 3 + 1];
+  var b02 = b[0 * 3 + 2];
+  var b10 = b[1 * 3 + 0];
+  var b11 = b[1 * 3 + 1];
+  var b12 = b[1 * 3 + 2];
+  var b20 = b[2 * 3 + 0];
+  var b21 = b[2 * 3 + 1];
+  var b22 = b[2 * 3 + 2];
+  return [
+    a00 * b00 + a10 * b01 + a20 * b02,
+    a01 * b00 + a11 * b01 + a21 * b02,
+    a02 * b00 + a12 * b01 + a22 * b02,
+    a00 * b10 + a10 * b11 + a20 * b12,
+    a01 * b10 + a11 * b11 + a21 * b12,
+    a02 * b10 + a12 * b11 + a22 * b12,
+    a00 * b20 + a10 * b21 + a20 * b22,
+    a01 * b20 + a11 * b21 + a21 * b22,
+    a02 * b20 + a12 * b21 + a22 * b22,
+  ];
 };
 
 /**
@@ -936,55 +932,57 @@ tdl.math.mulMatrixMatrix3 = null;
  * @param {!tdl.math.Matrix4} b The matrix on the right.
  * @return {!tdl.math.Matrix4} The matrix product of a and b.
  */
-tdl.math.rowMajor.mulMatrixMatrix4 = function(a, b) {
-  var a00 = a[0*4+0];
-  var a01 = a[0*4+1];
-  var a02 = a[0*4+2];
-  var a03 = a[0*4+3];
-  var a10 = a[1*4+0];
-  var a11 = a[1*4+1];
-  var a12 = a[1*4+2];
-  var a13 = a[1*4+3];
-  var a20 = a[2*4+0];
-  var a21 = a[2*4+1];
-  var a22 = a[2*4+2];
-  var a23 = a[2*4+3];
-  var a30 = a[3*4+0];
-  var a31 = a[3*4+1];
-  var a32 = a[3*4+2];
-  var a33 = a[3*4+3];
-  var b00 = b[0*4+0];
-  var b01 = b[0*4+1];
-  var b02 = b[0*4+2];
-  var b03 = b[0*4+3];
-  var b10 = b[1*4+0];
-  var b11 = b[1*4+1];
-  var b12 = b[1*4+2];
-  var b13 = b[1*4+3];
-  var b20 = b[2*4+0];
-  var b21 = b[2*4+1];
-  var b22 = b[2*4+2];
-  var b23 = b[2*4+3];
-  var b30 = b[3*4+0];
-  var b31 = b[3*4+1];
-  var b32 = b[3*4+2];
-  var b33 = b[3*4+3];
-  return [a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
-          a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
-          a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
-          a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
-          a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
-          a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
-          a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
-          a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
-          a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
-          a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
-          a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
-          a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
-          a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
-          a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
-          a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
-          a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33];
+tdl.math.rowMajor.mulMatrixMatrix4 = function (a, b) {
+  var a00 = a[0 * 4 + 0];
+  var a01 = a[0 * 4 + 1];
+  var a02 = a[0 * 4 + 2];
+  var a03 = a[0 * 4 + 3];
+  var a10 = a[1 * 4 + 0];
+  var a11 = a[1 * 4 + 1];
+  var a12 = a[1 * 4 + 2];
+  var a13 = a[1 * 4 + 3];
+  var a20 = a[2 * 4 + 0];
+  var a21 = a[2 * 4 + 1];
+  var a22 = a[2 * 4 + 2];
+  var a23 = a[2 * 4 + 3];
+  var a30 = a[3 * 4 + 0];
+  var a31 = a[3 * 4 + 1];
+  var a32 = a[3 * 4 + 2];
+  var a33 = a[3 * 4 + 3];
+  var b00 = b[0 * 4 + 0];
+  var b01 = b[0 * 4 + 1];
+  var b02 = b[0 * 4 + 2];
+  var b03 = b[0 * 4 + 3];
+  var b10 = b[1 * 4 + 0];
+  var b11 = b[1 * 4 + 1];
+  var b12 = b[1 * 4 + 2];
+  var b13 = b[1 * 4 + 3];
+  var b20 = b[2 * 4 + 0];
+  var b21 = b[2 * 4 + 1];
+  var b22 = b[2 * 4 + 2];
+  var b23 = b[2 * 4 + 3];
+  var b30 = b[3 * 4 + 0];
+  var b31 = b[3 * 4 + 1];
+  var b32 = b[3 * 4 + 2];
+  var b33 = b[3 * 4 + 3];
+  return [
+    a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
+    a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
+    a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
+    a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
+    a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
+    a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
+    a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
+    a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
+    a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
+    a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
+    a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
+    a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
+    a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
+    a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
+    a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
+    a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33,
+  ];
 };
 
 /**
@@ -994,55 +992,57 @@ tdl.math.rowMajor.mulMatrixMatrix4 = function(a, b) {
  * @param {!tdl.math.Matrix4} b The matrix on the right.
  * @return {!tdl.math.Matrix4} The matrix product of a and b.
  */
-tdl.math.columnMajor.mulMatrixMatrix4 = function(a, b) {
-  var a00 = a[0*4+0];
-  var a01 = a[0*4+1];
-  var a02 = a[0*4+2];
-  var a03 = a[0*4+3];
-  var a10 = a[1*4+0];
-  var a11 = a[1*4+1];
-  var a12 = a[1*4+2];
-  var a13 = a[1*4+3];
-  var a20 = a[2*4+0];
-  var a21 = a[2*4+1];
-  var a22 = a[2*4+2];
-  var a23 = a[2*4+3];
-  var a30 = a[3*4+0];
-  var a31 = a[3*4+1];
-  var a32 = a[3*4+2];
-  var a33 = a[3*4+3];
-  var b00 = b[0*4+0];
-  var b01 = b[0*4+1];
-  var b02 = b[0*4+2];
-  var b03 = b[0*4+3];
-  var b10 = b[1*4+0];
-  var b11 = b[1*4+1];
-  var b12 = b[1*4+2];
-  var b13 = b[1*4+3];
-  var b20 = b[2*4+0];
-  var b21 = b[2*4+1];
-  var b22 = b[2*4+2];
-  var b23 = b[2*4+3];
-  var b30 = b[3*4+0];
-  var b31 = b[3*4+1];
-  var b32 = b[3*4+2];
-  var b33 = b[3*4+3];
-  return [a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03,
-          a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03,
-          a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03,
-          a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03,
-          a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13,
-          a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13,
-          a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13,
-          a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13,
-          a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23,
-          a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23,
-          a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23,
-          a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23,
-          a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33,
-          a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33,
-          a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33,
-          a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33];
+tdl.math.columnMajor.mulMatrixMatrix4 = function (a, b) {
+  var a00 = a[0 * 4 + 0];
+  var a01 = a[0 * 4 + 1];
+  var a02 = a[0 * 4 + 2];
+  var a03 = a[0 * 4 + 3];
+  var a10 = a[1 * 4 + 0];
+  var a11 = a[1 * 4 + 1];
+  var a12 = a[1 * 4 + 2];
+  var a13 = a[1 * 4 + 3];
+  var a20 = a[2 * 4 + 0];
+  var a21 = a[2 * 4 + 1];
+  var a22 = a[2 * 4 + 2];
+  var a23 = a[2 * 4 + 3];
+  var a30 = a[3 * 4 + 0];
+  var a31 = a[3 * 4 + 1];
+  var a32 = a[3 * 4 + 2];
+  var a33 = a[3 * 4 + 3];
+  var b00 = b[0 * 4 + 0];
+  var b01 = b[0 * 4 + 1];
+  var b02 = b[0 * 4 + 2];
+  var b03 = b[0 * 4 + 3];
+  var b10 = b[1 * 4 + 0];
+  var b11 = b[1 * 4 + 1];
+  var b12 = b[1 * 4 + 2];
+  var b13 = b[1 * 4 + 3];
+  var b20 = b[2 * 4 + 0];
+  var b21 = b[2 * 4 + 1];
+  var b22 = b[2 * 4 + 2];
+  var b23 = b[2 * 4 + 3];
+  var b30 = b[3 * 4 + 0];
+  var b31 = b[3 * 4 + 1];
+  var b32 = b[3 * 4 + 2];
+  var b33 = b[3 * 4 + 3];
+  return [
+    a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03,
+    a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03,
+    a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03,
+    a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03,
+    a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13,
+    a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13,
+    a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13,
+    a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13,
+    a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23,
+    a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23,
+    a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23,
+    a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23,
+    a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33,
+    a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33,
+    a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33,
+    a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33,
+  ];
 };
 
 /**
@@ -1061,13 +1061,12 @@ tdl.math.mulMatrixMatrix4 = null;
  * @param {!tdl.math.Matrix} b The matrix on the right.
  * @return {!tdl.math.Matrix} The matrix product of a and b.
  */
-tdl.math.rowMajor.mulMatrixMatrix = function(a, b) {
+tdl.math.rowMajor.mulMatrixMatrix = function (a, b) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     for (var j = 0; j < 4; ++j) {
-      r[i*4+j] = 0.0;
-      for (var k = 0; k < 4; ++k)
-        r[i*4+j] += a[i*4+k] * b[k*4+j]; // kth row, jth column.
+      r[i * 4 + j] = 0.0;
+      for (var k = 0; k < 4; ++k) r[i * 4 + j] += a[i * 4 + k] * b[k * 4 + j]; // kth row, jth column.
     }
   }
   return r;
@@ -1081,13 +1080,12 @@ tdl.math.rowMajor.mulMatrixMatrix = function(a, b) {
  * @param {!tdl.math.Matrix} b The matrix on the right.
  * @return {!tdl.math.Matrix} The matrix product of a and b.
  */
-tdl.math.columnMajor.mulMatrixMatrix = function(a, b) {
+tdl.math.columnMajor.mulMatrixMatrix = function (a, b) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
     for (var j = 0; j < 4; ++j) {
-      r[i*4+j] = 0.0;
-      for (var k = 0; k < 4; ++k)
-        r[i*4+j] += b[i*4+k] * a[k*4+j]; // kth column, jth row.
+      r[i * 4 + j] = 0.0;
+      for (var k = 0; k < 4; ++k) r[i * 4 + j] += b[i * 4 + k] * a[k * 4 + j]; // kth column, jth row.
     }
   }
   return r;
@@ -1109,10 +1107,10 @@ tdl.math.mulMatrixMatrix = null;
  * @param {number} j The index of the desired column.
  * @return {!tdl.math.Vector} The jth column of m as a vector.
  */
-tdl.math.rowMajor.column = function(m, j) {
+tdl.math.rowMajor.column = function (m, j) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
-    r[i] = m[i*4+j];
+    r[i] = m[i * 4 + j];
   }
   return r;
 };
@@ -1124,10 +1122,10 @@ tdl.math.rowMajor.column = function(m, j) {
  * @param {number} j The index of the desired column.
  * @return {!tdl.math.Vector} The jth column of m as a vector.
  */
-tdl.math.columnMajor.column = function(m, j) {
+tdl.math.columnMajor.column = function (m, j) {
   var r = [];
   for (var i = 0; i < 4; ++i) {
-    r[i] = m[j*4+i];
+    r[i] = m[j * 4 + i];
   }
   return r;
 };
@@ -1147,10 +1145,10 @@ tdl.math.column = null;
  * @param {number} i The index of the desired row.
  * @return {!tdl.math.Vector} The ith row of m.
  */
-tdl.math.rowMajor.row = function(m, i) {
+tdl.math.rowMajor.row = function (m, i) {
   var r = [];
   for (var j = 0; j < 4; ++j) {
-    r[i] = m[i*4+j];
+    r[i] = m[i * 4 + j];
   }
   return r;
 };
@@ -1163,11 +1161,11 @@ tdl.math.rowMajor.row = function(m, i) {
  * @param {number} opt_size Unknown (to dkogan)
  * @return {!tdl.math.Vector} The ith row of m.
  */
-tdl.math.columnMajor.row = function(m, i, opt_size) {
+tdl.math.columnMajor.row = function (m, i, opt_size) {
   opt_size = opt_size || 4;
   var r = [];
   for (var j = 0; j < opt_size; ++j) {
-    r[j] = m[j*opt_size+i];
+    r[j] = m[j * opt_size + i];
   }
   return r;
 };
@@ -1185,7 +1183,7 @@ tdl.math.row = null;
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Matrix} The transpose of m.
  */
-tdl.math.transpose = function(m) {
+tdl.math.transpose = function (m) {
   var r = [];
   var m00 = m[0 * 4 + 0];
   var m01 = m[0 * 4 + 1];
@@ -1204,16 +1202,16 @@ tdl.math.transpose = function(m) {
   var m32 = m[3 * 4 + 2];
   var m33 = m[3 * 4 + 3];
 
-  r[ 0] = m00;
-  r[ 1] = m10;
-  r[ 2] = m20;
-  r[ 3] = m30;
-  r[ 4] = m01;
-  r[ 5] = m11;
-  r[ 6] = m21;
-  r[ 7] = m31;
-  r[ 8] = m02;
-  r[ 9] = m12;
+  r[0] = m00;
+  r[1] = m10;
+  r[2] = m20;
+  r[3] = m30;
+  r[4] = m01;
+  r[5] = m11;
+  r[6] = m21;
+  r[7] = m31;
+  r[8] = m02;
+  r[9] = m12;
   r[10] = m22;
   r[11] = m32;
   r[12] = m03;
@@ -1229,10 +1227,9 @@ tdl.math.transpose = function(m) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {number} The trace of m.
  */
-tdl.math.trace = function(m) {
+tdl.math.trace = function (m) {
   var r = 0.0;
-  for (var i = 0; i < 4; ++i)
-    r += m[i*4+i];
+  for (var i = 0; i < 4; ++i) r += m[i * 4 + i];
   return r;
 };
 
@@ -1241,7 +1238,7 @@ tdl.math.trace = function(m) {
  * @param {!tdl.math.Matrix1} m The matrix.
  * @return {number} The determinant of m.
  */
-tdl.math.det1 = function(m) {
+tdl.math.det1 = function (m) {
   return m[0];
 };
 
@@ -1250,8 +1247,8 @@ tdl.math.det1 = function(m) {
  * @param {!tdl.math.Matrix2} m The matrix.
  * @return {number} The determinant of m.
  */
-tdl.math.det2 = function(m) {
-  return m[0*2+0] * m[1*2+1] - m[0*2+1] * m[1*2+0];
+tdl.math.det2 = function (m) {
+  return m[0 * 2 + 0] * m[1 * 2 + 1] - m[0 * 2 + 1] * m[1 * 2 + 0];
 };
 
 /**
@@ -1259,10 +1256,12 @@ tdl.math.det2 = function(m) {
  * @param {!tdl.math.Matrix3} m The matrix.
  * @return {number} The determinant of m.
  */
-tdl.math.det3 = function(m) {
-  return m[2*3+2] * (m[0*3+0] * m[1*3+1] - m[0*3+1] * m[1*3+0]) -
-         m[2*3+1] * (m[0*3+0] * m[1*3+2] - m[0*3+2] * m[1*3+0]) +
-         m[2*3+0] * (m[0*3+1] * m[1*3+2] - m[0*3+2] * m[1*3+1]);
+tdl.math.det3 = function (m) {
+  return (
+    m[2 * 3 + 2] * (m[0 * 3 + 0] * m[1 * 3 + 1] - m[0 * 3 + 1] * m[1 * 3 + 0]) -
+    m[2 * 3 + 1] * (m[0 * 3 + 0] * m[1 * 3 + 2] - m[0 * 3 + 2] * m[1 * 3 + 0]) +
+    m[2 * 3 + 0] * (m[0 * 3 + 1] * m[1 * 3 + 2] - m[0 * 3 + 2] * m[1 * 3 + 1])
+  );
 };
 
 /**
@@ -1270,17 +1269,23 @@ tdl.math.det3 = function(m) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {number} The determinant of m.
  */
-tdl.math.det4 = function(m) {
-  var t01 = m[0*4+0] * m[1*4+1] - m[0*4+1] * m[1*4+0];
-  var t02 = m[0*4+0] * m[1*4+2] - m[0*4+2] * m[1*4+0];
-  var t03 = m[0*4+0] * m[1*4+3] - m[0*4+3] * m[1*4+0];
-  var t12 = m[0*4+1] * m[1*4+2] - m[0*4+2] * m[1*4+1];
-  var t13 = m[0*4+1] * m[1*4+3] - m[0*4+3] * m[1*4+1];
-  var t23 = m[0*4+2] * m[1*4+3] - m[0*4+3] * m[1*4+2];
-  return m[3*4+3] * (m[2*4+2] * t01 - m[2*4+1] * t02 + m[2*4+0] * t12) -
-         m[3*4+2] * (m[2*4+3] * t01 - m[2*4+1] * t03 + m[2*4+0] * t13) +
-         m[3*4+1] * (m[2*4+3] * t02 - m[2*4+2] * t03 + m[2*4+0] * t23) -
-         m[3*4+0] * (m[2*4+3] * t12 - m[2*4+2] * t13 + m[2*4+1] * t23);
+tdl.math.det4 = function (m) {
+  var t01 = m[0 * 4 + 0] * m[1 * 4 + 1] - m[0 * 4 + 1] * m[1 * 4 + 0];
+  var t02 = m[0 * 4 + 0] * m[1 * 4 + 2] - m[0 * 4 + 2] * m[1 * 4 + 0];
+  var t03 = m[0 * 4 + 0] * m[1 * 4 + 3] - m[0 * 4 + 3] * m[1 * 4 + 0];
+  var t12 = m[0 * 4 + 1] * m[1 * 4 + 2] - m[0 * 4 + 2] * m[1 * 4 + 1];
+  var t13 = m[0 * 4 + 1] * m[1 * 4 + 3] - m[0 * 4 + 3] * m[1 * 4 + 1];
+  var t23 = m[0 * 4 + 2] * m[1 * 4 + 3] - m[0 * 4 + 3] * m[1 * 4 + 2];
+  return (
+    m[3 * 4 + 3] *
+      (m[2 * 4 + 2] * t01 - m[2 * 4 + 1] * t02 + m[2 * 4 + 0] * t12) -
+    m[3 * 4 + 2] *
+      (m[2 * 4 + 3] * t01 - m[2 * 4 + 1] * t03 + m[2 * 4 + 0] * t13) +
+    m[3 * 4 + 1] *
+      (m[2 * 4 + 3] * t02 - m[2 * 4 + 2] * t03 + m[2 * 4 + 0] * t23) -
+    m[3 * 4 + 0] *
+      (m[2 * 4 + 3] * t12 - m[2 * 4 + 2] * t13 + m[2 * 4 + 1] * t23)
+  );
 };
 
 /**
@@ -1288,7 +1293,7 @@ tdl.math.det4 = function(m) {
  * @param {!tdl.math.Matrix1} m The matrix.
  * @return {!tdl.math.Matrix1} The inverse of m.
  */
-tdl.math.inverse1 = function(m) {
+tdl.math.inverse1 = function (m) {
   return [[1.0 / m[0]]];
 };
 
@@ -1297,9 +1302,14 @@ tdl.math.inverse1 = function(m) {
  * @param {!tdl.math.Matrix2} m The matrix.
  * @return {!tdl.math.Matrix2} The inverse of m.
  */
-tdl.math.inverse2 = function(m) {
-  var d = 1.0 / (m[0*2+0] * m[1*2+1] - m[0*2+1] * m[1*2+0]);
-  return [d * m[1*2+1], -d * m[0*2+1], -d * m[1*2+0], d * m[0*2+0]];
+tdl.math.inverse2 = function (m) {
+  var d = 1.0 / (m[0 * 2 + 0] * m[1 * 2 + 1] - m[0 * 2 + 1] * m[1 * 2 + 0]);
+  return [
+    d * m[1 * 2 + 1],
+    -d * m[0 * 2 + 1],
+    -d * m[1 * 2 + 0],
+    d * m[0 * 2 + 0],
+  ];
 };
 
 /**
@@ -1307,18 +1317,22 @@ tdl.math.inverse2 = function(m) {
  * @param {!tdl.math.Matrix3} m The matrix.
  * @return {!tdl.math.Matrix3} The inverse of m.
  */
-tdl.math.inverse3 = function(m) {
-  var t00 = m[1*3+1] * m[2*3+2] - m[1*3+2] * m[2*3+1];
-  var t10 = m[0*3+1] * m[2*3+2] - m[0*3+2] * m[2*3+1];
-  var t20 = m[0*3+1] * m[1*3+2] - m[0*3+2] * m[1*3+1];
-  var d = 1.0 / (m[0*3+0] * t00 - m[1*3+0] * t10 + m[2*3+0] * t20);
-  return [ d * t00, -d * t10, d * t20,
-          -d * (m[1*3+0] * m[2*3+2] - m[1*3+2] * m[2*3+0]),
-           d * (m[0*3+0] * m[2*3+2] - m[0*3+2] * m[2*3+0]),
-          -d * (m[0*3+0] * m[1*3+2] - m[0*3+2] * m[1*3+0]),
-           d * (m[1*3+0] * m[2*3+1] - m[1*3+1] * m[2*3+0]),
-          -d * (m[0*3+0] * m[2*3+1] - m[0*3+1] * m[2*3+0]),
-           d * (m[0*3+0] * m[1*3+1] - m[0*3+1] * m[1*3+0])];
+tdl.math.inverse3 = function (m) {
+  var t00 = m[1 * 3 + 1] * m[2 * 3 + 2] - m[1 * 3 + 2] * m[2 * 3 + 1];
+  var t10 = m[0 * 3 + 1] * m[2 * 3 + 2] - m[0 * 3 + 2] * m[2 * 3 + 1];
+  var t20 = m[0 * 3 + 1] * m[1 * 3 + 2] - m[0 * 3 + 2] * m[1 * 3 + 1];
+  var d = 1.0 / (m[0 * 3 + 0] * t00 - m[1 * 3 + 0] * t10 + m[2 * 3 + 0] * t20);
+  return [
+    d * t00,
+    -d * t10,
+    d * t20,
+    -d * (m[1 * 3 + 0] * m[2 * 3 + 2] - m[1 * 3 + 2] * m[2 * 3 + 0]),
+    d * (m[0 * 3 + 0] * m[2 * 3 + 2] - m[0 * 3 + 2] * m[2 * 3 + 0]),
+    -d * (m[0 * 3 + 0] * m[1 * 3 + 2] - m[0 * 3 + 2] * m[1 * 3 + 0]),
+    d * (m[1 * 3 + 0] * m[2 * 3 + 1] - m[1 * 3 + 1] * m[2 * 3 + 0]),
+    -d * (m[0 * 3 + 0] * m[2 * 3 + 1] - m[0 * 3 + 1] * m[2 * 3 + 0]),
+    d * (m[0 * 3 + 0] * m[1 * 3 + 1] - m[0 * 3 + 1] * m[1 * 3 + 0]),
+  ];
 };
 
 /**
@@ -1326,68 +1340,142 @@ tdl.math.inverse3 = function(m) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {!tdl.math.Matrix4} The inverse of m.
  */
-tdl.math.inverse4 = function(m) {
-  var tmp_0 = m[2*4+2] * m[3*4+3];
-  var tmp_1 = m[3*4+2] * m[2*4+3];
-  var tmp_2 = m[1*4+2] * m[3*4+3];
-  var tmp_3 = m[3*4+2] * m[1*4+3];
-  var tmp_4 = m[1*4+2] * m[2*4+3];
-  var tmp_5 = m[2*4+2] * m[1*4+3];
-  var tmp_6 = m[0*4+2] * m[3*4+3];
-  var tmp_7 = m[3*4+2] * m[0*4+3];
-  var tmp_8 = m[0*4+2] * m[2*4+3];
-  var tmp_9 = m[2*4+2] * m[0*4+3];
-  var tmp_10 = m[0*4+2] * m[1*4+3];
-  var tmp_11 = m[1*4+2] * m[0*4+3];
-  var tmp_12 = m[2*4+0] * m[3*4+1];
-  var tmp_13 = m[3*4+0] * m[2*4+1];
-  var tmp_14 = m[1*4+0] * m[3*4+1];
-  var tmp_15 = m[3*4+0] * m[1*4+1];
-  var tmp_16 = m[1*4+0] * m[2*4+1];
-  var tmp_17 = m[2*4+0] * m[1*4+1];
-  var tmp_18 = m[0*4+0] * m[3*4+1];
-  var tmp_19 = m[3*4+0] * m[0*4+1];
-  var tmp_20 = m[0*4+0] * m[2*4+1];
-  var tmp_21 = m[2*4+0] * m[0*4+1];
-  var tmp_22 = m[0*4+0] * m[1*4+1];
-  var tmp_23 = m[1*4+0] * m[0*4+1];
+tdl.math.inverse4 = function (m) {
+  var tmp_0 = m[2 * 4 + 2] * m[3 * 4 + 3];
+  var tmp_1 = m[3 * 4 + 2] * m[2 * 4 + 3];
+  var tmp_2 = m[1 * 4 + 2] * m[3 * 4 + 3];
+  var tmp_3 = m[3 * 4 + 2] * m[1 * 4 + 3];
+  var tmp_4 = m[1 * 4 + 2] * m[2 * 4 + 3];
+  var tmp_5 = m[2 * 4 + 2] * m[1 * 4 + 3];
+  var tmp_6 = m[0 * 4 + 2] * m[3 * 4 + 3];
+  var tmp_7 = m[3 * 4 + 2] * m[0 * 4 + 3];
+  var tmp_8 = m[0 * 4 + 2] * m[2 * 4 + 3];
+  var tmp_9 = m[2 * 4 + 2] * m[0 * 4 + 3];
+  var tmp_10 = m[0 * 4 + 2] * m[1 * 4 + 3];
+  var tmp_11 = m[1 * 4 + 2] * m[0 * 4 + 3];
+  var tmp_12 = m[2 * 4 + 0] * m[3 * 4 + 1];
+  var tmp_13 = m[3 * 4 + 0] * m[2 * 4 + 1];
+  var tmp_14 = m[1 * 4 + 0] * m[3 * 4 + 1];
+  var tmp_15 = m[3 * 4 + 0] * m[1 * 4 + 1];
+  var tmp_16 = m[1 * 4 + 0] * m[2 * 4 + 1];
+  var tmp_17 = m[2 * 4 + 0] * m[1 * 4 + 1];
+  var tmp_18 = m[0 * 4 + 0] * m[3 * 4 + 1];
+  var tmp_19 = m[3 * 4 + 0] * m[0 * 4 + 1];
+  var tmp_20 = m[0 * 4 + 0] * m[2 * 4 + 1];
+  var tmp_21 = m[2 * 4 + 0] * m[0 * 4 + 1];
+  var tmp_22 = m[0 * 4 + 0] * m[1 * 4 + 1];
+  var tmp_23 = m[1 * 4 + 0] * m[0 * 4 + 1];
 
-  var t0 = (tmp_0 * m[1*4+1] + tmp_3 * m[2*4+1] + tmp_4 * m[3*4+1]) -
-      (tmp_1 * m[1*4+1] + tmp_2 * m[2*4+1] + tmp_5 * m[3*4+1]);
-  var t1 = (tmp_1 * m[0*4+1] + tmp_6 * m[2*4+1] + tmp_9 * m[3*4+1]) -
-      (tmp_0 * m[0*4+1] + tmp_7 * m[2*4+1] + tmp_8 * m[3*4+1]);
-  var t2 = (tmp_2 * m[0*4+1] + tmp_7 * m[1*4+1] + tmp_10 * m[3*4+1]) -
-      (tmp_3 * m[0*4+1] + tmp_6 * m[1*4+1] + tmp_11 * m[3*4+1]);
-  var t3 = (tmp_5 * m[0*4+1] + tmp_8 * m[1*4+1] + tmp_11 * m[2*4+1]) -
-      (tmp_4 * m[0*4+1] + tmp_9 * m[1*4+1] + tmp_10 * m[2*4+1]);
+  var t0 =
+    tmp_0 * m[1 * 4 + 1] +
+    tmp_3 * m[2 * 4 + 1] +
+    tmp_4 * m[3 * 4 + 1] -
+    (tmp_1 * m[1 * 4 + 1] + tmp_2 * m[2 * 4 + 1] + tmp_5 * m[3 * 4 + 1]);
+  var t1 =
+    tmp_1 * m[0 * 4 + 1] +
+    tmp_6 * m[2 * 4 + 1] +
+    tmp_9 * m[3 * 4 + 1] -
+    (tmp_0 * m[0 * 4 + 1] + tmp_7 * m[2 * 4 + 1] + tmp_8 * m[3 * 4 + 1]);
+  var t2 =
+    tmp_2 * m[0 * 4 + 1] +
+    tmp_7 * m[1 * 4 + 1] +
+    tmp_10 * m[3 * 4 + 1] -
+    (tmp_3 * m[0 * 4 + 1] + tmp_6 * m[1 * 4 + 1] + tmp_11 * m[3 * 4 + 1]);
+  var t3 =
+    tmp_5 * m[0 * 4 + 1] +
+    tmp_8 * m[1 * 4 + 1] +
+    tmp_11 * m[2 * 4 + 1] -
+    (tmp_4 * m[0 * 4 + 1] + tmp_9 * m[1 * 4 + 1] + tmp_10 * m[2 * 4 + 1]);
 
-  var d = 1.0 / (m[0*4+0] * t0 + m[1*4+0] * t1 + m[2*4+0] * t2 + m[3*4+0] * t3);
+  var d =
+    1.0 /
+    (m[0 * 4 + 0] * t0 +
+      m[1 * 4 + 0] * t1 +
+      m[2 * 4 + 0] * t2 +
+      m[3 * 4 + 0] * t3);
 
-  return [d * t0, d * t1, d * t2, d * t3,
-       d * ((tmp_1 * m[1*4+0] + tmp_2 * m[2*4+0] + tmp_5 * m[3*4+0]) -
-          (tmp_0 * m[1*4+0] + tmp_3 * m[2*4+0] + tmp_4 * m[3*4+0])),
-       d * ((tmp_0 * m[0*4+0] + tmp_7 * m[2*4+0] + tmp_8 * m[3*4+0]) -
-          (tmp_1 * m[0*4+0] + tmp_6 * m[2*4+0] + tmp_9 * m[3*4+0])),
-       d * ((tmp_3 * m[0*4+0] + tmp_6 * m[1*4+0] + tmp_11 * m[3*4+0]) -
-          (tmp_2 * m[0*4+0] + tmp_7 * m[1*4+0] + tmp_10 * m[3*4+0])),
-       d * ((tmp_4 * m[0*4+0] + tmp_9 * m[1*4+0] + tmp_10 * m[2*4+0]) -
-          (tmp_5 * m[0*4+0] + tmp_8 * m[1*4+0] + tmp_11 * m[2*4+0])),
-       d * ((tmp_12 * m[1*4+3] + tmp_15 * m[2*4+3] + tmp_16 * m[3*4+3]) -
-          (tmp_13 * m[1*4+3] + tmp_14 * m[2*4+3] + tmp_17 * m[3*4+3])),
-       d * ((tmp_13 * m[0*4+3] + tmp_18 * m[2*4+3] + tmp_21 * m[3*4+3]) -
-          (tmp_12 * m[0*4+3] + tmp_19 * m[2*4+3] + tmp_20 * m[3*4+3])),
-       d * ((tmp_14 * m[0*4+3] + tmp_19 * m[1*4+3] + tmp_22 * m[3*4+3]) -
-          (tmp_15 * m[0*4+3] + tmp_18 * m[1*4+3] + tmp_23 * m[3*4+3])),
-       d * ((tmp_17 * m[0*4+3] + tmp_20 * m[1*4+3] + tmp_23 * m[2*4+3]) -
-          (tmp_16 * m[0*4+3] + tmp_21 * m[1*4+3] + tmp_22 * m[2*4+3])),
-       d * ((tmp_14 * m[2*4+2] + tmp_17 * m[3*4+2] + tmp_13 * m[1*4+2]) -
-          (tmp_16 * m[3*4+2] + tmp_12 * m[1*4+2] + tmp_15 * m[2*4+2])),
-       d * ((tmp_20 * m[3*4+2] + tmp_12 * m[0*4+2] + tmp_19 * m[2*4+2]) -
-          (tmp_18 * m[2*4+2] + tmp_21 * m[3*4+2] + tmp_13 * m[0*4+2])),
-       d * ((tmp_18 * m[1*4+2] + tmp_23 * m[3*4+2] + tmp_15 * m[0*4+2]) -
-          (tmp_22 * m[3*4+2] + tmp_14 * m[0*4+2] + tmp_19 * m[1*4+2])),
-       d * ((tmp_22 * m[2*4+2] + tmp_16 * m[0*4+2] + tmp_21 * m[1*4+2]) -
-          (tmp_20 * m[1*4+2] + tmp_23 * m[2*4+2] + tmp_17 * m[0*4+2]))];
+  return [
+    d * t0,
+    d * t1,
+    d * t2,
+    d * t3,
+    d *
+      (tmp_1 * m[1 * 4 + 0] +
+        tmp_2 * m[2 * 4 + 0] +
+        tmp_5 * m[3 * 4 + 0] -
+        (tmp_0 * m[1 * 4 + 0] + tmp_3 * m[2 * 4 + 0] + tmp_4 * m[3 * 4 + 0])),
+    d *
+      (tmp_0 * m[0 * 4 + 0] +
+        tmp_7 * m[2 * 4 + 0] +
+        tmp_8 * m[3 * 4 + 0] -
+        (tmp_1 * m[0 * 4 + 0] + tmp_6 * m[2 * 4 + 0] + tmp_9 * m[3 * 4 + 0])),
+    d *
+      (tmp_3 * m[0 * 4 + 0] +
+        tmp_6 * m[1 * 4 + 0] +
+        tmp_11 * m[3 * 4 + 0] -
+        (tmp_2 * m[0 * 4 + 0] + tmp_7 * m[1 * 4 + 0] + tmp_10 * m[3 * 4 + 0])),
+    d *
+      (tmp_4 * m[0 * 4 + 0] +
+        tmp_9 * m[1 * 4 + 0] +
+        tmp_10 * m[2 * 4 + 0] -
+        (tmp_5 * m[0 * 4 + 0] + tmp_8 * m[1 * 4 + 0] + tmp_11 * m[2 * 4 + 0])),
+    d *
+      (tmp_12 * m[1 * 4 + 3] +
+        tmp_15 * m[2 * 4 + 3] +
+        tmp_16 * m[3 * 4 + 3] -
+        (tmp_13 * m[1 * 4 + 3] +
+          tmp_14 * m[2 * 4 + 3] +
+          tmp_17 * m[3 * 4 + 3])),
+    d *
+      (tmp_13 * m[0 * 4 + 3] +
+        tmp_18 * m[2 * 4 + 3] +
+        tmp_21 * m[3 * 4 + 3] -
+        (tmp_12 * m[0 * 4 + 3] +
+          tmp_19 * m[2 * 4 + 3] +
+          tmp_20 * m[3 * 4 + 3])),
+    d *
+      (tmp_14 * m[0 * 4 + 3] +
+        tmp_19 * m[1 * 4 + 3] +
+        tmp_22 * m[3 * 4 + 3] -
+        (tmp_15 * m[0 * 4 + 3] +
+          tmp_18 * m[1 * 4 + 3] +
+          tmp_23 * m[3 * 4 + 3])),
+    d *
+      (tmp_17 * m[0 * 4 + 3] +
+        tmp_20 * m[1 * 4 + 3] +
+        tmp_23 * m[2 * 4 + 3] -
+        (tmp_16 * m[0 * 4 + 3] +
+          tmp_21 * m[1 * 4 + 3] +
+          tmp_22 * m[2 * 4 + 3])),
+    d *
+      (tmp_14 * m[2 * 4 + 2] +
+        tmp_17 * m[3 * 4 + 2] +
+        tmp_13 * m[1 * 4 + 2] -
+        (tmp_16 * m[3 * 4 + 2] +
+          tmp_12 * m[1 * 4 + 2] +
+          tmp_15 * m[2 * 4 + 2])),
+    d *
+      (tmp_20 * m[3 * 4 + 2] +
+        tmp_12 * m[0 * 4 + 2] +
+        tmp_19 * m[2 * 4 + 2] -
+        (tmp_18 * m[2 * 4 + 2] +
+          tmp_21 * m[3 * 4 + 2] +
+          tmp_13 * m[0 * 4 + 2])),
+    d *
+      (tmp_18 * m[1 * 4 + 2] +
+        tmp_23 * m[3 * 4 + 2] +
+        tmp_15 * m[0 * 4 + 2] -
+        (tmp_22 * m[3 * 4 + 2] +
+          tmp_14 * m[0 * 4 + 2] +
+          tmp_19 * m[1 * 4 + 2])),
+    d *
+      (tmp_22 * m[2 * 4 + 2] +
+        tmp_16 * m[0 * 4 + 2] +
+        tmp_21 * m[1 * 4 + 2] -
+        (tmp_20 * m[1 * 4 + 2] +
+          tmp_23 * m[2 * 4 + 2] +
+          tmp_17 * m[0 * 4 + 2])),
+  ];
 };
 
 /**
@@ -1400,18 +1488,16 @@ tdl.math.inverse4 = function(m) {
  * @return {number} The determinant of the matrix obtained by removing
  *     row x and column y from a.
  */
-tdl.math.codet = function(a, x, y) {
+tdl.math.codet = function (a, x, y) {
   var size = 4;
   var b = [];
   var ai = 0;
   for (var bi = 0; bi < size - 1; ++bi) {
-    if (ai == x)
-      ai++;
+    if (ai == x) ai++;
     var aj = 0;
     for (var bj = 0; bj < size - 1; ++bj) {
-      if (aj == y)
-        aj++;
-      b[bi*4+bj] = a[ai*4+aj];
+      if (aj == y) aj++;
+      b[bi * 4 + bj] = a[ai * 4 + aj];
       aj++;
     }
     ai++;
@@ -1424,10 +1510,10 @@ tdl.math.codet = function(a, x, y) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {number} the determinant of m.
  */
-tdl.math.det = function(m) {
+tdl.math.det = function (m) {
   var d = 4;
   if (d <= 4) {
-    return tdl.math['det' + d](m);
+    return tdl.math["det" + d](m);
   }
   var r = 0.0;
   var sign = 1;
@@ -1445,10 +1531,10 @@ tdl.math.det = function(m) {
  * @param {!tdl.math.Matrix} m The matrix.
  * @return {!tdl.math.Matrix} The inverse of m.
  */
-tdl.math.inverse = function(m) {
+tdl.math.inverse = function (m) {
   var d = 4;
   if (d <= 4) {
-    return tdl.math['inverse' + d](m);
+    return tdl.math["inverse" + d](m);
   }
   var r = [];
   var size = m.length;
@@ -1470,17 +1556,17 @@ tdl.math.inverse = function(m) {
  * @return {!tdl.math.Matrix} A matrix whose rows are obtained from the
  *     rows of m by the Graham-Schmidt process.
  */
-tdl.math.orthonormalize = function(m) {
-//  var r = [];
-//  for (var i = 0; i < 4; ++i) {
-//    var v = m[i];
-//    for (var j = 0; j < i; ++j) {
-//      v = tdl.math.subVector(v, tdl.math.mulScalarVector(
-//          tdl.math.dot(r[j], m[i]), r[j]));
-//    }
-//    r[i] = tdl.math.normalize(v);
-//  }
-//  return r;
+tdl.math.orthonormalize = function (m) {
+  //  var r = [];
+  //  for (var i = 0; i < 4; ++i) {
+  //    var v = m[i];
+  //    for (var j = 0; j < i; ++j) {
+  //      v = tdl.math.subVector(v, tdl.math.mulScalarVector(
+  //          tdl.math.dot(r[j], m[i]), r[j]));
+  //    }
+  //    r[i] = tdl.math.normalize(v);
+  //  }
+  //  return r;
 };
 
 /**
@@ -1489,7 +1575,7 @@ tdl.math.orthonormalize = function(m) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {!tdl.math.Matrix4} The inverse of m.
  */
-tdl.math.matrix4.inverse = function(m) {
+tdl.math.matrix4.inverse = function (m) {
   return tdl.math.inverse4(m);
 };
 
@@ -1500,7 +1586,7 @@ tdl.math.matrix4.inverse = function(m) {
  * @param {!tdl.math.Matrix4} b The matrix on the right.
  * @return {!tdl.math.Matrix4} The matrix product of a and b.
  */
-tdl.math.matrix4.mul = function(a, b) {
+tdl.math.matrix4.mul = function (a, b) {
   return tdl.math.mulMatrixMatrix4(a, b);
 };
 
@@ -1510,7 +1596,7 @@ tdl.math.matrix4.mul = function(a, b) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {number} The determinant of m.
  */
-tdl.math.matrix4.det = function(m) {
+tdl.math.matrix4.det = function (m) {
   return tdl.math.det4(m);
 };
 
@@ -1520,7 +1606,7 @@ tdl.math.matrix4.det = function(m) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {!tdl.math.Matrix4} A copy of m.
  */
-tdl.math.matrix4.copy = function(m) {
+tdl.math.matrix4.copy = function (m) {
   return tdl.math.copyMatrix(m);
 };
 
@@ -1533,16 +1619,16 @@ tdl.math.matrix4.transpose = tdl.math.transpose;
  * @param {!tdl.math.Matrix3} b A 3-by-3 matrix.
  * @return {!tdl.math.Matrix4} a once modified.
  */
-tdl.math.matrix4.setUpper3x3 = function(a, b) {
-  a[0*4+0] = b[0*3+0];
-  a[0*4+1] = b[0*3+1];
-  a[0*4+2] = b[0*3+2];
-  a[1*4+0] = b[1*3+0];
-  a[1*4+1] = b[1*3+1];
-  a[1*4+2] = b[1*3+2];
-  a[2*4+0] = b[2*3+0];
-  a[2*4+1] = b[2*3+1];
-  a[2*4+2] = b[2*3+2];
+tdl.math.matrix4.setUpper3x3 = function (a, b) {
+  a[0 * 4 + 0] = b[0 * 3 + 0];
+  a[0 * 4 + 1] = b[0 * 3 + 1];
+  a[0 * 4 + 2] = b[0 * 3 + 2];
+  a[1 * 4 + 0] = b[1 * 3 + 0];
+  a[1 * 4 + 1] = b[1 * 3 + 1];
+  a[1 * 4 + 2] = b[1 * 3 + 2];
+  a[2 * 4 + 0] = b[2 * 3 + 0];
+  a[2 * 4 + 1] = b[2 * 3 + 1];
+  a[2 * 4 + 2] = b[2 * 3 + 2];
 
   return a;
 };
@@ -1553,17 +1639,17 @@ tdl.math.matrix4.setUpper3x3 = function(a, b) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {!tdl.math.Matrix3} The upper 3-by-3 block of m.
  */
-tdl.math.matrix4.getUpper3x3 = function(m) {
+tdl.math.matrix4.getUpper3x3 = function (m) {
   return [
-    m[0*4+0],
-    m[0*4+1],
-    m[0*4+2],
-    m[1*4+0],
-    m[1*4+1],
-    m[1*4+2],
-    m[2*4+0],
-    m[2*4+1],
-    m[2*4+2]
+    m[0 * 4 + 0],
+    m[0 * 4 + 1],
+    m[0 * 4 + 2],
+    m[1 * 4 + 0],
+    m[1 * 4 + 1],
+    m[1 * 4 + 2],
+    m[2 * 4 + 0],
+    m[2 * 4 + 1],
+    m[2 * 4 + 2],
   ];
 };
 
@@ -1574,7 +1660,7 @@ tdl.math.matrix4.getUpper3x3 = function(m) {
  * @param {(!tdl.math.Vector3|!tdl.math.Vector4)} v The vector.
  * @return {!tdl.math.Matrix4} a once modified.
  */
-tdl.math.matrix4.setTranslation = function(a, v) {
+tdl.math.matrix4.setTranslation = function (a, v) {
   a[12] = v[0];
   a[13] = v[1];
   a[14] = v[2];
@@ -1588,7 +1674,7 @@ tdl.math.matrix4.setTranslation = function(a, v) {
  * @param {!tdl.math.Matrix4} m The matrix.
  * @return {!tdl.math.Vector3} The translation component of m.
  */
-tdl.math.matrix4.getTranslation = function(m) {
+tdl.math.matrix4.getTranslation = function (m) {
   return [m[12], m[13], m[14], m[15]];
 };
 
@@ -1600,14 +1686,20 @@ tdl.math.matrix4.getTranslation = function(m) {
  * @param {!tdl.math.Vector3} v The point.
  * @return {!tdl.math.Vector3} The transformed point.
  */
-tdl.math.matrix4.transformPoint = function(m, v) {
+tdl.math.matrix4.transformPoint = function (m, v) {
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
-  var d = v0 * m[0*4+3] + v1 * m[1*4+3] + v2 * m[2*4+3] + m[3*4+3];
-  return [(v0 * m[0*4+0] + v1 * m[1*4+0] + v2 * m[2*4+0] + m[3*4+0]) / d,
-          (v0 * m[0*4+1] + v1 * m[1*4+1] + v2 * m[2*4+1] + m[3*4+1]) / d,
-          (v0 * m[0*4+2] + v1 * m[1*4+2] + v2 * m[2*4+2] + m[3*4+2]) / d];
+  var d =
+    v0 * m[0 * 4 + 3] + v1 * m[1 * 4 + 3] + v2 * m[2 * 4 + 3] + m[3 * 4 + 3];
+  return [
+    (v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0] + m[3 * 4 + 0]) /
+      d,
+    (v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1] + m[3 * 4 + 1]) /
+      d,
+    (v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2] + m[3 * 4 + 2]) /
+      d,
+  ];
 };
 
 /**
@@ -1618,16 +1710,30 @@ tdl.math.matrix4.transformPoint = function(m, v) {
  * @return {!tdl.math.Vector4} The transformed point in homogenous
  *     coordinates.
  */
-tdl.math.matrix4.transformVector4 = function(m, v) {
+tdl.math.matrix4.transformVector4 = function (m, v) {
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
   var v3 = v[3];
 
-  return [v0 * m[0*4+0] + v1 * m[1*4+0] + v2 * m[2*4+0] + v3 * m[3*4+0],
-          v0 * m[0*4+1] + v1 * m[1*4+1] + v2 * m[2*4+1] + v3 * m[3*4+1],
-          v0 * m[0*4+2] + v1 * m[1*4+2] + v2 * m[2*4+2] + v3 * m[3*4+2],
-          v0 * m[0*4+3] + v1 * m[1*4+3] + v2 * m[2*4+3] + v3 * m[3*4+3]];
+  return [
+    v0 * m[0 * 4 + 0] +
+      v1 * m[1 * 4 + 0] +
+      v2 * m[2 * 4 + 0] +
+      v3 * m[3 * 4 + 0],
+    v0 * m[0 * 4 + 1] +
+      v1 * m[1 * 4 + 1] +
+      v2 * m[2 * 4 + 1] +
+      v3 * m[3 * 4 + 1],
+    v0 * m[0 * 4 + 2] +
+      v1 * m[1 * 4 + 2] +
+      v2 * m[2 * 4 + 2] +
+      v3 * m[3 * 4 + 2],
+    v0 * m[0 * 4 + 3] +
+      v1 * m[1 * 4 + 3] +
+      v2 * m[2 * 4 + 3] +
+      v3 * m[3 * 4 + 3],
+  ];
 };
 
 /**
@@ -1641,14 +1747,16 @@ tdl.math.matrix4.transformVector4 = function(m, v) {
  * @param {!tdl.math.Vector3} v The direction.
  * @return {!tdl.math.Vector3} The transformed direction.
  */
-tdl.math.matrix4.transformDirection = function(m, v) {
+tdl.math.matrix4.transformDirection = function (m, v) {
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
 
-  return [v0 * m[0*4+0] + v1 * m[1*4+0] + v2 * m[2*4+0],
-          v0 * m[0*4+1] + v1 * m[1*4+1] + v2 * m[2*4+1],
-          v0 * m[0*4+2] + v1 * m[1*4+2] + v2 * m[2*4+2]];
+  return [
+    v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0],
+    v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1],
+    v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2],
+  ];
 };
 
 /**
@@ -1664,28 +1772,25 @@ tdl.math.matrix4.transformDirection = function(m, v) {
  * @param {!tdl.math.Vector3} v The normal.
  * @return {!tdl.math.Vector3} The transformed normal.
  */
-tdl.math.matrix4.transformNormal = function(m, v) {
+tdl.math.matrix4.transformNormal = function (m, v) {
   var mi = tdl.math.inverse4(m);
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
 
-  return [v0 * mi[0*4+0] + v1 * mi[0*4+1] + v2 * mi[0*4+2],
-          v0 * mi[1*4+0] + v1 * mi[1*4+1] + v2 * mi[1*4+2],
-          v0 * mi[2*4+0] + v1 * mi[2*4+1] + v2 * mi[2*4+2]];
+  return [
+    v0 * mi[0 * 4 + 0] + v1 * mi[0 * 4 + 1] + v2 * mi[0 * 4 + 2],
+    v0 * mi[1 * 4 + 0] + v1 * mi[1 * 4 + 1] + v2 * mi[1 * 4 + 2],
+    v0 * mi[2 * 4 + 0] + v1 * mi[2 * 4 + 1] + v2 * mi[2 * 4 + 2],
+  ];
 };
 
 /**
  * Creates a 4-by-4 identity matrix.
  * @return {!tdl.math.Matrix4} The 4-by-4 identity.
  */
-tdl.math.matrix4.identity = function() {
-  return [
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  ];
+tdl.math.matrix4.identity = function () {
+  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 };
 
 /**
@@ -1693,13 +1798,13 @@ tdl.math.matrix4.identity = function() {
  * @param {!tdl.math.Matrix4} m The matrix to set to identity.
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.setIdentity = function(m) {
+tdl.math.matrix4.setIdentity = function (m) {
   for (var i = 0; i < 4; i++) {
     for (var j = 0; j < 4; j++) {
       if (i == j) {
-        m[i*4+j] = 1;
+        m[i * 4 + j] = 1;
       } else {
-        m[i*4+j] = 0;
+        m[i * 4 + j] = 0;
       }
     }
   }
@@ -1725,15 +1830,27 @@ tdl.math.matrix4.setIdentity = function(m) {
  *     of the far clipping plane.
  * @return {!tdl.math.Matrix4} The perspective matrix.
  */
-tdl.math.matrix4.perspective = function(angle, aspect, zNear, zFar) {
+tdl.math.matrix4.perspective = function (angle, aspect, zNear, zFar) {
   var f = Math.tan(Math.PI * 0.5 - 0.5 * angle);
   var rangeInv = 1.0 / (zNear - zFar);
 
   return [
-    f / aspect, 0, 0, 0,
-    0, f, 0, 0,
-    0, 0, (zNear + zFar) * rangeInv, -1,
-    0, 0, zNear * zFar * rangeInv * 2, 0
+    f / aspect,
+    0,
+    0,
+    0,
+    0,
+    f,
+    0,
+    0,
+    0,
+    0,
+    (zNear + zFar) * rangeInv,
+    -1,
+    0,
+    0,
+    zNear * zFar * rangeInv * 2,
+    0,
   ];
 };
 
@@ -1753,15 +1870,24 @@ tdl.math.matrix4.perspective = function(angle, aspect, zNear, zFar) {
  * @param {number} far The negative z coordinate of the far plane of the box.
  * @return {!tdl.math.Matrix4} The orthographic projection matrix.
  */
-tdl.math.matrix4.orthographic =
-    function(left, right, bottom, top, near, far) {
+tdl.math.matrix4.orthographic = function (left, right, bottom, top, near, far) {
   return [
-    2 / (right - left), 0, 0, 0,
-    0, 2 / (top - bottom), 0, 0,
-    0, 0, 1 / (near - far), 0,
+    2 / (right - left),
+    0,
+    0,
+    0,
+    0,
+    2 / (top - bottom),
+    0,
+    0,
+    0,
+    0,
+    1 / (near - far),
+    0,
     (left + right) / (left - right),
     (bottom + top) / (bottom - top),
-    near / (near - far), 1
+    near / (near - far),
+    1,
   ];
 };
 
@@ -1782,15 +1908,28 @@ tdl.math.matrix4.orthographic =
  * @param {number} far The negative z coordinate of the far plane of the box.
  * @return {!tdl.math.Matrix4} The perspective projection matrix.
  */
-tdl.math.matrix4.frustum = function(left, right, bottom, top, near, far) {
-  var dx = (right - left);
-  var dy = (top - bottom);
-  var dz = (near - far);
+tdl.math.matrix4.frustum = function (left, right, bottom, top, near, far) {
+  var dx = right - left;
+  var dy = top - bottom;
+  var dz = near - far;
   return [
-    2 * near / dx, 0, 0, 0,
-    0, 2 * near / dy, 0, 0,
-    (left + right) / dx, (top + bottom) / dy, far / dz, -1,
-    0, 0, near * far / dz, 0];
+    (2 * near) / dx,
+    0,
+    0,
+    0,
+    0,
+    (2 * near) / dy,
+    0,
+    0,
+    (left + right) / dx,
+    (top + bottom) / dy,
+    far / dz,
+    -1,
+    0,
+    0,
+    (near * far) / dz,
+    0,
+  ];
 };
 
 /**
@@ -1808,9 +1947,8 @@ tdl.math.matrix4.frustum = function(left, right, bottom, top, near, far) {
  *     pointing up.
  * @return {!tdl.math.Matrix4} The look-at matrix.
  */
-tdl.math.matrix4.lookAt = function(eye, target, up) {
-  return tdl.math.inverse(tdl.math.matrix4.cameraLookAt(
-      eye, target, up));
+tdl.math.matrix4.lookAt = function (eye, target, up) {
+  return tdl.math.inverse(tdl.math.matrix4.cameraLookAt(eye, target, up));
 };
 
 /**
@@ -1825,20 +1963,29 @@ tdl.math.matrix4.lookAt = function(eye, target, up) {
  *     pointing up.
  * @return {!tdl.math.Matrix4} The camera look-at matrix.
  */
-tdl.math.matrix4.cameraLookAt = function(eye, target, up) {
-  var vz = tdl.math.normalize(
-      tdl.math.subVector(eye, target));
-  var vx = tdl.math.normalize(
-      tdl.math.cross(up, vz));
+tdl.math.matrix4.cameraLookAt = function (eye, target, up) {
+  var vz = tdl.math.normalize(tdl.math.subVector(eye, target));
+  var vx = tdl.math.normalize(tdl.math.cross(up, vz));
   var vy = tdl.math.cross(vz, vx);
 
   return tdl.math.inverse([
-     vx[0], vx[1], vx[2], 0,
-     vy[0], vy[1], vy[2], 0,
-     vz[0], vz[1], vz[2], 0,
-     -tdl.math.dot(vx, eye),
-     -tdl.math.dot(vy, eye),
-     -tdl.math.dot(vz, eye), 1]);
+    vx[0],
+    vx[1],
+    vx[2],
+    0,
+    vy[0],
+    vy[1],
+    vy[2],
+    0,
+    vz[0],
+    vz[1],
+    vz[2],
+    0,
+    -tdl.math.dot(vx, eye),
+    -tdl.math.dot(vy, eye),
+    -tdl.math.dot(vz, eye),
+    1,
+  ]);
 };
 
 /**
@@ -1851,55 +1998,57 @@ tdl.math.matrix4.cameraLookAt = function(eye, target, up) {
  * @param {!tdl.math.Matrix4} b A 4-by-4 matrix.
  * @return {!tdl.math.Matrix4} the composition of a and b, b first then a.
  */
-tdl.math.matrix4.composition = function(a, b) {
-  var a00 = a[0*4+0];
-  var a01 = a[0*4+1];
-  var a02 = a[0*4+2];
-  var a03 = a[0*4+3];
-  var a10 = a[1*4+0];
-  var a11 = a[1*4+1];
-  var a12 = a[1*4+2];
-  var a13 = a[1*4+3];
-  var a20 = a[2*4+0];
-  var a21 = a[2*4+1];
-  var a22 = a[2*4+2];
-  var a23 = a[2*4+3];
-  var a30 = a[3*4+0];
-  var a31 = a[3*4+1];
-  var a32 = a[3*4+2];
-  var a33 = a[3*4+3];
-  var b00 = b[0*4+0];
-  var b01 = b[0*4+1];
-  var b02 = b[0*4+2];
-  var b03 = b[0*4+3];
-  var b10 = b[1*4+0];
-  var b11 = b[1*4+1];
-  var b12 = b[1*4+2];
-  var b13 = b[1*4+3];
-  var b20 = b[2*4+0];
-  var b21 = b[2*4+1];
-  var b22 = b[2*4+2];
-  var b23 = b[2*4+3];
-  var b30 = b[3*4+0];
-  var b31 = b[3*4+1];
-  var b32 = b[3*4+2];
-  var b33 = b[3*4+3];
-  return [a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03,
-          a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03,
-          a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03,
-          a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03,
-          a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13,
-          a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13,
-          a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13,
-          a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13,
-          a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23,
-          a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23,
-          a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23,
-          a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23,
-          a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33,
-          a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33,
-          a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33,
-          a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33];
+tdl.math.matrix4.composition = function (a, b) {
+  var a00 = a[0 * 4 + 0];
+  var a01 = a[0 * 4 + 1];
+  var a02 = a[0 * 4 + 2];
+  var a03 = a[0 * 4 + 3];
+  var a10 = a[1 * 4 + 0];
+  var a11 = a[1 * 4 + 1];
+  var a12 = a[1 * 4 + 2];
+  var a13 = a[1 * 4 + 3];
+  var a20 = a[2 * 4 + 0];
+  var a21 = a[2 * 4 + 1];
+  var a22 = a[2 * 4 + 2];
+  var a23 = a[2 * 4 + 3];
+  var a30 = a[3 * 4 + 0];
+  var a31 = a[3 * 4 + 1];
+  var a32 = a[3 * 4 + 2];
+  var a33 = a[3 * 4 + 3];
+  var b00 = b[0 * 4 + 0];
+  var b01 = b[0 * 4 + 1];
+  var b02 = b[0 * 4 + 2];
+  var b03 = b[0 * 4 + 3];
+  var b10 = b[1 * 4 + 0];
+  var b11 = b[1 * 4 + 1];
+  var b12 = b[1 * 4 + 2];
+  var b13 = b[1 * 4 + 3];
+  var b20 = b[2 * 4 + 0];
+  var b21 = b[2 * 4 + 1];
+  var b22 = b[2 * 4 + 2];
+  var b23 = b[2 * 4 + 3];
+  var b30 = b[3 * 4 + 0];
+  var b31 = b[3 * 4 + 1];
+  var b32 = b[3 * 4 + 2];
+  var b33 = b[3 * 4 + 3];
+  return [
+    a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03,
+    a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03,
+    a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03,
+    a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03,
+    a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13,
+    a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13,
+    a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13,
+    a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13,
+    a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23,
+    a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23,
+    a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23,
+    a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23,
+    a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33,
+    a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33,
+    a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33,
+    a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33,
+  ];
 };
 
 /**
@@ -1912,49 +2061,49 @@ tdl.math.matrix4.composition = function(a, b) {
  * @param {!tdl.math.Matrix4} b A 4-by-4 matrix.
  * @return {!tdl.math.Matrix4} a once modified.
  */
-tdl.math.matrix4.compose = function(a, b) {
-  var a00 = a[0*4+0];
-  var a01 = a[0*4+1];
-  var a02 = a[0*4+2];
-  var a03 = a[0*4+3];
-  var a10 = a[1*4+0];
-  var a11 = a[1*4+1];
-  var a12 = a[1*4+2];
-  var a13 = a[1*4+3];
-  var a20 = a[2*4+0];
-  var a21 = a[2*4+1];
-  var a22 = a[2*4+2];
-  var a23 = a[2*4+3];
-  var a30 = a[3*4+0];
-  var a31 = a[3*4+1];
-  var a32 = a[3*4+2];
-  var a33 = a[3*4+3];
-  var b00 = b[0*4+0];
-  var b01 = b[0*4+1];
-  var b02 = b[0*4+2];
-  var b03 = b[0*4+3];
-  var b10 = b[1*4+0];
-  var b11 = b[1*4+1];
-  var b12 = b[1*4+2];
-  var b13 = b[1*4+3];
-  var b20 = b[2*4+0];
-  var b21 = b[2*4+1];
-  var b22 = b[2*4+2];
-  var b23 = b[2*4+3];
-  var b30 = b[3*4+0];
-  var b31 = b[3*4+1];
-  var b32 = b[3*4+2];
-  var b33 = b[3*4+3];
-  a[ 0] = a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03;
-  a[ 1] = a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03;
-  a[ 2] = a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03;
-  a[ 3] = a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03;
-  a[ 4] = a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13;
-  a[ 5] = a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13;
-  a[ 6] = a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13;
-  a[ 7] = a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13;
-  a[ 8] = a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23;
-  a[ 9] = a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23;
+tdl.math.matrix4.compose = function (a, b) {
+  var a00 = a[0 * 4 + 0];
+  var a01 = a[0 * 4 + 1];
+  var a02 = a[0 * 4 + 2];
+  var a03 = a[0 * 4 + 3];
+  var a10 = a[1 * 4 + 0];
+  var a11 = a[1 * 4 + 1];
+  var a12 = a[1 * 4 + 2];
+  var a13 = a[1 * 4 + 3];
+  var a20 = a[2 * 4 + 0];
+  var a21 = a[2 * 4 + 1];
+  var a22 = a[2 * 4 + 2];
+  var a23 = a[2 * 4 + 3];
+  var a30 = a[3 * 4 + 0];
+  var a31 = a[3 * 4 + 1];
+  var a32 = a[3 * 4 + 2];
+  var a33 = a[3 * 4 + 3];
+  var b00 = b[0 * 4 + 0];
+  var b01 = b[0 * 4 + 1];
+  var b02 = b[0 * 4 + 2];
+  var b03 = b[0 * 4 + 3];
+  var b10 = b[1 * 4 + 0];
+  var b11 = b[1 * 4 + 1];
+  var b12 = b[1 * 4 + 2];
+  var b13 = b[1 * 4 + 3];
+  var b20 = b[2 * 4 + 0];
+  var b21 = b[2 * 4 + 1];
+  var b22 = b[2 * 4 + 2];
+  var b23 = b[2 * 4 + 3];
+  var b30 = b[3 * 4 + 0];
+  var b31 = b[3 * 4 + 1];
+  var b32 = b[3 * 4 + 2];
+  var b33 = b[3 * 4 + 3];
+  a[0] = a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03;
+  a[1] = a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03;
+  a[2] = a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03;
+  a[3] = a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03;
+  a[4] = a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13;
+  a[5] = a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13;
+  a[6] = a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13;
+  a[7] = a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13;
+  a[8] = a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23;
+  a[9] = a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23;
   a[10] = a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23;
   a[11] = a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23;
   a[12] = a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33;
@@ -1970,13 +2119,8 @@ tdl.math.matrix4.compose = function(a, b) {
  *     which to translate.
  * @return {!tdl.math.Matrix4} The translation matrix.
  */
-tdl.math.matrix4.translation = function(v) {
-  return [
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    v[0], v[1], v[2], 1
-  ];
+tdl.math.matrix4.translation = function (v) {
+  return [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, v[0], v[1], v[2], 1];
 };
 
 /**
@@ -1986,23 +2130,23 @@ tdl.math.matrix4.translation = function(v) {
  *     which to translate.
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.translate = function(m, v) {
-  var m00 = m[0*4+0];
-  var m01 = m[0*4+1];
-  var m02 = m[0*4+2];
-  var m03 = m[0*4+3];
-  var m10 = m[1*4+0];
-  var m11 = m[1*4+1];
-  var m12 = m[1*4+2];
-  var m13 = m[1*4+3];
-  var m20 = m[2*4+0];
-  var m21 = m[2*4+1];
-  var m22 = m[2*4+2];
-  var m23 = m[2*4+3];
-  var m30 = m[3*4+0];
-  var m31 = m[3*4+1];
-  var m32 = m[3*4+2];
-  var m33 = m[3*4+3];
+tdl.math.matrix4.translate = function (m, v) {
+  var m00 = m[0 * 4 + 0];
+  var m01 = m[0 * 4 + 1];
+  var m02 = m[0 * 4 + 2];
+  var m03 = m[0 * 4 + 3];
+  var m10 = m[1 * 4 + 0];
+  var m11 = m[1 * 4 + 1];
+  var m12 = m[1 * 4 + 2];
+  var m13 = m[1 * 4 + 3];
+  var m20 = m[2 * 4 + 0];
+  var m21 = m[2 * 4 + 1];
+  var m22 = m[2 * 4 + 2];
+  var m23 = m[2 * 4 + 3];
+  var m30 = m[3 * 4 + 0];
+  var m31 = m[3 * 4 + 1];
+  var m32 = m[3 * 4 + 2];
+  var m33 = m[3 * 4 + 3];
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
@@ -2023,13 +2167,8 @@ tdl.math.matrix4.translate = function(m, v) {
  *     three entries specifying the factor by which to scale in each dimension.
  * @return {!tdl.math.Matrix4} The scaling matrix.
  */
-tdl.math.matrix4.scaling = function(v) {
-  return [
-    v[0], 0, 0, 0,
-    0, v[1], 0, 0,
-    0, 0, v[2], 0,
-    0, 0, 0, 1
-  ];
+tdl.math.matrix4.scaling = function (v) {
+  return [v[0], 0, 0, 0, 0, v[1], 0, 0, 0, 0, v[2], 0, 0, 0, 0, 1];
 };
 
 /**
@@ -2041,23 +2180,23 @@ tdl.math.matrix4.scaling = function(v) {
  *     factor by which to scale in each dimension.
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.scale = function(m, v) {
+tdl.math.matrix4.scale = function (m, v) {
   var v0 = v[0];
   var v1 = v[1];
   var v2 = v[2];
 
-  m[0] = v0 * m[0*4+0];
-  m[1] = v0 * m[0*4+1];
-  m[2] = v0 * m[0*4+2];
-  m[3] = v0 * m[0*4+3];
-  m[4] = v1 * m[1*4+0];
-  m[5] = v1 * m[1*4+1];
-  m[6] = v1 * m[1*4+2];
-  m[7] = v1 * m[1*4+3];
-  m[8] = v2 * m[2*4+0];
-  m[9] = v2 * m[2*4+1];
-  m[10] = v2 * m[2*4+2];
-  m[11] = v2 * m[2*4+3];
+  m[0] = v0 * m[0 * 4 + 0];
+  m[1] = v0 * m[0 * 4 + 1];
+  m[2] = v0 * m[0 * 4 + 2];
+  m[3] = v0 * m[0 * 4 + 3];
+  m[4] = v1 * m[1 * 4 + 0];
+  m[5] = v1 * m[1 * 4 + 1];
+  m[6] = v1 * m[1 * 4 + 2];
+  m[7] = v1 * m[1 * 4 + 3];
+  m[8] = v2 * m[2 * 4 + 0];
+  m[9] = v2 * m[2 * 4 + 1];
+  m[10] = v2 * m[2 * 4 + 2];
+  m[11] = v2 * m[2 * 4 + 3];
 
   return m;
 };
@@ -2067,16 +2206,11 @@ tdl.math.matrix4.scale = function(m, v) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} The rotation matrix.
  */
-tdl.math.matrix4.rotationX = function(angle) {
+tdl.math.matrix4.rotationX = function (angle) {
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return [
-    1, 0, 0, 0,
-    0, c, s, 0,
-    0, -s, c, 0,
-    0, 0, 0, 1
-  ];
+  return [1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1];
 };
 
 /**
@@ -2086,24 +2220,24 @@ tdl.math.matrix4.rotationX = function(angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.rotateX = function(m, angle) {
-  var m10 = m[1*4+0];
-  var m11 = m[1*4+1];
-  var m12 = m[1*4+2];
-  var m13 = m[1*4+3];
-  var m20 = m[2*4+0];
-  var m21 = m[2*4+1];
-  var m22 = m[2*4+2];
-  var m23 = m[2*4+3];
+tdl.math.matrix4.rotateX = function (m, angle) {
+  var m10 = m[1 * 4 + 0];
+  var m11 = m[1 * 4 + 1];
+  var m12 = m[1 * 4 + 2];
+  var m13 = m[1 * 4 + 3];
+  var m20 = m[2 * 4 + 0];
+  var m21 = m[2 * 4 + 1];
+  var m22 = m[2 * 4 + 2];
+  var m23 = m[2 * 4 + 3];
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  m[4]  = c * m10 + s * m20;
-  m[5]  = c * m11 + s * m21;
-  m[6]  = c * m12 + s * m22;
-  m[7]  = c * m13 + s * m23;
-  m[8]  = c * m20 - s * m10;
-  m[9]  = c * m21 - s * m11;
+  m[4] = c * m10 + s * m20;
+  m[5] = c * m11 + s * m21;
+  m[6] = c * m12 + s * m22;
+  m[7] = c * m13 + s * m23;
+  m[8] = c * m20 - s * m10;
+  m[9] = c * m21 - s * m11;
   m[10] = c * m22 - s * m12;
   m[11] = c * m23 - s * m13;
 
@@ -2115,16 +2249,11 @@ tdl.math.matrix4.rotateX = function(m, angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} The rotation matrix.
  */
-tdl.math.matrix4.rotationY = function(angle) {
+tdl.math.matrix4.rotationY = function (angle) {
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return [
-    c, 0, -s, 0,
-    0, 1, 0, 0,
-    s, 0, c, 0,
-    0, 0, 0, 1
-  ];
+  return [c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1];
 };
 
 /**
@@ -2134,24 +2263,24 @@ tdl.math.matrix4.rotationY = function(angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.rotateY = function(m, angle) {
-  var m00 = m[0*4+0];
-  var m01 = m[0*4+1];
-  var m02 = m[0*4+2];
-  var m03 = m[0*4+3];
-  var m20 = m[2*4+0];
-  var m21 = m[2*4+1];
-  var m22 = m[2*4+2];
-  var m23 = m[2*4+3];
+tdl.math.matrix4.rotateY = function (m, angle) {
+  var m00 = m[0 * 4 + 0];
+  var m01 = m[0 * 4 + 1];
+  var m02 = m[0 * 4 + 2];
+  var m03 = m[0 * 4 + 3];
+  var m20 = m[2 * 4 + 0];
+  var m21 = m[2 * 4 + 1];
+  var m22 = m[2 * 4 + 2];
+  var m23 = m[2 * 4 + 3];
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  m[ 0] = c * m00 - s * m20;
-  m[ 1] = c * m01 - s * m21;
-  m[ 2] = c * m02 - s * m22;
-  m[ 3] = c * m03 - s * m23;
-  m[ 8] = c * m20 + s * m00;
-  m[ 9] = c * m21 + s * m01;
+  m[0] = c * m00 - s * m20;
+  m[1] = c * m01 - s * m21;
+  m[2] = c * m02 - s * m22;
+  m[3] = c * m03 - s * m23;
+  m[8] = c * m20 + s * m00;
+  m[9] = c * m21 + s * m01;
   m[10] = c * m22 + s * m02;
   m[11] = c * m23 + s * m03;
 
@@ -2163,16 +2292,11 @@ tdl.math.matrix4.rotateY = function(m, angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} The rotation matrix.
  */
-tdl.math.matrix4.rotationZ = function(angle) {
+tdl.math.matrix4.rotationZ = function (angle) {
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  return [
-    c, s, 0, 0,
-    -s, c, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1
-  ];
+  return [c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 };
 
 /**
@@ -2182,26 +2306,26 @@ tdl.math.matrix4.rotationZ = function(angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.rotateZ = function(m, angle) {
-  var m00 = m[0*4+0];
-  var m01 = m[0*4+1];
-  var m02 = m[0*4+2];
-  var m03 = m[0*4+3];
-  var m10 = m[1*4+0];
-  var m11 = m[1*4+1];
-  var m12 = m[1*4+2];
-  var m13 = m[1*4+3];
+tdl.math.matrix4.rotateZ = function (m, angle) {
+  var m00 = m[0 * 4 + 0];
+  var m01 = m[0 * 4 + 1];
+  var m02 = m[0 * 4 + 2];
+  var m03 = m[0 * 4 + 3];
+  var m10 = m[1 * 4 + 0];
+  var m11 = m[1 * 4 + 1];
+  var m12 = m[1 * 4 + 2];
+  var m13 = m[1 * 4 + 3];
   var c = Math.cos(angle);
   var s = Math.sin(angle);
 
-  m[ 0] = c * m00 + s * m10;
-  m[ 1] = c * m01 + s * m11;
-  m[ 2] = c * m02 + s * m12;
-  m[ 3] = c * m03 + s * m13;
-  m[ 4] = c * m10 - s * m00;
-  m[ 5] = c * m11 - s * m01;
-  m[ 6] = c * m12 - s * m02;
-  m[ 7] = c * m13 - s * m03;
+  m[0] = c * m00 + s * m10;
+  m[1] = c * m01 + s * m11;
+  m[2] = c * m02 + s * m12;
+  m[3] = c * m03 + s * m13;
+  m[4] = c * m10 - s * m00;
+  m[5] = c * m11 - s * m01;
+  m[6] = c * m12 - s * m02;
+  m[7] = c * m13 - s * m03;
 
   return m;
 };
@@ -2214,7 +2338,7 @@ tdl.math.matrix4.rotateZ = function(m, angle) {
  * @param {!tdl.math.Vector3} v A vector of angles (in radians).
  * @return {!tdl.math.Matrix4} The rotation matrix.
  */
-tdl.math.matrix4.rotationZYX = function(v) {
+tdl.math.matrix4.rotationZYX = function (v) {
   var sinx = Math.sin(v[0]);
   var cosx = Math.cos(v[0]);
   var siny = Math.sin(v[1]);
@@ -2226,7 +2350,10 @@ tdl.math.matrix4.rotationZYX = function(v) {
   var sinzsiny = sinz * siny;
 
   return [
-    cosz * cosy, sinz * cosy, -siny, 0,
+    cosz * cosy,
+    sinz * cosy,
+    -siny,
+    0,
     coszsiny * sinx - sinz * cosx,
     sinzsiny * sinx + cosz * cosx,
     cosy * sinx,
@@ -2235,7 +2362,10 @@ tdl.math.matrix4.rotationZYX = function(v) {
     sinzsiny * cosx - cosz * sinx,
     cosy * cosx,
     0,
-    0, 0, 0, 1
+    0,
+    0,
+    0,
+    1,
   ];
 };
 
@@ -2247,7 +2377,7 @@ tdl.math.matrix4.rotationZYX = function(v) {
  * @param {!tdl.math.Vector3} v A vector of angles (in radians).
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.rotateZYX = function(m, v) {
+tdl.math.matrix4.rotateZYX = function (m, v) {
   var sinX = Math.sin(v[0]);
   var cosX = Math.cos(v[0]);
   var sinY = Math.sin(v[1]);
@@ -2268,33 +2398,33 @@ tdl.math.matrix4.rotateZYX = function(m, v) {
   var r21 = sinZSinY * cosX - cosZ * sinX;
   var r22 = cosY * cosX;
 
-  var m00 = m[0*4+0];
-  var m01 = m[0*4+1];
-  var m02 = m[0*4+2];
-  var m03 = m[0*4+3];
-  var m10 = m[1*4+0];
-  var m11 = m[1*4+1];
-  var m12 = m[1*4+2];
-  var m13 = m[1*4+3];
-  var m20 = m[2*4+0];
-  var m21 = m[2*4+1];
-  var m22 = m[2*4+2];
-  var m23 = m[2*4+3];
-  var m30 = m[3*4+0];
-  var m31 = m[3*4+1];
-  var m32 = m[3*4+2];
-  var m33 = m[3*4+3];
+  var m00 = m[0 * 4 + 0];
+  var m01 = m[0 * 4 + 1];
+  var m02 = m[0 * 4 + 2];
+  var m03 = m[0 * 4 + 3];
+  var m10 = m[1 * 4 + 0];
+  var m11 = m[1 * 4 + 1];
+  var m12 = m[1 * 4 + 2];
+  var m13 = m[1 * 4 + 3];
+  var m20 = m[2 * 4 + 0];
+  var m21 = m[2 * 4 + 1];
+  var m22 = m[2 * 4 + 2];
+  var m23 = m[2 * 4 + 3];
+  var m30 = m[3 * 4 + 0];
+  var m31 = m[3 * 4 + 1];
+  var m32 = m[3 * 4 + 2];
+  var m33 = m[3 * 4 + 3];
 
-  m[ 0] = r00 * m00 + r01 * m10 + r02 * m20;
-  m[ 1] = r00 * m01 + r01 * m11 + r02 * m21;
-  m[ 2] = r00 * m02 + r01 * m12 + r02 * m22;
-  m[ 3] = r00 * m03 + r01 * m13 + r02 * m23;
-  m[ 4] = r10 * m00 + r11 * m10 + r12 * m20;
-  m[ 5] = r10 * m01 + r11 * m11 + r12 * m21;
-  m[ 6] = r10 * m02 + r11 * m12 + r12 * m22;
-  m[ 7] = r10 * m03 + r11 * m13 + r12 * m23;
-  m[ 8] = r20 * m00 + r21 * m10 + r22 * m20;
-  m[ 9] = r20 * m01 + r21 * m11 + r22 * m21;
+  m[0] = r00 * m00 + r01 * m10 + r02 * m20;
+  m[1] = r00 * m01 + r01 * m11 + r02 * m21;
+  m[2] = r00 * m02 + r01 * m12 + r02 * m22;
+  m[3] = r00 * m03 + r01 * m13 + r02 * m23;
+  m[4] = r10 * m00 + r11 * m10 + r12 * m20;
+  m[5] = r10 * m01 + r11 * m11 + r12 * m21;
+  m[6] = r10 * m02 + r11 * m12 + r12 * m22;
+  m[7] = r10 * m03 + r11 * m13 + r12 * m23;
+  m[8] = r20 * m00 + r21 * m10 + r22 * m20;
+  m[9] = r20 * m01 + r21 * m11 + r22 * m21;
   m[10] = r20 * m02 + r21 * m12 + r22 * m22;
   m[11] = r20 * m03 + r21 * m13 + r22 * m23;
 
@@ -2310,7 +2440,7 @@ tdl.math.matrix4.rotateZYX = function(m, v) {
  * @return {!tdl.math.Matrix4} A matrix which rotates angle radians
  *     around the axis.
  */
-tdl.math.matrix4.axisRotation = function(axis, angle) {
+tdl.math.matrix4.axisRotation = function (axis, angle) {
   var x = axis[0];
   var y = axis[1];
   var z = axis[2];
@@ -2338,7 +2468,10 @@ tdl.math.matrix4.axisRotation = function(axis, angle) {
     y * z * oneMinusCosine - x * s,
     zz + (1 - zz) * c,
     0,
-    0, 0, 0, 1
+    0,
+    0,
+    0,
+    1,
   ];
 };
 
@@ -2351,7 +2484,7 @@ tdl.math.matrix4.axisRotation = function(axis, angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.math.Matrix4} m once modified.
  */
-tdl.math.matrix4.axisRotate = function(m, axis, angle) {
+tdl.math.matrix4.axisRotate = function (m, axis, angle) {
   var x = axis[0];
   var y = axis[1];
   var z = axis[2];
@@ -2376,33 +2509,33 @@ tdl.math.matrix4.axisRotate = function(m, axis, angle) {
   var r21 = y * z * oneMinusCosine - x * s;
   var r22 = zz + (1 - zz) * c;
 
-  var m00 = m[0*4+0];
-  var m01 = m[0*4+1];
-  var m02 = m[0*4+2];
-  var m03 = m[0*4+3];
-  var m10 = m[1*4+0];
-  var m11 = m[1*4+1];
-  var m12 = m[1*4+2];
-  var m13 = m[1*4+3];
-  var m20 = m[2*4+0];
-  var m21 = m[2*4+1];
-  var m22 = m[2*4+2];
-  var m23 = m[2*4+3];
-  var m30 = m[3*4+0];
-  var m31 = m[3*4+1];
-  var m32 = m[3*4+2];
-  var m33 = m[3*4+3];
+  var m00 = m[0 * 4 + 0];
+  var m01 = m[0 * 4 + 1];
+  var m02 = m[0 * 4 + 2];
+  var m03 = m[0 * 4 + 3];
+  var m10 = m[1 * 4 + 0];
+  var m11 = m[1 * 4 + 1];
+  var m12 = m[1 * 4 + 2];
+  var m13 = m[1 * 4 + 3];
+  var m20 = m[2 * 4 + 0];
+  var m21 = m[2 * 4 + 1];
+  var m22 = m[2 * 4 + 2];
+  var m23 = m[2 * 4 + 3];
+  var m30 = m[3 * 4 + 0];
+  var m31 = m[3 * 4 + 1];
+  var m32 = m[3 * 4 + 2];
+  var m33 = m[3 * 4 + 3];
 
-  m[ 0] = r00 * m00 + r01 * m10 + r02 * m20;
-  m[ 1] = r00 * m01 + r01 * m11 + r02 * m21;
-  m[ 2] = r00 * m02 + r01 * m12 + r02 * m22;
-  m[ 3] = r00 * m03 + r01 * m13 + r02 * m23;
-  m[ 4] = r10 * m00 + r11 * m10 + r12 * m20;
-  m[ 5] = r10 * m01 + r11 * m11 + r12 * m21;
-  m[ 6] = r10 * m02 + r11 * m12 + r12 * m22;
-  m[ 7] = r10 * m03 + r11 * m13 + r12 * m23;
-  m[ 8] = r20 * m00 + r21 * m10 + r22 * m20;
-  m[ 9] = r20 * m01 + r21 * m11 + r22 * m21;
+  m[0] = r00 * m00 + r01 * m10 + r02 * m20;
+  m[1] = r00 * m01 + r01 * m11 + r02 * m21;
+  m[2] = r00 * m02 + r01 * m12 + r02 * m22;
+  m[3] = r00 * m03 + r01 * m13 + r02 * m23;
+  m[4] = r10 * m00 + r11 * m10 + r12 * m20;
+  m[5] = r10 * m01 + r11 * m11 + r12 * m21;
+  m[6] = r10 * m02 + r11 * m12 + r12 * m22;
+  m[7] = r10 * m03 + r11 * m13 + r12 * m23;
+  m[8] = r20 * m00 + r21 * m10 + r22 * m20;
+  m[9] = r20 * m01 + r21 * m11 + r22 * m21;
   m[10] = r20 * m02 + r21 * m12 + r22 * m22;
   m[11] = r20 * m03 + r21 * m13 + r22 * m23;
 
@@ -2415,7 +2548,7 @@ tdl.math.matrix4.axisRotate = function(m, axis, angle) {
  * tdl.math.rowMajor).  Call this function to establish the row major
  * convention.
  */
-tdl.math.installRowMajorFunctions = function() {
+tdl.math.installRowMajorFunctions = function () {
   for (var f in tdl.math.rowMajor) {
     tdl.math[f] = tdl.math.rowMajor[f];
   }
@@ -2427,7 +2560,7 @@ tdl.math.installRowMajorFunctions = function() {
  * tdl.math.columnMajor).  Call this function to establish the column
  * major convention.
  */
-tdl.math.installColumnMajorFunctions = function() {
+tdl.math.installColumnMajorFunctions = function () {
   for (var f in tdl.math.columnMajor) {
     tdl.math[f] = tdl.math.columnMajor[f];
   }
@@ -2438,7 +2571,7 @@ tdl.math.installColumnMajorFunctions = function() {
  * version in tdl.math.errorCheck (provided such a function exists in
  * tdl.math.errorCheck).
  */
-tdl.math.installErrorCheckFunctions = function() {
+tdl.math.installErrorCheckFunctions = function () {
   for (var f in tdl.math.errorCheck) {
     tdl.math[f] = tdl.math.errorCheck[f];
   }
@@ -2449,11 +2582,11 @@ tdl.math.installErrorCheckFunctions = function() {
  * version in tdl.math.errorCheckFree (provided such a function exists in
  * tdl.math.errorCheckFree).
  */
-tdl.math.installErrorCheckFreeFunctions = function() {
+tdl.math.installErrorCheckFreeFunctions = function () {
   for (var f in tdl.math.errorCheckFree) {
     tdl.math[f] = tdl.math.errorCheckFree[f];
   }
-}
+};
 
 // By default, install the row-major functions.
 tdl.math.installRowMajorFunctions();

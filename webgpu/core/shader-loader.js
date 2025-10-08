@@ -1,8 +1,8 @@
 export async function loadShaderModule(device, pathOrUrl, label, baseUrl) {
   // Determine the full URL for the shader
   let url;
-  
-  if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+
+  if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
     // Already an absolute URL
     url = pathOrUrl;
   } else if (baseUrl) {
@@ -12,7 +12,7 @@ export async function loadShaderModule(device, pathOrUrl, label, baseUrl) {
     // Fallback: resolve relative to this module (shader-loader.js)
     url = new URL(pathOrUrl, import.meta.url).href;
   }
-  
+
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to load shader from ${url}: ${response.status}`);

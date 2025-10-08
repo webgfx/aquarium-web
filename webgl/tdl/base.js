@@ -29,7 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview Base for all tdl sample utilties.
  *
@@ -49,11 +48,10 @@ var tdl = tdl || {};
  */
 var goog = goog || {};
 
-
 if (!window.Int32Array) {
-  window.Int32Array = function() { };
-  window.Float32Array = function() { };
-  window.Uint16Array = function() { };
+  window.Int32Array = function () {};
+  window.Float32Array = function () {};
+  window.Uint16Array = function () {};
 }
 
 /**
@@ -108,22 +106,20 @@ tdl.provided_ = [];
  * object.
  * @param {string} name name of the object that this file defines.
  */
-tdl.provide = function(name) {
+tdl.provide = function (name) {
   // Ensure that the same namespace isn't provided twice.
-  if (tdl.getObjectByName(name) &&
-      !tdl.implicitNamespaces_[name]) {
+  if (tdl.getObjectByName(name) && !tdl.implicitNamespaces_[name]) {
     throw 'Namespace "' + name + '" already declared.';
   }
 
   var namespace = name;
-  while ((namespace = namespace.substring(0, namespace.lastIndexOf('.')))) {
+  while ((namespace = namespace.substring(0, namespace.lastIndexOf(".")))) {
     tdl.implicitNamespaces_[namespace] = true;
   }
 
   tdl.exportPath_(name);
   tdl.provided_.push(name);
 };
-
 
 /**
  * Namespaces implicitly defined by tdl.provide. For example,
@@ -147,8 +143,8 @@ tdl.implicitNamespaces_ = {};
  *     is |tdl.global|.
  * @private
  */
-tdl.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
-  var parts = name.split('.');
+tdl.exportPath_ = function (name, opt_object, opt_objectToExportTo) {
+  var parts = name.split(".");
   var cur = opt_objectToExportTo || tdl.global;
   var part;
 
@@ -156,7 +152,7 @@ tdl.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
   // methods externed in this manner.  See the testExportSymbolExceptions in
   // base_test.html for an example.
   if (!(parts[0] in cur) && cur.execScript) {
-    cur.execScript('var ' + parts[0]);
+    cur.execScript("var " + parts[0]);
   }
 
   // Parentheses added to eliminate strict JS warning in Firefox.
@@ -172,7 +168,6 @@ tdl.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
   }
 };
 
-
 /**
  * Returns an object based on its fully qualified external name.  If you are
  * using a compilation pass that renames property names beware that using this
@@ -183,8 +178,8 @@ tdl.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
  *     |tdl.global|.
  * @return {Object} The object or, if not found, null.
  */
-tdl.getObjectByName = function(name, opt_obj) {
-  var parts = name.split('.');
+tdl.getObjectByName = function (name, opt_obj) {
+  var parts = name.split(".");
   var cur = opt_obj || tdl.global;
   for (var pp = 0; pp < parts.length; ++pp) {
     var part = parts[pp];
@@ -197,19 +192,18 @@ tdl.getObjectByName = function(name, opt_obj) {
   return cur;
 };
 
-
 /**
  * Implements a system for the dynamic resolution of dependencies.
  * @param {string} rule Rule to include, in the form tdl.package.part.
  */
-tdl.require = function(rule) {
+tdl.require = function (rule) {
   // TODO(gman): For some unknown reason, when we call
   // tdl.util.getScriptTagText_ it calls
   // document.getElementsByTagName('script') and for some reason the scripts do
   // not always show up. Calling it here seems to fix that as long as we
   // actually ask for the length, at least in FF 3.5.1 It would be nice to
   // figure out why.
-  var dummy = document.getElementsByTagName('script').length;
+  var dummy = document.getElementsByTagName("script").length;
   // if the object already exists we do not need do do anything
   if (tdl.getObjectByName(rule)) {
     return;
@@ -219,17 +213,15 @@ tdl.require = function(rule) {
     tdl.included_[path] = true;
     tdl.writeScripts_();
   } else {
-    throw new Error('tdl.require could not find: ' + rule);
+    throw new Error("tdl.require could not find: " + rule);
   }
 };
-
 
 /**
  * Path for included scripts.
  * @type {string}
  */
-tdl.basePath = '';
-
+tdl.basePath = "";
 
 /**
  * Object used to keep track of urls that have already been added. This
@@ -239,7 +231,6 @@ tdl.basePath = '';
  */
 tdl.included_ = {};
 
-
 /**
  * This object is used to keep track of dependencies and other data that is
  * used for loading scripts.
@@ -247,20 +238,19 @@ tdl.included_ = {};
  * @type {Object}
  */
 tdl.dependencies_ = {
-  visited: {},  // used when resolving dependencies to prevent us from
-                // visiting the file twice.
-  written: {}  // used to keep track of script files we have written.
+  visited: {}, // used when resolving dependencies to prevent us from
+  // visiting the file twice.
+  written: {}, // used to keep track of script files we have written.
 };
-
 
 /**
  * Tries to detect the base path of the tdl-base.js script that
  * bootstraps the tdl libraries.
  * @private
  */
-tdl.findBasePath_ = function() {
+tdl.findBasePath_ = function () {
   var doc = tdl.global.document;
-  if (typeof doc == 'undefined') {
+  if (typeof doc == "undefined") {
     return;
   }
   if (tdl.global.BASE_PATH) {
@@ -270,9 +260,9 @@ tdl.findBasePath_ = function() {
     // HACKHACK to hide compiler warnings :(
     tdl.global.BASE_PATH = null;
   }
-  var expectedBase = 'tdl/base.js';
-  var scripts = doc.getElementsByTagName('script');
-  for (var script, i = 0; script = scripts[i]; i++) {
+  var expectedBase = "tdl/base.js";
+  var scripts = doc.getElementsByTagName("script");
+  for (var script, i = 0; (script = scripts[i]); i++) {
     var src = script.src;
     var l = src.length;
     if (src.substr(l - expectedBase.length) == expectedBase) {
@@ -282,31 +272,27 @@ tdl.findBasePath_ = function() {
   }
 };
 
-
 /**
  * Writes a script tag if, and only if, that script hasn't already been added
  * to the document.  (Must be called at execution time.)
  * @param {string} src Script source.
  * @private
  */
-tdl.writeScriptTag_ = function(src) {
+tdl.writeScriptTag_ = function (src) {
   var doc = tdl.global.document;
-  if (typeof doc != 'undefined' &&
-      !tdl.dependencies_.written[src]) {
+  if (typeof doc != "undefined" && !tdl.dependencies_.written[src]) {
     tdl.dependencies_.written[src] = true;
-    var html = '<script src="' +
-               src + '"></' + 'script>'
+    var html = '<script src="' + src + '"></' + "script>";
     doc.write(html);
   }
 };
-
 
 /**
  * Resolves dependencies based on the dependencies added using addDependency
  * and calls writeScriptTag_ in the correct order.
  * @private
  */
-tdl.writeScripts_ = function() {
+tdl.writeScripts_ = function () {
   // the scripts we need to write this time.
   var scripts = [];
   var seenScript = {};
@@ -345,11 +331,10 @@ tdl.writeScripts_ = function() {
     if (scripts[i]) {
       tdl.writeScriptTag_(tdl.basePath + scripts[i]);
     } else {
-      throw Error('Undefined script input');
+      throw Error("Undefined script input");
     }
   }
 };
-
 
 /**
  * Looks at the dependency rules and tries to determine the script file that
@@ -359,9 +344,9 @@ tdl.writeScripts_ = function() {
  * @return {string?} Url corresponding to the rule, or null.
  * @private
  */
-tdl.getPathFromRule_ = function(rule) {
-  var parts = rule.split('.');
-  return parts.join('/') + '.js';
+tdl.getPathFromRule_ = function (rule) {
+  var parts = rule.split(".");
+  return parts.join("/") + ".js";
 };
 
 tdl.findBasePath_();
@@ -373,10 +358,9 @@ tdl.findBasePath_();
  * @param {*} val Variable to test.
  * @return {boolean} Whether variable is defined.
  */
-tdl.isDef = function(val) {
-  return typeof val != 'undefined';
+tdl.isDef = function (val) {
+  return typeof val != "undefined";
 };
-
 
 /**
  * Exposes an unobfuscated global namespace path for the given object.
@@ -402,11 +386,11 @@ tdl.isDef = function(val) {
  * @param {Object} opt_objectToExportTo The object to add the path to; default
  *     is |tdl.global|.
  */
-tdl.exportSymbol = function(publicPath, object, opt_objectToExportTo) {
+tdl.exportSymbol = function (publicPath, object, opt_objectToExportTo) {
   tdl.exportPath_(publicPath, object, opt_objectToExportTo);
 };
 
-tdl.provide('tdl.base');
+tdl.provide("tdl.base");
 
 /**
  * The base module for tdl.
@@ -420,10 +404,14 @@ tdl.base = tdl.base || {};
  * @param {*} value A value.
  * @return {boolean} Whether the value is an array.
  */
-tdl.base.isArray = function(value) {
+tdl.base.isArray = function (value) {
   var valueAsObject = /** @type {!Object} */ (value);
-  return typeof(value) === 'object' && value !== null &&
-      'length' in valueAsObject && 'splice' in valueAsObject;
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "length" in valueAsObject &&
+    "splice" in valueAsObject
+  );
 };
 
 /**
@@ -432,7 +420,7 @@ tdl.base.isArray = function(value) {
  * @param {string} name Name to un-obfuscate.
  * @return {string} un-obfuscated name.
  */
-tdl.base.maybeDeobfuscateFunctionName_ = function(name) {
+tdl.base.maybeDeobfuscateFunctionName_ = function (name) {
   return name;
 };
 
@@ -441,13 +429,13 @@ tdl.base.maybeDeobfuscateFunctionName_ = function(name) {
  * @param {!Object} subClass Class that wants to inherit.
  * @param {!Object} superClass Class to inherit from.
  */
-tdl.base.inherit = function(subClass, superClass) {
+tdl.base.inherit = function (subClass, superClass) {
   /**
    * TmpClass.
    * @ignore
    * @constructor
    */
-  var TmpClass = function() { };
+  var TmpClass = function () {};
   TmpClass.prototype = superClass.prototype;
   subClass.prototype = new TmpClass();
 };
@@ -457,7 +445,7 @@ tdl.base.inherit = function(subClass, superClass) {
  * @param {!Exception} excp The exception to get a stack trace from.
  * @return {!Array.<string>} An array of strings of the stack trace.
  */
-tdl.base.parseErrorStack = function(excp) {
+tdl.base.parseErrorStack = function (excp) {
   var stack = [];
   var name;
   var line;
@@ -466,7 +454,7 @@ tdl.base.parseErrorStack = function(excp) {
     return stack;
   }
 
-  var stacklist = excp.stack.split('\n');
+  var stacklist = excp.stack.split("\n");
 
   for (var i = 0; i < stacklist.length - 1; i++) {
     var framedata = stacklist[i];
@@ -475,17 +463,17 @@ tdl.base.parseErrorStack = function(excp) {
     if (name) {
       name = tdl.base.maybeDeobfuscateFunctionName_(name);
     } else {
-      name = 'anonymous';
+      name = "anonymous";
     }
 
     var result = framedata.match(/(.*:[0-9]+)$/);
     line = result && result[1];
 
     if (!line) {
-      line = '(unknown)';
+      line = "(unknown)";
     }
 
-    stack[stack.length] = name + ' : ' + line
+    stack[stack.length] = name + " : " + line;
   }
 
   // remove top level anonymous functions to match IE
@@ -503,12 +491,12 @@ tdl.base.parseErrorStack = function(excp) {
  *      name from.
  * @return {string} function name or 'anonymous' if not found.
  */
-tdl.base.getFunctionName = function(aFunction) {
+tdl.base.getFunctionName = function (aFunction) {
   var regexpResult = aFunction.toString().match(/function(\s*)(\w*)/);
   if (regexpResult && regexpResult.length >= 2 && regexpResult[2]) {
     return tdl.base.maybeDeobfuscateFunctionName_(regexpResult[2]);
   }
-  return 'anonymous';
+  return "anonymous";
 };
 
 /**
@@ -516,10 +504,10 @@ tdl.base.getFunctionName = function(aFunction) {
  * @param {Array.<string>} stack An array of errors.
  * @return {string} The pretty stack.
  */
-tdl.base.formatErrorStack = function(stack) {
-  var result = '';
+tdl.base.formatErrorStack = function (stack) {
+  var result = "";
   for (var i = 0; i < stack.length; i++) {
-    result += '> ' + stack[i] + '\n';
+    result += "> " + stack[i] + "\n";
   }
   return result;
 };
@@ -530,26 +518,29 @@ tdl.base.formatErrorStack = function(stack) {
  *     stack. Example: Pass in 1 to remove yourself from the stack trace.
  * @return {string} The stack trace.
  */
-tdl.base.getStackTrace = function(stripCount) {
-  var result = '';
+tdl.base.getStackTrace = function (stripCount) {
+  var result = "";
 
-  if (typeof(arguments.caller) != 'undefined') { // IE, not ECMA
+  if (typeof arguments.caller != "undefined") {
+    // IE, not ECMA
     for (var a = arguments.caller; a != null; a = a.caller) {
-      result += '> ' + tdl.base.getFunctionName(a.callee) + '\n';
+      result += "> " + tdl.base.getFunctionName(a.callee) + "\n";
       if (a.caller == a) {
-        result += '*';
+        result += "*";
         break;
       }
     }
-  } else { // Mozilla, not ECMA
+  } else {
+    // Mozilla, not ECMA
     // fake an exception so we can get Mozilla's error stack
     var testExcp;
     try {
-      eval('var var;');
+      eval("var var;");
     } catch (testExcp) {
       var stack = tdl.base.parseErrorStack(testExcp);
-      result += tdl.base.formatErrorStack(stack.slice(3 + stripCount,
-                                                        stack.length));
+      result += tdl.base.formatErrorStack(
+        stack.slice(3 + stripCount, stack.length),
+      );
     }
   }
 
@@ -560,9 +551,8 @@ tdl.base.getStackTrace = function(stripCount) {
  * Returns true if the user's browser is Microsoft IE.
  * @return {boolean} true if the user's browser is Microsoft IE.
  */
-tdl.base.IsMSIE = function() {
+tdl.base.IsMSIE = function () {
   var ua = navigator.userAgent.toLowerCase();
   var msie = /msie/.test(ua) && !/opera/.test(ua);
   return msie;
 };
-

@@ -29,15 +29,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains various functions for managing a clock
  */
 
-tdl.provide('tdl.clock');
+tdl.provide("tdl.clock");
 
-tdl.require('tdl.io');
-tdl.require('tdl.log');
+tdl.require("tdl.io");
+tdl.require("tdl.log");
 
 /**
  * Creates a clock. Optionally synced to a server
@@ -46,7 +45,7 @@ tdl.require('tdl.log');
  *        Note: If the client is faster than the server this means it's possible
  *        the clock will report a certain time and then later a previous time.
  */
-tdl.clock.createClock = function(opt_syncRate, opt_url) {
+tdl.clock.createClock = function (opt_syncRate, opt_url) {
   if (opt_syncRate) {
     return new tdl.clock.SyncedClock(opt_syncRate, opt_url);
   } else {
@@ -54,42 +53,40 @@ tdl.clock.createClock = function(opt_syncRate, opt_url) {
   }
 };
 
-
 /**
  * A clock that gets the local current time in seconds.
  * @private
  */
-tdl.clock.LocalClock = function() {
-}
+tdl.clock.LocalClock = function () {};
 
 /**
  * Gets the current time in seconds.
  * @private
  */
-tdl.clock.LocalClock.prototype.getTime = function() {
-  return (new Date()).getTime() * 0.001;
-}
+tdl.clock.LocalClock.prototype.getTime = function () {
+  return new Date().getTime() * 0.001;
+};
 
 /**
  * A clock that gets the current time in seconds attempting to eep the clock
  * synced to the server.
  * @private
  */
-tdl.clock.SyncedClock = function(opt_syncRate, opt_url) {
+tdl.clock.SyncedClock = function (opt_syncRate, opt_url) {
   this.url = opt_url || window.location.href;
   this.syncRate = opt_syncRate || 10;
   this.timeOffset = 0;
   this.syncToServer();
-}
+};
 
-tdl.clock.SyncedClock.prototype.getLocalTime_ = function() {
-  return (new Date()).getTime() * 0.001;
-}
+tdl.clock.SyncedClock.prototype.getLocalTime_ = function () {
+  return new Date().getTime() * 0.001;
+};
 
-tdl.clock.SyncedClock.prototype.syncToServer = function() {
+tdl.clock.SyncedClock.prototype.syncToServer = function () {
   var that = this;
   var sendTime = this.getLocalTime_();
-  tdl.io.sendJSON(this.url, {cmd: 'time'}, function(obj, exception) {
+  tdl.io.sendJSON(this.url, { cmd: "time" }, function (obj, exception) {
     if (exception) {
       tdl.log("error: syncToServer: " + exception);
     } else {
@@ -99,9 +96,9 @@ tdl.clock.SyncedClock.prototype.syncToServer = function() {
       that.timeOffset = serverTime - receiveTime;
       tdl.log("new timeoffset: " + that.timeOffset);
     }
-    setTimeout(function() {
-        that.syncToServer();
-      }, that.syncRate * 1000);
+    setTimeout(function () {
+      that.syncToServer();
+    }, that.syncRate * 1000);
   });
 };
 
@@ -109,7 +106,6 @@ tdl.clock.SyncedClock.prototype.syncToServer = function() {
  * Gets the current time in seconds.
  * @private
  */
-tdl.clock.SyncedClock.prototype.getTime = function() {
-  return (new Date()).getTime() * 0.001 + this.timeOffset;
-}
-
+tdl.clock.SyncedClock.prototype.getTime = function () {
+  return new Date().getTime() * 0.001 + this.timeOffset;
+};

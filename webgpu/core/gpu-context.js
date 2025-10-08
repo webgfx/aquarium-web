@@ -1,4 +1,5 @@
-const PRESENTATION_FORMAT = navigator.gpu?.getPreferredCanvasFormat?.() ?? "bgra8unorm";
+const PRESENTATION_FORMAT =
+  navigator.gpu?.getPreferredCanvasFormat?.() ?? "bgra8unorm";
 
 export async function createContext(canvas, options = {}) {
   const adapter = await navigator.gpu.requestAdapter({

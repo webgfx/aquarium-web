@@ -29,13 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains a class which assists with the
  * loading of GLSL shaders.
  */
 
-tdl.provide('tdl.shader');
+tdl.provide("tdl.shader");
 
 /**
  * A module for shaders.
@@ -56,25 +55,26 @@ tdl.shader = tdl.shader || {};
  * @param {!string} fragmentScriptName The name of the HTML Script node
  *     containing the fragment program.
  */
-tdl.shader.loadFromScriptNodes = function(gl,
-                                            vertexScriptName,
-                                            fragmentScriptName) {
+tdl.shader.loadFromScriptNodes = function (
+  gl,
+  vertexScriptName,
+  fragmentScriptName,
+) {
   var vertexScript = document.getElementById(vertexScriptName);
   var fragmentScript = document.getElementById(fragmentScriptName);
-  if (!vertexScript || !fragmentScript)
-    return null;
-  return new tdl.shader.Shader(gl,
-                                 vertexScript.text,
-                                 fragmentScript.text);
-}
+  if (!vertexScript || !fragmentScript) return null;
+  return new tdl.shader.Shader(gl, vertexScript.text, fragmentScript.text);
+};
 
 /**
  * Helper which convers GLSL names to JavaScript names.
  * @private
  */
-tdl.shader.glslNameToJs_ = function(name) {
-  return name.replace(/_(.)/g, function(_, p1) { return p1.toUpperCase(); });
-}
+tdl.shader.glslNameToJs_ = function (name) {
+  return name.replace(/_(.)/g, function (_, p1) {
+    return p1.toUpperCase();
+  });
+};
 
 /**
  * Creates a new Shader object, loading and linking the given vertex
@@ -84,20 +84,20 @@ tdl.shader.glslNameToJs_ = function(name) {
  * @param {!string} vertex The vertex shader.
  * @param {!string} fragment The fragment shader.
  */
-tdl.shader.Shader = function(gl, vertex, fragment) {
+tdl.shader.Shader = function (gl, vertex, fragment) {
   this.program = gl.createProgram();
   this.gl = gl;
 
   var vs = this.loadShader(this.gl.VERTEX_SHADER, vertex);
   if (!vs) {
-    tdl.log("couldn't load shader")
+    tdl.log("couldn't load shader");
   }
   this.gl.attachShader(this.program, vs);
   this.gl.deleteShader(vs);
 
   var fs = this.loadShader(this.gl.FRAGMENT_SHADER, fragment);
   if (!fs) {
-    tdl.log("couldn't load shader")
+    tdl.log("couldn't load shader");
   }
   this.gl.attachShader(this.program, fs);
   this.gl.deleteShader(fs);
@@ -136,20 +136,20 @@ tdl.shader.Shader = function(gl, vertex, fragment) {
       this[jsName + "Loc"] = this.getUniform(glslName);
     }
   }
-}
+};
 
 /**
  * Binds the shader's program.
  */
-tdl.shader.Shader.prototype.bind = function() {
+tdl.shader.Shader.prototype.bind = function () {
   this.gl.useProgram(this.program);
-}
+};
 
 /**
  * Helper for loading a shader.
  * @private
  */
-tdl.shader.Shader.prototype.loadShader = function(type, shaderSrc) {
+tdl.shader.Shader.prototype.loadShader = function (type, shaderSrc) {
   var shader = this.gl.createShader(type);
   if (shader == null) {
     return null;
@@ -167,13 +167,13 @@ tdl.shader.Shader.prototype.loadShader = function(type, shaderSrc) {
     return null;
   }
   return shader;
-}
+};
 
 /**
  * Helper for looking up an attribute's location.
  * @private
  */
-tdl.shader.Shader.prototype.getAttribute = function(name) {
+tdl.shader.Shader.prototype.getAttribute = function (name) {
   return this.gl.getAttribLocation(this.program, name);
 };
 
@@ -181,6 +181,6 @@ tdl.shader.Shader.prototype.getAttribute = function(name) {
  * Helper for looking up an attribute's location.
  * @private
  */
-tdl.shader.Shader.prototype.getUniform = function(name) {
+tdl.shader.Shader.prototype.getUniform = function (name) {
   return this.gl.getUniformLocation(this.program, name);
-}
+};

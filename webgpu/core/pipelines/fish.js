@@ -6,10 +6,15 @@ export async function createFishPipeline(
   { frameLayout, instanceLayout, materialLayout },
   colorFormat,
   vertexBuffers,
-  baseUrl
+  baseUrl,
 ) {
   const pipelineBuilder = new PipelineBuilder(device);
-  const shaderModule = await loadShaderModule(device, "shaders/fish.wgsl", "fish-shader", baseUrl);
+  const shaderModule = await loadShaderModule(
+    device,
+    "shaders/fish.wgsl",
+    "fish-shader",
+    baseUrl,
+  );
 
   const layout = device.createPipelineLayout({
     bindGroupLayouts: [frameLayout, instanceLayout, materialLayout],

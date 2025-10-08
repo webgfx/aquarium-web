@@ -4,8 +4,13 @@ import {
   mat4Multiply,
   mat4Inverse,
   mat4Transpose,
+  mat4Identity,
 } from "./math.js";
-import { createBindGroupLayout, createBindGroup, createUniformBuffer } from "./bindings.js";
+import {
+  createBindGroupLayout,
+  createBindGroup,
+  createUniformBuffer,
+} from "./bindings.js";
 import { TextureCache } from "./texture-cache.js";
 import { FishSchool } from "./animation/fish-school.js";
 import { fishSpecies } from "./scene-registry.js";
@@ -15,6 +20,8 @@ import { createSeaweedPipeline } from "./pipelines/seaweed.js";
 import { createInnerPipeline } from "./pipelines/inner.js";
 import { createOuterPipeline } from "./pipelines/outer.js";
 import { createBubblePipeline } from "./pipelines/bubble.js";
+import { createLaserPipeline } from "./pipelines/laser.js";
+import { createLightRayPipeline } from "./pipelines/light-ray.js";
 
 const FRAME_UNIFORM_SIZE = 256;
 const MODEL_UNIFORM_SIZE = 256;
@@ -59,7 +66,7 @@ export class AquariumRenderer {
     this.diffuseMaterialLayout = null;
     this.fishInstanceLayout = null;
     this.fishMaterialLayout = null;
-  this.tankMaterialLayout = null;
+    this.tankMaterialLayout = null;
 
     this.diffusePipeline = null;
     this.diffuseItems = [];
@@ -67,10 +74,10 @@ export class AquariumRenderer {
     this.seaweedItems = [];
     this.fishPipeline = null;
     this.fishRenderGroups = [];
-  this.innerPipeline = null;
-  this.outerPipeline = null;
-  this.innerItems = [];
-  this.outerItems = [];
+    this.innerPipeline = null;
+    this.outerPipeline = null;
+    this.innerItems = [];
+    this.outerItems = [];
 
     // Bubble particle system
     this.bubblePipeline = null;
@@ -90,11 +97,26 @@ export class AquariumRenderer {
     this.numActiveBubbles = 0;
     this.bubbleEmitters = 10;
 
+    // Laser system
+    this.laserPipeline = null;
+    this.laserMaterialLayout = null;
+    this.laserTexture = null;
+    this.laserInstances = [];
+    this.laserVertexBuffer = null;
+    this.laserColorMultBuffer = null;
+
+    // Light ray system
+    this.lightRayPipeline = null;
+    this.lightRayMaterialLayout = null;
+    this.lightRayTexture = null;
+    this.lightRayInfo = [];
+    this.lightRayQuadBuffer = null;
+
     this.materialCache = new Map();
     this.fishMaterials = new Map();
-  this.tankMaterials = new Map();
-  this.skyboxTexture = null;
-  this.skyboxView = null;
+    this.tankMaterials = new Map();
+    this.skyboxTexture = null;
+    this.skyboxView = null;
     this.fishSchool = new FishSchool();
 
     this.fpsElement = document.getElementById("fpsValue");
@@ -135,115 +157,153 @@ export class AquariumRenderer {
       },
     ]);
 
-    this.diffuseMaterialLayout = createBindGroupLayout(this.device, "diffuse-material-layout", [
-      {
-        binding: 0,
-        visibility,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 1,
-        visibility,
-        sampler: { type: "filtering" },
-      },
-      {
-        binding: 2,
-        visibility,
-        buffer: { type: "uniform" },
-      },
-    ]);
+    this.diffuseMaterialLayout = createBindGroupLayout(
+      this.device,
+      "diffuse-material-layout",
+      [
+        {
+          binding: 0,
+          visibility,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 1,
+          visibility,
+          sampler: { type: "filtering" },
+        },
+        {
+          binding: 2,
+          visibility,
+          buffer: { type: "uniform" },
+        },
+      ]
+    );
 
-    this.fishInstanceLayout = createBindGroupLayout(this.device, "fish-instance-layout", [
-      {
-        binding: 0,
-        visibility: GPUShaderStage.VERTEX,
-        buffer: { type: "read-only-storage" },
-      },
-      {
-        binding: 1,
-        visibility,
-        buffer: { type: "uniform" },
-      },
-    ]);
+    this.fishInstanceLayout = createBindGroupLayout(
+      this.device,
+      "fish-instance-layout",
+      [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.VERTEX,
+          buffer: { type: "read-only-storage" },
+        },
+        {
+          binding: 1,
+          visibility,
+          buffer: { type: "uniform" },
+        },
+      ]
+    );
 
-    this.fishMaterialLayout = createBindGroupLayout(this.device, "fish-material-layout", [
-      {
-        binding: 0,
-        visibility: GPUShaderStage.FRAGMENT,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 1,
-        visibility: GPUShaderStage.FRAGMENT,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 2,
-        visibility: GPUShaderStage.FRAGMENT,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 3,
-        visibility: GPUShaderStage.FRAGMENT,
-        sampler: { type: "filtering" },
-      },
-    ]);
+    this.fishMaterialLayout = createBindGroupLayout(
+      this.device,
+      "fish-material-layout",
+      [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 3,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: { type: "filtering" },
+        },
+      ]
+    );
 
-    this.tankMaterialLayout = createBindGroupLayout(this.device, "tank-material-layout", [
-      {
-        binding: 0,
-        visibility: fragmentVisibility,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 1,
-        visibility: fragmentVisibility,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 2,
-        visibility: fragmentVisibility,
-        texture: { sampleType: "float" },
-      },
-      {
-        binding: 3,
-        visibility: fragmentVisibility,
-        texture: { sampleType: "float", viewDimension: "cube" },
-      },
-      {
-        binding: 4,
-        visibility: fragmentVisibility,
-        sampler: { type: "filtering" },
-      },
-      {
-        binding: 5,
-        visibility: fragmentVisibility,
-        buffer: { type: "uniform" },
-      },
-    ]);
+    this.tankMaterialLayout = createBindGroupLayout(
+      this.device,
+      "tank-material-layout",
+      [
+        {
+          binding: 0,
+          visibility: fragmentVisibility,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 1,
+          visibility: fragmentVisibility,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 2,
+          visibility: fragmentVisibility,
+          texture: { sampleType: "float" },
+        },
+        {
+          binding: 3,
+          visibility: fragmentVisibility,
+          texture: { sampleType: "float", viewDimension: "cube" },
+        },
+        {
+          binding: 4,
+          visibility: fragmentVisibility,
+          sampler: { type: "filtering" },
+        },
+        {
+          binding: 5,
+          visibility: fragmentVisibility,
+          buffer: { type: "uniform" },
+        },
+      ]
+    );
   }
 
   createUniformBuffers() {
-    this.frameUniformBuffer = createUniformBuffer(this.device, FRAME_UNIFORM_SIZE, "frame-uniform");
-    this.frameBindGroup = createBindGroup(this.device, this.frameLayout, [
-      {
-        binding: 0,
-        resource: { buffer: this.frameUniformBuffer },
-      },
-    ], "frame-bind-group");
+    this.frameUniformBuffer = createUniformBuffer(
+      this.device,
+      FRAME_UNIFORM_SIZE,
+      "frame-uniform"
+    );
+    this.frameBindGroup = createBindGroup(
+      this.device,
+      this.frameLayout,
+      [
+        {
+          binding: 0,
+          resource: { buffer: this.frameUniformBuffer },
+        },
+      ],
+      "frame-bind-group"
+    );
 
-    this.modelUniformBuffer = createUniformBuffer(this.device, MODEL_UNIFORM_SIZE, "model-uniform");
-    this.modelBindGroup = createBindGroup(this.device, this.modelLayout, [
-      {
-        binding: 0,
-        resource: { buffer: this.modelUniformBuffer },
-      },
-    ], "model-bind-group");
+    this.modelUniformBuffer = createUniformBuffer(
+      this.device,
+      MODEL_UNIFORM_SIZE,
+      "model-uniform"
+    );
+    this.modelBindGroup = createBindGroup(
+      this.device,
+      this.modelLayout,
+      [
+        {
+          binding: 0,
+          resource: { buffer: this.modelUniformBuffer },
+        },
+      ],
+      "model-bind-group"
+    );
   }
 
   async prepareSceneData() {
-    const sceneByName = new Map(this.assets.scenes.map((scene) => [scene.name, scene]));
-    const baseDiffuseModel = this.assets.scenes.find((scene) => scene.definition.program === "diffuse")?.models[0];
+    const sceneByName = new Map(
+      this.assets.scenes.map((scene) => [scene.name, scene])
+    );
+    const baseDiffuseModel = this.assets.scenes.find(
+      (scene) => scene.definition.program === "diffuse"
+    )?.models[0];
     if (!baseDiffuseModel) {
       throw new Error("No diffuse models available to build pipeline");
     }
@@ -260,7 +320,9 @@ export class AquariumRenderer {
       this.assets.baseUrl
     );
 
-    const fishScenes = this.assets.scenes.filter((scene) => (scene.definition.program ?? "").startsWith("fish"));
+    const fishScenes = this.assets.scenes.filter((scene) =>
+      (scene.definition.program ?? "").startsWith("fish")
+    );
     const baseFishModel = fishScenes[0]?.models[0];
     if (baseFishModel) {
       this.fishPipeline = await createFishPipeline(
@@ -278,7 +340,9 @@ export class AquariumRenderer {
       this.fishPipeline = null;
     }
 
-    const seaweedScenes = this.assets.scenes.filter((scene) => scene.definition.program === "seaweed");
+    const seaweedScenes = this.assets.scenes.filter(
+      (scene) => scene.definition.program === "seaweed"
+    );
     const baseSeaweedModel = seaweedScenes[0]?.models[0];
     if (baseSeaweedModel) {
       this.seaweedPipeline = await createSeaweedPipeline(
@@ -298,18 +362,38 @@ export class AquariumRenderer {
 
     // Load skybox cube texture for tank rendering
     const skyboxUrls = [
-      new URL('assets/GlobeOuter_EM_positive_x.jpg', this.assets.baseUrl).toString(),
-      new URL('assets/GlobeOuter_EM_negative_x.jpg', this.assets.baseUrl).toString(),
-      new URL('assets/GlobeOuter_EM_positive_y.jpg', this.assets.baseUrl).toString(),
-      new URL('assets/GlobeOuter_EM_negative_y.jpg', this.assets.baseUrl).toString(),
-      new URL('assets/GlobeOuter_EM_positive_z.jpg', this.assets.baseUrl).toString(),
-      new URL('assets/GlobeOuter_EM_negative_z.jpg', this.assets.baseUrl).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_positive_x.jpg",
+        this.assets.baseUrl
+      ).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_negative_x.jpg",
+        this.assets.baseUrl
+      ).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_positive_y.jpg",
+        this.assets.baseUrl
+      ).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_negative_y.jpg",
+        this.assets.baseUrl
+      ).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_positive_z.jpg",
+        this.assets.baseUrl
+      ).toString(),
+      new URL(
+        "assets/GlobeOuter_EM_negative_z.jpg",
+        this.assets.baseUrl
+      ).toString(),
     ];
     const skyboxRecord = await this.textureCache.loadCubeTexture(skyboxUrls);
     this.skyboxTexture = skyboxRecord.texture;
-    this.skyboxView = this.skyboxTexture.createView({ dimension: 'cube' });
+    this.skyboxView = this.skyboxTexture.createView({ dimension: "cube" });
 
-    const innerScenes = this.assets.scenes.filter((scene) => scene.definition.program === "inner");
+    const innerScenes = this.assets.scenes.filter(
+      (scene) => scene.definition.program === "inner"
+    );
     const baseInnerModel = innerScenes[0]?.models[0];
     if (baseInnerModel) {
       this.innerPipeline = await createInnerPipeline(
@@ -327,7 +411,9 @@ export class AquariumRenderer {
       this.innerPipeline = null;
     }
 
-    const outerScenes = this.assets.scenes.filter((scene) => scene.definition.program === "outer");
+    const outerScenes = this.assets.scenes.filter(
+      (scene) => scene.definition.program === "outer"
+    );
     const baseOuterModel = outerScenes[0]?.models[0];
     if (baseOuterModel) {
       this.outerPipeline = await createOuterPipeline(
@@ -348,9 +434,13 @@ export class AquariumRenderer {
     // Initialize bubble particle system
     await this.initializeBubbleSystem();
 
-  this.diffuseItems = [];
-  this.seaweedItems = [];
-  let seaweedTimeIndex = 0;
+    // Initialize laser and light ray systems
+    await this.initializeLaserSystem();
+    await this.initializeLightRaySystem();
+
+    this.diffuseItems = [];
+    this.seaweedItems = [];
+    let seaweedTimeIndex = 0;
     for (const object of this.assets.placement.objects) {
       const scene = sceneByName.get(object.name);
       if (!scene) {
@@ -393,7 +483,10 @@ export class AquariumRenderer {
         }
         case "inner": {
           for (const model of scene.models) {
-            const material = await this.getTankMaterial(model.textureNames ?? {}, "inner");
+            const material = await this.getTankMaterial(
+              model.textureNames ?? {},
+              "inner"
+            );
             this.innerItems.push({
               model,
               material,
@@ -404,7 +497,10 @@ export class AquariumRenderer {
         }
         case "outer": {
           for (const model of scene.models) {
-            const material = await this.getTankMaterial(model.textureNames ?? {}, "outer");
+            const material = await this.getTankMaterial(
+              model.textureNames ?? {},
+              "outer"
+            );
             this.outerItems.push({
               model,
               material,
@@ -419,7 +515,11 @@ export class AquariumRenderer {
     }
 
     this.fishRenderGroups = [];
-    for (let speciesIndex = 0; speciesIndex < fishSpecies.length; ++speciesIndex) {
+    for (
+      let speciesIndex = 0;
+      speciesIndex < fishSpecies.length;
+      ++speciesIndex
+    ) {
       const species = fishSpecies[speciesIndex];
       const scene = sceneByName.get(species.name);
       if (!scene || scene.models.length === 0) {
@@ -446,7 +546,9 @@ export class AquariumRenderer {
         FISH_MATERIAL_UNIFORM_SIZE,
         `fish-${species.name}-uniform`
       );
-      const speciesUniformData = new Float32Array(FISH_MATERIAL_UNIFORM_SIZE / 4);
+      const speciesUniformData = new Float32Array(
+        FISH_MATERIAL_UNIFORM_SIZE / 4
+      );
       speciesUniformData[0] = species.constUniforms.fishLength;
       speciesUniformData[1] = species.constUniforms.fishWaveLength;
       speciesUniformData[2] = species.constUniforms.fishBendAmount;
@@ -464,22 +566,29 @@ export class AquariumRenderer {
       );
 
       const initialCapacity = 1;
-      const instanceArray = new Float32Array(initialCapacity * FISH_INSTANCE_STRIDE_FLOATS);
+      const instanceArray = new Float32Array(
+        initialCapacity * FISH_INSTANCE_STRIDE_FLOATS
+      );
       const instanceBuffer = this.device.createBuffer({
         label: `fish-${species.name}-instances`,
         size: Math.max(1, initialCapacity) * FISH_INSTANCE_STRIDE_BYTES,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
       });
-      const instanceBindGroup = createBindGroup(this.device, this.fishInstanceLayout, [
-        {
-          binding: 0,
-          resource: { buffer: instanceBuffer },
-        },
-        {
-          binding: 1,
-          resource: { buffer: speciesUniformBuffer },
-        },
-      ], `fish-instance-${species.name}`);
+      const instanceBindGroup = createBindGroup(
+        this.device,
+        this.fishInstanceLayout,
+        [
+          {
+            binding: 0,
+            resource: { buffer: instanceBuffer },
+          },
+          {
+            binding: 1,
+            resource: { buffer: speciesUniformBuffer },
+          },
+        ],
+        `fish-instance-${species.name}`
+      );
 
       this.fishRenderGroups.push({
         species,
@@ -513,23 +622,30 @@ export class AquariumRenderer {
     }
 
     group.instanceCapacity = newCapacity;
-    group.instanceArray = new Float32Array(newCapacity * FISH_INSTANCE_STRIDE_FLOATS);
+    group.instanceArray = new Float32Array(
+      newCapacity * FISH_INSTANCE_STRIDE_FLOATS
+    );
     group.instanceBuffer = this.device.createBuffer({
       label: `fish-${group.species.name}-instances`,
       size: newCapacity * FISH_INSTANCE_STRIDE_BYTES,
       usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
     });
 
-    group.instanceBindGroup = createBindGroup(this.device, this.fishInstanceLayout, [
-      {
-        binding: 0,
-        resource: { buffer: group.instanceBuffer },
-      },
-      {
-        binding: 1,
-        resource: { buffer: group.speciesUniformBuffer },
-      },
-    ], `fish-instance-${group.species.name}`);
+    group.instanceBindGroup = createBindGroup(
+      this.device,
+      this.fishInstanceLayout,
+      [
+        {
+          binding: 0,
+          resource: { buffer: group.instanceBuffer },
+        },
+        {
+          binding: 1,
+          resource: { buffer: group.speciesUniformBuffer },
+        },
+      ],
+      `fish-instance-${group.species.name}`
+    );
   }
 
   updateFishResources() {
@@ -567,7 +683,10 @@ export class AquariumRenderer {
         this.queue.writeBuffer(
           group.instanceBuffer,
           0,
-          group.instanceArray.subarray(0, fishList.length * FISH_INSTANCE_STRIDE_FLOATS)
+          group.instanceArray.subarray(
+            0,
+            fishList.length * FISH_INSTANCE_STRIDE_FLOATS
+          )
         );
       }
 
@@ -576,7 +695,8 @@ export class AquariumRenderer {
       uniforms[1] = group.species.constUniforms.fishWaveLength;
       uniforms[2] = group.species.constUniforms.fishBendAmount;
       uniforms[3] = options.normalMaps && group.material.hasNormalMap ? 1 : 0;
-      uniforms[4] = options.reflection && group.material.hasReflectionMap ? 1 : 0;
+      uniforms[4] =
+        options.reflection && group.material.hasReflectionMap ? 1 : 0;
       uniforms[5] = 5;
       uniforms[6] = 0.3;
       uniforms[7] = 0;
@@ -597,7 +717,8 @@ export class AquariumRenderer {
       uniforms[7] = this.currentState.innerConst.eta;
       uniforms[8] = this.currentState.innerConst.tankColorFudge;
       uniforms[9] = options.normalMaps && item.material.hasNormalMap ? 1 : 0;
-      uniforms[10] = options.reflection && item.material.hasReflectionMap ? 1 : 0;
+      uniforms[10] =
+        options.reflection && item.material.hasReflectionMap ? 1 : 0;
       this.queue.writeBuffer(
         item.material.uniformBuffer,
         0,
@@ -609,7 +730,8 @@ export class AquariumRenderer {
     for (const item of this.outerItems) {
       const uniforms = item.material.uniformData;
       uniforms[9] = options.normalMaps && item.material.hasNormalMap ? 1 : 0;
-      uniforms[10] = options.reflection && item.material.hasReflectionMap ? 1 : 0;
+      uniforms[10] =
+        options.reflection && item.material.hasReflectionMap ? 1 : 0;
       this.queue.writeBuffer(
         item.material.uniformBuffer,
         0,
@@ -626,30 +748,48 @@ export class AquariumRenderer {
       return this.materialCache.get(key);
     }
 
-    const textureUrl = new URL(`assets/${diffuseTextureName}`, this.assets.baseUrl).toString();
+    const textureUrl = new URL(
+      `assets/${diffuseTextureName}`,
+      this.assets.baseUrl
+    ).toString();
     const textureRecord = await this.textureCache.loadTexture(textureUrl);
-    const materialUniformBuffer = createUniformBuffer(this.device, MATERIAL_UNIFORM_SIZE, `material-${diffuseTextureName}`);
+    const materialUniformBuffer = createUniformBuffer(
+      this.device,
+      MATERIAL_UNIFORM_SIZE,
+      `material-${diffuseTextureName}`
+    );
     const materialData = new Float32Array(MATERIAL_UNIFORM_SIZE / 4);
     // Default specular setup; refined values will come with full port.
     materialData.set([1, 1, 1, 1], 0);
     materialData[4] = 5; // shininess
     materialData[5] = 0.3; // specularFactor
-    this.queue.writeBuffer(materialUniformBuffer, 0, materialData.buffer, materialData.byteOffset, MATERIAL_UNIFORM_SIZE);
+    this.queue.writeBuffer(
+      materialUniformBuffer,
+      0,
+      materialData.buffer,
+      materialData.byteOffset,
+      MATERIAL_UNIFORM_SIZE
+    );
 
-    const bindGroup = createBindGroup(this.device, this.diffuseMaterialLayout, [
-      {
-        binding: 0,
-        resource: textureRecord.texture.createView(),
-      },
-      {
-        binding: 1,
-        resource: textureRecord.sampler,
-      },
-      {
-        binding: 2,
-        resource: { buffer: materialUniformBuffer },
-      },
-    ], `diffuse-material-${diffuseTextureName}`);
+    const bindGroup = createBindGroup(
+      this.device,
+      this.diffuseMaterialLayout,
+      [
+        {
+          binding: 0,
+          resource: textureRecord.texture.createView(),
+        },
+        {
+          binding: 1,
+          resource: textureRecord.sampler,
+        },
+        {
+          binding: 2,
+          resource: { buffer: materialUniformBuffer },
+        },
+      ],
+      `diffuse-material-${diffuseTextureName}`
+    );
 
     const material = {
       bindGroup,
@@ -667,38 +807,52 @@ export class AquariumRenderer {
     }
     const normalName = textureNames?.normalMap ?? null;
     const reflectionName = textureNames?.reflectionMap ?? null;
-    const key = `fish:${diffuseName}:${normalName ?? "none"}:${reflectionName ?? "none"}`;
+    const key = `fish:${diffuseName}:${normalName ?? "none"}:${
+      reflectionName ?? "none"
+    }`;
     if (this.fishMaterials.has(key)) {
       return this.fishMaterials.get(key);
     }
 
-    const diffuseUrl = new URL(`assets/${diffuseName}`, this.assets.baseUrl).toString();
+    const diffuseUrl = new URL(
+      `assets/${diffuseName}`,
+      this.assets.baseUrl
+    ).toString();
     const diffuseRecord = await this.textureCache.loadTexture(diffuseUrl);
     const normalRecord = normalName
-      ? await this.textureCache.loadTexture(new URL(`assets/${normalName}`, this.assets.baseUrl).toString())
+      ? await this.textureCache.loadTexture(
+          new URL(`assets/${normalName}`, this.assets.baseUrl).toString()
+        )
       : diffuseRecord;
     const reflectionRecord = reflectionName
-      ? await this.textureCache.loadTexture(new URL(`assets/${reflectionName}`, this.assets.baseUrl).toString())
+      ? await this.textureCache.loadTexture(
+          new URL(`assets/${reflectionName}`, this.assets.baseUrl).toString()
+        )
       : diffuseRecord;
 
-    const bindGroup = createBindGroup(this.device, this.fishMaterialLayout, [
-      {
-        binding: 0,
-        resource: diffuseRecord.texture.createView(),
-      },
-      {
-        binding: 1,
-        resource: normalRecord.texture.createView(),
-      },
-      {
-        binding: 2,
-        resource: reflectionRecord.texture.createView(),
-      },
-      {
-        binding: 3,
-        resource: diffuseRecord.sampler,
-      },
-    ], `fish-material-${key}`);
+    const bindGroup = createBindGroup(
+      this.device,
+      this.fishMaterialLayout,
+      [
+        {
+          binding: 0,
+          resource: diffuseRecord.texture.createView(),
+        },
+        {
+          binding: 1,
+          resource: normalRecord.texture.createView(),
+        },
+        {
+          binding: 2,
+          resource: reflectionRecord.texture.createView(),
+        },
+        {
+          binding: 3,
+          resource: diffuseRecord.sampler,
+        },
+      ],
+      `fish-material-${key}`
+    );
 
     const material = {
       bindGroup,
@@ -719,21 +873,34 @@ export class AquariumRenderer {
     if (!diffuseName) {
       throw new Error(`Tank ${tankType} model is missing a diffuse texture`);
     }
-    const key = `tank:${tankType}:${diffuseName}:${normalName ?? "none"}:${reflectionName ?? "none"}`;
+    const key = `tank:${tankType}:${diffuseName}:${normalName ?? "none"}:${
+      reflectionName ?? "none"
+    }`;
     if (this.tankMaterials.has(key)) {
       return this.tankMaterials.get(key);
     }
 
-    const diffuseUrl = new URL(`assets/${diffuseName}`, this.assets.baseUrl).toString();
+    const diffuseUrl = new URL(
+      `assets/${diffuseName}`,
+      this.assets.baseUrl
+    ).toString();
     const diffuseRecord = await this.textureCache.loadTexture(diffuseUrl);
     const normalRecord = normalName
-      ? await this.textureCache.loadTexture(new URL(`assets/${normalName}`, this.assets.baseUrl).toString())
+      ? await this.textureCache.loadTexture(
+          new URL(`assets/${normalName}`, this.assets.baseUrl).toString()
+        )
       : diffuseRecord;
     const reflectionRecord = reflectionName
-      ? await this.textureCache.loadTexture(new URL(`assets/${reflectionName}`, this.assets.baseUrl).toString())
+      ? await this.textureCache.loadTexture(
+          new URL(`assets/${reflectionName}`, this.assets.baseUrl).toString()
+        )
       : diffuseRecord;
 
-    const tankUniformBuffer = createUniformBuffer(this.device, TANK_MATERIAL_UNIFORM_SIZE, `tank-${tankType}-uniform`);
+    const tankUniformBuffer = createUniformBuffer(
+      this.device,
+      TANK_MATERIAL_UNIFORM_SIZE,
+      `tank-${tankType}-uniform`
+    );
     const tankUniformData = new Float32Array(TANK_MATERIAL_UNIFORM_SIZE / 4);
     tankUniformData.set([1, 1, 1, 1], 0); // specular
     tankUniformData[4] = 50; // shininess
@@ -741,37 +908,50 @@ export class AquariumRenderer {
     tankUniformData[6] = this.currentState.innerConst.refractionFudge; // refractionFudge
     tankUniformData[7] = this.currentState.innerConst.eta; // eta
     tankUniformData[8] = this.currentState.innerConst.tankColorFudge; // tankColorFudge
-    tankUniformData[9] = this.currentState.options.normalMaps && normalName ? 1 : 0; // useNormalMap
-    tankUniformData[10] = this.currentState.options.reflection && reflectionName ? 1 : 0; // useReflectionMap
+    tankUniformData[9] =
+      this.currentState.options.normalMaps && normalName ? 1 : 0; // useNormalMap
+    tankUniformData[10] =
+      this.currentState.options.reflection && reflectionName ? 1 : 0; // useReflectionMap
     tankUniformData[11] = tankType === "outer" ? 0.2 : 0; // outerFudge
-    this.queue.writeBuffer(tankUniformBuffer, 0, tankUniformData.buffer, tankUniformData.byteOffset, TANK_MATERIAL_UNIFORM_SIZE);
+    this.queue.writeBuffer(
+      tankUniformBuffer,
+      0,
+      tankUniformData.buffer,
+      tankUniformData.byteOffset,
+      TANK_MATERIAL_UNIFORM_SIZE
+    );
 
-    const bindGroup = createBindGroup(this.device, this.tankMaterialLayout, [
-      {
-        binding: 0,
-        resource: diffuseRecord.texture.createView(),
-      },
-      {
-        binding: 1,
-        resource: normalRecord.texture.createView(),
-      },
-      {
-        binding: 2,
-        resource: reflectionRecord.texture.createView(),
-      },
-      {
-        binding: 3,
-        resource: this.skyboxView,
-      },
-      {
-        binding: 4,
-        resource: diffuseRecord.sampler,
-      },
-      {
-        binding: 5,
-        resource: { buffer: tankUniformBuffer },
-      },
-    ], `tank-material-${key}`);
+    const bindGroup = createBindGroup(
+      this.device,
+      this.tankMaterialLayout,
+      [
+        {
+          binding: 0,
+          resource: diffuseRecord.texture.createView(),
+        },
+        {
+          binding: 1,
+          resource: normalRecord.texture.createView(),
+        },
+        {
+          binding: 2,
+          resource: reflectionRecord.texture.createView(),
+        },
+        {
+          binding: 3,
+          resource: this.skyboxView,
+        },
+        {
+          binding: 4,
+          resource: diffuseRecord.sampler,
+        },
+        {
+          binding: 5,
+          resource: { buffer: tankUniformBuffer },
+        },
+      ],
+      `tank-material-${key}`
+    );
 
     const material = {
       bindGroup,
@@ -789,27 +969,29 @@ export class AquariumRenderer {
 
   async initializeBubbleSystem() {
     // Create bubble pipeline
-    const bubblePipelineData = await createBubblePipeline(this.device, this.context.format, this.assets.baseUrl);
+    const bubblePipelineData = await createBubblePipeline(
+      this.device,
+      this.context.format,
+      this.assets.baseUrl
+    );
     this.bubblePipeline = bubblePipelineData.pipeline;
     this.bubbleBindGroupLayout0 = bubblePipelineData.bindGroupLayout0;
     this.bubbleBindGroupLayout1 = bubblePipelineData.bindGroupLayout1;
 
     // Load bubble texture
-    const bubbleTextureUrl = new URL('static_assets/bubble.png', this.assets.baseUrl).toString();
+    const bubbleTextureUrl = new URL(
+      "static_assets/bubble.png",
+      this.assets.baseUrl
+    ).toString();
     const bubbleRecord = await this.textureCache.loadTexture(bubbleTextureUrl);
     this.bubbleTexture = bubbleRecord.texture;
 
     // Create corner buffer (shared quad vertices for billboards)
     const corners = new Float32Array([
-      -0.5, -0.5,
-      0.5, -0.5,
-      0.5, 0.5,
-      -0.5, -0.5,
-      0.5, 0.5,
-      -0.5, 0.5,
+      -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
     ]);
     this.bubbleCornerBuffer = this.device.createBuffer({
-      label: 'bubble-corners',
+      label: "bubble-corners",
       size: corners.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
@@ -817,22 +999,28 @@ export class AquariumRenderer {
 
     // Create particle data buffer
     const particleStride = 20; // 5 vec4s per particle
-    this.bubbleParticleData = new Float32Array(this.maxBubbleParticles * particleStride);
+    this.bubbleParticleData = new Float32Array(
+      this.maxBubbleParticles * particleStride
+    );
     this.bubbleParticleBuffer = this.device.createBuffer({
-      label: 'bubble-particles',
+      label: "bubble-particles",
       size: this.bubbleParticleData.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
 
     // Create frame uniform buffer for bubbles
-    this.bubbleFrameUniformBuffer = createUniformBuffer(this.device, 40 * 4, 'bubble-frame-uniform'); // 160 bytes for shader alignment
+    this.bubbleFrameUniformBuffer = createUniformBuffer(
+      this.device,
+      40 * 4,
+      "bubble-frame-uniform"
+    ); // 160 bytes for shader alignment
 
     // Create bind groups
     this.bubbleFrameBindGroup = createBindGroup(
       this.device,
       this.bubbleBindGroupLayout0,
       [{ binding: 0, resource: { buffer: this.bubbleFrameUniformBuffer } }],
-      'bubble-frame-bind-group'
+      "bubble-frame-bind-group"
     );
 
     this.bubbleMaterialBindGroup = createBindGroup(
@@ -842,7 +1030,7 @@ export class AquariumRenderer {
         { binding: 0, resource: this.bubbleTexture.createView() },
         { binding: 1, resource: bubbleRecord.sampler },
       ],
-      'bubble-material-bind-group'
+      "bubble-material-bind-group"
     );
 
     // Initialize all particles as inactive
@@ -861,15 +1049,18 @@ export class AquariumRenderer {
 
     const particleStride = 20;
     const numParticlesToEmit = 100;
-    
+
     for (let i = 0; i < numParticlesToEmit; i++) {
       const particleIndex = (this.bubbleIndex + i) % this.maxBubbleParticles;
       const offset = particleIndex * particleStride;
 
       // Position (relative to emitter)
-      this.bubbleParticleData[offset + 0] = worldMatrix[12] + (Math.random() - 0.5) * 0.2;
-      this.bubbleParticleData[offset + 1] = worldMatrix[13] - 2 + Math.random() * 4;
-      this.bubbleParticleData[offset + 2] = worldMatrix[14] + (Math.random() - 0.5) * 0.2;
+      this.bubbleParticleData[offset + 0] =
+        worldMatrix[12] + (Math.random() - 0.5) * 0.2;
+      this.bubbleParticleData[offset + 1] =
+        worldMatrix[13] - 2 + Math.random() * 4;
+      this.bubbleParticleData[offset + 2] =
+        worldMatrix[14] + (Math.random() - 0.5) * 0.2;
       this.bubbleParticleData[offset + 3] = this.clock; // startTime
 
       // Velocity
@@ -897,8 +1088,12 @@ export class AquariumRenderer {
       this.bubbleParticleData[offset + 19] = (Math.random() - 0.5) * 0.2; // spinSpeed
     }
 
-    this.bubbleIndex = (this.bubbleIndex + numParticlesToEmit) % this.maxBubbleParticles;
-    this.numActiveBubbles = Math.min(this.numActiveBubbles + numParticlesToEmit, this.maxBubbleParticles);
+    this.bubbleIndex =
+      (this.bubbleIndex + numParticlesToEmit) % this.maxBubbleParticles;
+    this.numActiveBubbles = Math.min(
+      this.numActiveBubbles + numParticlesToEmit,
+      this.maxBubbleParticles
+    );
   }
 
   updateBubbles(deltaSeconds) {
@@ -912,23 +1107,123 @@ export class AquariumRenderer {
       this.bubbleTimer = 2 + Math.random() * 8;
       const radius = Math.random() * 50;
       const angle = Math.random() * Math.PI * 2;
-      
+
       // Create a world matrix for the emission point
       const emitMatrix = new Float32Array(16);
       emitMatrix[0] = emitMatrix[5] = emitMatrix[10] = emitMatrix[15] = 1;
       emitMatrix[12] = Math.sin(angle) * radius;
       emitMatrix[13] = 0;
       emitMatrix[14] = Math.cos(angle) * radius;
-      
+
       this.emitBubbles(emitMatrix);
     }
 
     // Upload particle data to GPU
-    this.queue.writeBuffer(this.bubbleParticleBuffer, 0, this.bubbleParticleData);
+    this.queue.writeBuffer(
+      this.bubbleParticleBuffer,
+      0,
+      this.bubbleParticleData
+    );
+  }
+
+  updateLasers(deltaSeconds) {
+    if (!this.currentState.options.lasers || !this.laserMaterialBindGroup) {
+      return;
+    }
+
+    // Clear previous laser instances
+    this.laserInstances = [];
+
+    // Find BigFishA and BigFishB in fish render groups
+    for (const group of this.fishRenderGroups) {
+      if (
+        group.species.name !== "BigFishA" &&
+        group.species.name !== "BigFishB"
+      ) {
+        continue;
+      }
+
+      // Get fish positions from the fish school
+      const speciesState = this.fishSchool.speciesState[group.speciesIndex];
+      if (!speciesState || !speciesState.fish) continue;
+
+      // Create 3 lasers for each fish at 120-degree angles
+      for (const fish of speciesState.fish) {
+        const fishX = fish.x ?? 0;
+        const fishY = fish.y ?? 0;
+        const fishZ = fish.z ?? 0;
+        const fishRotation = Math.atan2(fish.z ?? 0, fish.x ?? 0);
+
+        // Create 3 lasers at 120-degree intervals
+        for (let i = 0; i < 3; i++) {
+          const angle = fishRotation + (i * Math.PI * 2) / 3;
+          const laserLength = 200.0; // Match WebGL scale
+
+          // Create world matrix for laser
+          const worldMatrix = new Float32Array(16);
+          // Identity
+          worldMatrix[0] =
+            worldMatrix[5] =
+            worldMatrix[10] =
+            worldMatrix[15] =
+              1;
+
+          // Scale: width = 0.5, height = laserLength (matching WebGL [0.5, 0.5, 200])
+          worldMatrix[0] = 0.5;
+          worldMatrix[5] = laserLength;
+          worldMatrix[10] = 0.5;
+
+          // Rotation around Y axis
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+          const rotX = worldMatrix[0];
+          const rotZ = worldMatrix[10];
+          worldMatrix[0] = cos * rotX;
+          worldMatrix[2] = sin * rotX;
+          worldMatrix[8] = -sin * rotZ;
+          worldMatrix[10] = cos * rotZ;
+
+          // Position at fish location
+          worldMatrix[12] = fishX;
+          worldMatrix[13] = fishY;
+          worldMatrix[14] = fishZ;
+
+          this.laserInstances.push({
+            worldMatrix,
+            materialBindGroup: this.laserMaterialBindGroup,
+          });
+        }
+      }
+    }
+  }
+
+  updateLightRays(deltaSeconds) {
+    if (!this.currentState.options.lightRays || !this.lightRayInfo) {
+      return;
+    }
+
+    // Update light ray timers and fade alpha (matching WebGL g_lightRaySpeed = 4)
+    const speed = this.currentState.globals.speed * 4;
+    for (const ray of this.lightRayInfo) {
+      ray.timer += deltaSeconds * speed;
+
+      // Reset ray when it exceeds duration
+      if (ray.timer > ray.duration) {
+        ray.timer = 0;
+        ray.x = (Math.random() - 0.5) * 40; // ±20
+        ray.z = (Math.random() - 0.5) * 40;
+        ray.rotation = Math.random() * 2.0 - 1.0; // ±1.0
+        ray.duration = 1 + Math.random() * 1; // 1-2 seconds
+      }
+    }
   }
 
   renderBubbles(pass, frameUniformData) {
-    if (!this.currentState.options.bubbles || !this.bubblePipeline || this.numActiveBubbles === 0) {
+    if (
+      !this.currentState.options.bubbles ||
+      !this.bubblePipeline ||
+      this.numActiveBubbles === 0
+    ) {
       return;
     }
 
@@ -936,11 +1231,15 @@ export class AquariumRenderer {
     // Extract viewProjection (first 16 floats) and viewInverse (next 16 floats)
     const viewProjection = frameUniformData.slice(0, 16);
     const viewInverse = frameUniformData.slice(16, 32);
-    
+
     this.bubbleFrameUniformData.set(viewProjection, 0); // mat4x4
     this.bubbleFrameUniformData.set(viewInverse, 16); // mat4x4
     this.bubbleFrameUniformData[32] = this.clock; // time
-    this.queue.writeBuffer(this.bubbleFrameUniformBuffer, 0, this.bubbleFrameUniformData);
+    this.queue.writeBuffer(
+      this.bubbleFrameUniformBuffer,
+      0,
+      this.bubbleFrameUniformData
+    );
 
     pass.setPipeline(this.bubblePipeline);
     pass.setBindGroup(0, this.bubbleFrameBindGroup);
@@ -948,6 +1247,268 @@ export class AquariumRenderer {
     pass.setVertexBuffer(0, this.bubbleCornerBuffer);
     pass.setVertexBuffer(1, this.bubbleParticleBuffer);
     pass.draw(6, this.numActiveBubbles, 0, 0);
+  }
+
+  async initializeLaserSystem() {
+    // Create laser pipeline
+    const laserPipelineData = await createLaserPipeline(
+      this.device,
+      this.context.format,
+      this.assets.baseUrl,
+      {
+        frameLayout: this.frameLayout,
+        modelLayout: this.modelLayout,
+      }
+    );
+    this.laserPipeline = laserPipelineData.pipeline;
+    this.laserMaterialLayout = laserPipelineData.materialBindGroupLayout;
+
+    // Load laser beam texture
+    const beamTextureUrl = new URL(
+      "static_assets/beam.png",
+      this.assets.baseUrl
+    ).toString();
+    const beamRecord = await this.textureCache.loadTexture(beamTextureUrl);
+    this.laserTexture = beamRecord.texture;
+
+    // Create quad vertices for laser beam (billboarded quad)
+    const vertices = new Float32Array([
+      // position (xy), texcoord (uv)
+      -0.5,
+      -0.5,
+      0.0,
+      1.0, // bottom-left
+      0.5,
+      -0.5,
+      1.0,
+      1.0, // bottom-right
+      0.5,
+      0.5,
+      1.0,
+      0.0, // top-right
+      -0.5,
+      -0.5,
+      0.0,
+      1.0, // bottom-left
+      0.5,
+      0.5,
+      1.0,
+      0.0, // top-right
+      -0.5,
+      0.5,
+      0.0,
+      0.0, // top-left
+    ]);
+    this.laserVertexBuffer = this.device.createBuffer({
+      label: "laser-vertices",
+      size: vertices.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    });
+    this.queue.writeBuffer(this.laserVertexBuffer, 0, vertices);
+
+    // Create color multiplier buffer (vec4)
+    const colorMult = new Float32Array([1.0, 0.2, 0.2, 1.0]); // Red tint
+    this.laserColorMultBuffer = this.device.createBuffer({
+      label: "laser-color-mult",
+      size: 16, // vec4 = 16 bytes
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    this.queue.writeBuffer(this.laserColorMultBuffer, 0, colorMult);
+
+    // Initialize laser instances (will be populated when fish are setup)
+    this.laserInstances = [];
+
+    // Create material bind group for lasers (shared by all laser instances)
+    this.laserMaterialBindGroup = createBindGroup(
+      this.device,
+      this.laserMaterialLayout,
+      [
+        { binding: 0, resource: this.laserTexture.createView() },
+        { binding: 1, resource: beamRecord.sampler },
+        { binding: 2, resource: { buffer: this.laserColorMultBuffer } },
+      ],
+      "laser-material-bind-group"
+    );
+  }
+
+  async initializeLightRaySystem() {
+    // Create light ray pipeline
+    const lightRayPipelineData = await createLightRayPipeline(
+      this.device,
+      this.context.format,
+      this.assets.baseUrl,
+      {
+        frameLayout: this.frameLayout,
+        modelLayout: this.modelLayout,
+      }
+    );
+    this.lightRayPipeline = lightRayPipelineData.pipeline;
+    this.lightRayMaterialLayout = lightRayPipelineData.materialBindGroupLayout;
+
+    // Load light ray texture
+    const lightRayTextureUrl = new URL(
+      "static_assets/LightRay.png",
+      this.assets.baseUrl
+    ).toString();
+    const lightRayRecord = await this.textureCache.loadTexture(
+      lightRayTextureUrl
+    );
+    this.lightRayTexture = lightRayRecord.texture;
+
+    // Create quad vertices for light rays (large vertical billboards)
+    const vertices = new Float32Array([
+      // position (xy), texcoord (uv)
+      -10.0,
+      0.0,
+      0.0,
+      1.0, // bottom-left
+      10.0,
+      0.0,
+      1.0,
+      1.0, // bottom-right
+      10.0,
+      100.0,
+      1.0,
+      0.0, // top-right
+      -10.0,
+      0.0,
+      0.0,
+      1.0, // bottom-left
+      10.0,
+      100.0,
+      1.0,
+      0.0, // top-right
+      -10.0,
+      100.0,
+      0.0,
+      0.0, // top-left
+    ]);
+    this.lightRayQuadBuffer = this.device.createBuffer({
+      label: "light-ray-vertices",
+      size: vertices.byteLength,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+    });
+    this.queue.writeBuffer(this.lightRayQuadBuffer, 0, vertices);
+
+    // Initialize 5 light ray instances with random positions and timers
+    this.lightRayInfo = [];
+    for (let i = 0; i < 5; i++) {
+      const info = {
+        x: (Math.random() - 0.5) * 40, // random x position (±20, matching g_lightRayPosRange = 20)
+        z: (Math.random() - 0.5) * 40, // random z position
+        rotation: Math.random() * 2.0 - 1.0, // random rotation (matching g_lightRayRotRange = 1.0)
+        timer: Math.random() * 2, // random start time (matching g_lightRayDurationMin = 1 + range = 1)
+        duration: 1 + Math.random() * 1, // fade duration 1-2 seconds (matching WebGL)
+      };
+
+      // Create material bind group for this light ray
+      info.materialBindGroup = createBindGroup(
+        this.device,
+        this.lightRayMaterialLayout,
+        [
+          { binding: 0, resource: this.lightRayTexture.createView() },
+          { binding: 1, resource: lightRayRecord.sampler },
+        ],
+        `light-ray-material-${i}`
+      );
+
+      this.lightRayInfo.push(info);
+    }
+  }
+
+  renderLasers(pass, frameUniforms) {
+    if (
+      !this.currentState.options.lasers ||
+      !this.laserPipeline ||
+      this.laserInstances.length === 0
+    ) {
+      return;
+    }
+
+    // Set laser pipeline
+    pass.setPipeline(this.laserPipeline);
+    pass.setBindGroup(0, this.frameBindGroup);
+    pass.setVertexBuffer(0, this.laserVertexBuffer);
+
+    // Render each laser instance
+    for (const laser of this.laserInstances) {
+      // Update model matrix for this laser
+      this.updateModelUniforms(laser.worldMatrix);
+      pass.setBindGroup(1, this.modelBindGroup);
+      pass.setBindGroup(2, this.laserMaterialBindGroup);
+      pass.draw(6, 1, 0, 0);
+    }
+  }
+
+  renderLightRays(pass, frameUniforms) {
+    if (
+      !this.currentState.options.lightRays ||
+      !this.lightRayPipeline ||
+      this.lightRayInfo.length === 0
+    ) {
+      return;
+    }
+
+    // Set light ray pipeline
+    pass.setPipeline(this.lightRayPipeline);
+    pass.setBindGroup(0, this.frameBindGroup);
+    pass.setVertexBuffer(0, this.lightRayQuadBuffer);
+
+    // Render each light ray
+    for (const ray of this.lightRayInfo) {
+      // Calculate alpha based on timer (sine wave fade, matching WebGL)
+      const lerp = ray.timer / ray.duration;
+      const alpha = Math.sin(lerp * Math.PI);
+
+      if (alpha <= 0) continue; // skip invisible rays
+
+      // Match WebGL: Y position between 70-120 based on eyeHeight
+      const y = Math.max(
+        70,
+        Math.min(120, 50 + this.currentState.globals.eyeHeight)
+      );
+
+      // Build transform matrix: rotation around Z (matching WebGL), then translation
+      // WebGL uses: rotationZ(info.rot + lerp * 0.2) * translation([x, y, 0]) * scaling([10, -100, 10])
+      const rotZ = ray.rotation + lerp * 0.2; // rotation lerp
+      const cos = Math.cos(rotZ);
+      const sin = Math.sin(rotZ);
+
+      const worldMatrix = new Float32Array(16);
+      // Identity
+      worldMatrix[0] = 1;
+      worldMatrix[5] = 1;
+      worldMatrix[10] = 1;
+      worldMatrix[15] = 1;
+
+      // Rotation around Z axis (row-major indexing)
+      worldMatrix[0] = cos;
+      worldMatrix[1] = sin;
+      worldMatrix[4] = -sin;
+      worldMatrix[5] = cos;
+
+      // Scale: width=10, height=-100 (negative for downward), depth=10
+      worldMatrix[0] *= 10;
+      worldMatrix[1] *= 10;
+      worldMatrix[4] *= 10;
+      worldMatrix[5] *= -100; // negative Y scale for downward rays
+      worldMatrix[10] *= 10;
+
+      // Translation
+      worldMatrix[12] = ray.x;
+      worldMatrix[13] = y;
+      worldMatrix[14] = ray.z;
+
+      this.updateModelUniforms(worldMatrix);
+      pass.setBindGroup(1, this.modelBindGroup);
+      pass.setBindGroup(2, ray.materialBindGroup);
+      pass.draw(6, 1, 0, 0);
+    }
+    
+    // Reset model matrix to identity after rendering light rays
+    // to avoid affecting subsequent renders
+    const identityMatrix = mat4Identity();
+    this.updateModelUniforms(identityMatrix);
   }
 
   start() {
@@ -969,7 +1530,10 @@ export class AquariumRenderer {
   }
 
   render(deltaSeconds) {
-    if (this.canvas.width !== this.depthSize[0] || this.canvas.height !== this.depthSize[1]) {
+    if (
+      this.canvas.width !== this.depthSize[0] ||
+      this.canvas.height !== this.depthSize[1]
+    ) {
       this.setupDepthTextureIfNeeded();
     }
 
@@ -978,6 +1542,8 @@ export class AquariumRenderer {
 
     this.updateFishResources();
     this.updateBubbles(deltaSeconds);
+    this.updateLasers(deltaSeconds);
+    this.updateLightRays(deltaSeconds);
 
     const frameUniforms = this.computeFrameUniforms();
     this.queue.writeBuffer(
@@ -1038,7 +1604,13 @@ export class AquariumRenderer {
         pass.setBindGroup(2, group.material.bindGroup);
         group.model.bind(pass);
         if (group.model.indexBuffer) {
-          pass.drawIndexed(group.model.indexCount, group.instanceCount, 0, 0, 0);
+          pass.drawIndexed(
+            group.model.indexCount,
+            group.instanceCount,
+            0,
+            0,
+            0
+          );
         } else {
           pass.draw(group.model.indexCount, group.instanceCount, 0, 0);
         }
@@ -1066,7 +1638,11 @@ export class AquariumRenderer {
       }
     }
 
-    if (this.currentState.options.tank && this.innerPipeline && this.innerItems.length > 0) {
+    if (
+      this.currentState.options.tank &&
+      this.innerPipeline &&
+      this.innerItems.length > 0
+    ) {
       pass.setPipeline(this.innerPipeline);
       pass.setBindGroup(0, this.frameBindGroup);
 
@@ -1083,7 +1659,11 @@ export class AquariumRenderer {
       }
     }
 
-    if (this.currentState.options.tank && this.outerPipeline && this.outerItems.length > 0) {
+    if (
+      this.currentState.options.tank &&
+      this.outerPipeline &&
+      this.outerItems.length > 0
+    ) {
       pass.setPipeline(this.outerPipeline);
       pass.setBindGroup(0, this.frameBindGroup);
 
@@ -1102,6 +1682,12 @@ export class AquariumRenderer {
 
     // Render bubbles with additive blending (after transparent tank)
     this.renderBubbles(pass, frameUniforms);
+
+    // Render lasers with additive blending (attached to BigFish)
+    this.renderLasers(pass, frameUniforms);
+
+    // Render light rays with alpha blending (god rays from above)
+    this.renderLightRays(pass, frameUniforms);
 
     pass.end();
     this.queue.submit([encoder.finish()]);
@@ -1146,32 +1732,39 @@ export class AquariumRenderer {
     const viewMatrix = mat4LookAt(eyePosition, target, up);
     const viewInverse = mat4Inverse(viewMatrix);
     const aspect = this.canvas.width / Math.max(1, this.canvas.height);
-    const projection = mat4PerspectiveYFov((globals.fieldOfView * Math.PI) / 180, aspect, 1, 25000);
+    const projection = mat4PerspectiveYFov(
+      (globals.fieldOfView * Math.PI) / 180,
+      aspect,
+      1,
+      25000
+    );
     const viewProjection = mat4Multiply(projection, viewMatrix);
 
     this.frameUniformData.set(viewProjection, 0);
     this.frameUniformData.set(viewInverse, 16);
-    this.frameUniformData.set([eyePosition[0], eyePosition[1] + 20, eyePosition[2], 1], 32);
+    this.frameUniformData.set(
+      [eyePosition[0], eyePosition[1] + 20, eyePosition[2], 1],
+      32
+    );
     this.frameUniformData.set([1, 1, 1, 1], 36);
-    this.frameUniformData.set([
-      this.currentState.globals.ambientRed,
-      this.currentState.globals.ambientGreen,
-      this.currentState.globals.ambientBlue,
-      1,
-    ], 40);
-    this.frameUniformData.set([
-      globals.fogRed,
-      globals.fogGreen,
-      globals.fogBlue,
-      1,
-    ], 44);
+    this.frameUniformData.set(
+      [
+        this.currentState.globals.ambientRed,
+        this.currentState.globals.ambientGreen,
+        this.currentState.globals.ambientBlue,
+        1,
+      ],
+      40
+    );
+    this.frameUniformData.set(
+      [globals.fogRed, globals.fogGreen, globals.fogBlue, 1],
+      44
+    );
     const fogEnabled = this.currentState.options.fog ? 1 : 0;
-    this.frameUniformData.set([
-      globals.fogPower,
-      globals.fogMult,
-      globals.fogOffset,
-      fogEnabled,
-    ], 48);
+    this.frameUniformData.set(
+      [globals.fogPower, globals.fogMult, globals.fogOffset, fogEnabled],
+      48
+    );
 
     return this.frameUniformData;
   }

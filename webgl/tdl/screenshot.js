@@ -29,25 +29,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains various functions for taking a screenshot
  */
 
-tdl.provide('tdl.screenshot');
+tdl.provide("tdl.screenshot");
 
-tdl.require('tdl.io');
-tdl.require('tdl.log');
+tdl.require("tdl.io");
+tdl.require("tdl.log");
 
 /**
  * takes a screenshot of a canvas. Sends it to the server to be saved.
  */
-tdl.screenshot.takeScreenshot = function(canvas) {
+tdl.screenshot.takeScreenshot = function (canvas) {
   tdl.io.sendJSON(
-      this.url,
-      {cmd: 'screenshot', dataURL: canvas.toDataURL()},
-      function() {});
+    this.url,
+    { cmd: "screenshot", dataURL: canvas.toDataURL() },
+    function () {},
+  );
 };
-
-
-

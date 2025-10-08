@@ -1,37 +1,222 @@
-import {
-  optionDefinitions,
-  fishCountPresets,
-  viewPresets,
-} from "./config.js";
+import { optionDefinitions, fishCountPresets, viewPresets } from "./config.js";
 
 const sliderConfig = [
-  { group: "globals", key: "speed", label: "Speed", min: 0, max: 4, step: 0.001 },
-  { group: "globals", key: "targetHeight", label: "Target Height", min: -50, max: 150, step: 0.001 },
-  { group: "globals", key: "targetRadius", label: "Target Radius", min: 0, max: 200, step: 0.001 },
-  { group: "globals", key: "eyeHeight", label: "Eye Height", min: 0, max: 150, step: 0.001 },
-  { group: "globals", key: "eyeRadius", label: "Eye Radius", min: 0, max: 200, step: 0.001 },
-  { group: "globals", key: "eyeSpeed", label: "Eye Speed", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "fieldOfView", label: "Field of View", min: 1, max: 179, step: 0.01 },
-  { group: "globals", key: "ambientRed", label: "Ambient Red", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "ambientGreen", label: "Ambient Green", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "ambientBlue", label: "Ambient Blue", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "fogPower", label: "Fog Power", min: 0, max: 50, step: 0.001 },
-  { group: "globals", key: "fogMult", label: "Fog Mult", min: 0, max: 10, step: 0.001 },
-  { group: "globals", key: "fogOffset", label: "Fog Offset", min: 0, max: 3, step: 0.0001 },
-  { group: "globals", key: "fogRed", label: "Fog Red", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "fogGreen", label: "Fog Green", min: 0, max: 1, step: 0.0001 },
-  { group: "globals", key: "fogBlue", label: "Fog Blue", min: 0, max: 1, step: 0.0001 },
-  { group: "fish", key: "fishHeightRange", label: "Fish Height Range", min: 0, max: 3, step: 0.0001 },
-  { group: "fish", key: "fishHeight", label: "Fish Height", min: 0, max: 50, step: 0.001 },
-  { group: "fish", key: "fishSpeed", label: "Fish Speed", min: 0, max: 2, step: 0.0001 },
-  { group: "fish", key: "fishOffset", label: "Fish Offset", min: 0, max: 2, step: 0.0001 },
-  { group: "fish", key: "fishXClock", label: "Fish X Clock", min: 0, max: 2, step: 0.0001 },
-  { group: "fish", key: "fishYClock", label: "Fish Y Clock", min: 0, max: 2, step: 0.0001 },
-  { group: "fish", key: "fishZClock", label: "Fish Z Clock", min: 0, max: 2, step: 0.0001 },
-  { group: "fish", key: "fishTailSpeed", label: "Fish Tail Speed", min: 0, max: 30, step: 0.001 },
-  { group: "innerConst", key: "refractionFudge", label: "Refraction Fudge", min: 0, max: 50, step: 0.001 },
-  { group: "innerConst", key: "eta", label: "Eta", min: 0, max: 1.2, step: 0.0001 },
-  { group: "innerConst", key: "tankColorFudge", label: "Tank Color Fudge", min: 0, max: 2, step: 0.0001 },
+  {
+    group: "globals",
+    key: "speed",
+    label: "Speed",
+    min: 0,
+    max: 4,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "targetHeight",
+    label: "Target Height",
+    min: -50,
+    max: 150,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "targetRadius",
+    label: "Target Radius",
+    min: 0,
+    max: 200,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "eyeHeight",
+    label: "Eye Height",
+    min: 0,
+    max: 150,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "eyeRadius",
+    label: "Eye Radius",
+    min: 0,
+    max: 200,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "eyeSpeed",
+    label: "Eye Speed",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "fieldOfView",
+    label: "Field of View",
+    min: 1,
+    max: 179,
+    step: 0.01,
+  },
+  {
+    group: "globals",
+    key: "ambientRed",
+    label: "Ambient Red",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "ambientGreen",
+    label: "Ambient Green",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "ambientBlue",
+    label: "Ambient Blue",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "fogPower",
+    label: "Fog Power",
+    min: 0,
+    max: 50,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "fogMult",
+    label: "Fog Mult",
+    min: 0,
+    max: 10,
+    step: 0.001,
+  },
+  {
+    group: "globals",
+    key: "fogOffset",
+    label: "Fog Offset",
+    min: 0,
+    max: 3,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "fogRed",
+    label: "Fog Red",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "fogGreen",
+    label: "Fog Green",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "globals",
+    key: "fogBlue",
+    label: "Fog Blue",
+    min: 0,
+    max: 1,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishHeightRange",
+    label: "Fish Height Range",
+    min: 0,
+    max: 3,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishHeight",
+    label: "Fish Height",
+    min: 0,
+    max: 50,
+    step: 0.001,
+  },
+  {
+    group: "fish",
+    key: "fishSpeed",
+    label: "Fish Speed",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishOffset",
+    label: "Fish Offset",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishXClock",
+    label: "Fish X Clock",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishYClock",
+    label: "Fish Y Clock",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishZClock",
+    label: "Fish Z Clock",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
+  {
+    group: "fish",
+    key: "fishTailSpeed",
+    label: "Fish Tail Speed",
+    min: 0,
+    max: 30,
+    step: 0.001,
+  },
+  {
+    group: "innerConst",
+    key: "refractionFudge",
+    label: "Refraction Fudge",
+    min: 0,
+    max: 50,
+    step: 0.001,
+  },
+  {
+    group: "innerConst",
+    key: "eta",
+    label: "Eta",
+    min: 0,
+    max: 1.2,
+    step: 0.0001,
+  },
+  {
+    group: "innerConst",
+    key: "tankColorFudge",
+    label: "Tank Color Fudge",
+    min: 0,
+    max: 2,
+    step: 0.0001,
+  },
 ];
 
 function createSlider({ label, min, max, step, value, onInput }) {
@@ -132,13 +317,15 @@ export function setupUI(initialState) {
     button.textContent = preset.toLocaleString();
     button.addEventListener("click", () => {
       mutableState.fishCount = preset;
-      document.getElementById("fishCount").textContent = preset.toLocaleString();
+      document.getElementById("fishCount").textContent =
+        preset.toLocaleString();
       publish();
     });
     presetRoot.append(button);
   });
 
-  document.getElementById("fishCount").textContent = mutableState.fishCount.toLocaleString();
+  document.getElementById("fishCount").textContent =
+    mutableState.fishCount.toLocaleString();
 
   const toggleViewButton = document.getElementById("toggleView");
   toggleViewButton.addEventListener("click", () => {
@@ -149,20 +336,20 @@ export function setupUI(initialState) {
 
   const fishPresetSection = document.getElementById("fishPresetSection");
   const toggleOptionsButton = document.getElementById("toggleOptions");
-  
+
   // Hide options by default
   optionContainer.style.display = "none";
-  
+
   toggleOptionsButton.addEventListener("click", () => {
     const isHidden = optionContainer.style.display === "none";
     optionContainer.style.display = isHidden ? "" : "none";
   });
 
   const toggleAdvancedButton = document.getElementById("toggleAdvanced");
-  
+
   // Hide advanced by default
   sliderRoot.style.display = "none";
-  
+
   toggleAdvancedButton.addEventListener("click", () => {
     const isHidden = sliderRoot.style.display === "none";
     sliderRoot.style.display = isHidden ? "" : "none";

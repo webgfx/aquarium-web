@@ -43,7 +43,7 @@
  *
  */
 
-tdl.provide('tdl.quaternions');
+tdl.provide("tdl.quaternions");
 
 /**
  * A Module for quaternion math.
@@ -65,18 +65,17 @@ tdl.quaternions.Quaternion = goog.typedef;
  *     of which is in question.
  * @return {string} Either the string 'Scalar' or 'Quaternion'.
  */
-tdl.quaternions.mathType = function(a) {
-  if (typeof(a) === 'number')
-    return 'Scalar';
-  return 'Quaternion';
+tdl.quaternions.mathType = function (a) {
+  if (typeof a === "number") return "Scalar";
+  return "Quaternion";
 };
 
 /**
  * Creates an identity quaternion.
  * @return {!tdl.quaternions.Quaternion} The identity quaternion.
  */
-tdl.quaternions.identity = function() {
-  return [ 0, 0, 0, 1 ];
+tdl.quaternions.identity = function () {
+  return [0, 0, 0, 1];
 };
 
 /**
@@ -84,7 +83,7 @@ tdl.quaternions.identity = function() {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.quaternions.Quaternion} A new quaternion identical to q.
  */
-tdl.quaternions.copy = function(q) {
+tdl.quaternions.copy = function (q) {
   return q.slice();
 };
 
@@ -93,7 +92,7 @@ tdl.quaternions.copy = function(q) {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.quaternions.Quaternion} -q.
  */
-tdl.quaternions.negative = function(q) {
+tdl.quaternions.negative = function (q) {
   return [-q[0], -q[1], -q[2], -q[3]];
 };
 
@@ -103,11 +102,8 @@ tdl.quaternions.negative = function(q) {
  * @param {!tdl.quaternions.Quaternion} b Operand Quaternion.
  * @return {!tdl.quaternions.Quaternion} The sum of a and b.
  */
-tdl.quaternions.addQuaternionQuaternion = function(a, b) {
-  return [a[0] + b[0],
-          a[1] + b[1],
-          a[2] + b[2],
-          a[3] + b[3]];
+tdl.quaternions.addQuaternionQuaternion = function (a, b) {
+  return [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]];
 };
 
 /**
@@ -116,7 +112,7 @@ tdl.quaternions.addQuaternionQuaternion = function(a, b) {
  * @param {number} b Operand Scalar.
  * @return {!tdl.quaternions.Quaternion} The sum of a and b.
  */
-tdl.quaternions.addQuaternionScalar = function(a, b) {
+tdl.quaternions.addQuaternionScalar = function (a, b) {
   return a.slice(0, 3).concat(a[3] + b);
 };
 
@@ -126,7 +122,7 @@ tdl.quaternions.addQuaternionScalar = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The sum of a and b.
  */
-tdl.quaternions.addScalarQuaternion = function(a, b) {
+tdl.quaternions.addScalarQuaternion = function (a, b) {
   return b.slice(0, 3).concat(a + b[3]);
 };
 
@@ -136,11 +132,8 @@ tdl.quaternions.addScalarQuaternion = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The difference a - b.
  */
-tdl.quaternions.subQuaternionQuaternion = function(a, b) {
-  return [a[0] - b[0],
-          a[1] - b[1],
-          a[2] - b[2],
-          a[3] - b[3]];
+tdl.quaternions.subQuaternionQuaternion = function (a, b) {
+  return [a[0] - b[0], a[1] - b[1], a[2] - b[2], a[3] - b[3]];
 };
 
 /**
@@ -149,7 +142,7 @@ tdl.quaternions.subQuaternionQuaternion = function(a, b) {
  * @param {number} b Operand scalar.
  * @return {!tdl.quaternions.Quaternion} The difference a - b.
  */
-tdl.quaternions.subQuaternionScalar = function(a, b) {
+tdl.quaternions.subQuaternionScalar = function (a, b) {
   return a.slice(0, 3).concat(a[3] - b);
 };
 
@@ -159,7 +152,7 @@ tdl.quaternions.subQuaternionScalar = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The difference a - b.
  */
-tdl.quaternions.subScalarQuaternion = function(a, b) {
+tdl.quaternions.subScalarQuaternion = function (a, b) {
   return [-b[0], -b[1], -b[2], a - b[3]];
 };
 
@@ -169,7 +162,7 @@ tdl.quaternions.subScalarQuaternion = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.quaternions.Quaternion} The product of k and q.
  */
-tdl.quaternions.mulScalarQuaternion = function(k, q) {
+tdl.quaternions.mulScalarQuaternion = function (k, q) {
   return [k * q[0], k * q[1], k * q[2], k * q[3]];
 };
 
@@ -179,7 +172,7 @@ tdl.quaternions.mulScalarQuaternion = function(k, q) {
  * @param {number} k The scalar.
  * @return {!tdl.quaternions.Quaternion} The product of k and v.
  */
-tdl.quaternions.mulQuaternionScalar = function(q, k) {
+tdl.quaternions.mulQuaternionScalar = function (q, k) {
   return [k * q[0], k * q[1], k * q[2], k * q[3]];
 };
 
@@ -189,7 +182,7 @@ tdl.quaternions.mulQuaternionScalar = function(q, k) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The quaternion product a * b.
  */
-tdl.quaternions.mulQuaternionQuaternion = function(a, b) {
+tdl.quaternions.mulQuaternionQuaternion = function (a, b) {
   var aX = a[0];
   var aY = a[1];
   var aZ = a[2];
@@ -200,10 +193,11 @@ tdl.quaternions.mulQuaternionQuaternion = function(a, b) {
   var bW = b[3];
 
   return [
-      aW * bX + aX * bW + aY * bZ - aZ * bY,
-      aW * bY + aY * bW + aZ * bX - aX * bZ,
-      aW * bZ + aZ * bW + aX * bY - aY * bX,
-      aW * bW - aX * bX - aY * bY - aZ * bZ];
+    aW * bX + aX * bW + aY * bZ - aZ * bY,
+    aW * bY + aY * bW + aZ * bX - aX * bZ,
+    aW * bZ + aZ * bW + aX * bY - aY * bX,
+    aW * bW - aX * bX - aY * bY - aZ * bZ,
+  ];
 };
 
 /**
@@ -212,7 +206,7 @@ tdl.quaternions.mulQuaternionQuaternion = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The quaternion quotient a / b.
  */
-tdl.quaternions.divQuaternionQuaternion = function(a, b) {
+tdl.quaternions.divQuaternionQuaternion = function (a, b) {
   var aX = a[0];
   var aY = a[1];
   var aZ = a[2];
@@ -224,10 +218,11 @@ tdl.quaternions.divQuaternionQuaternion = function(a, b) {
 
   var d = 1 / (bW * bW + bX * bX + bY * bY + bZ * bZ);
   return [
-      (aX * bW - aW * bX - aY * bZ + aZ * bY) * d,
-      (aX * bZ - aW * bY + aY * bW - aZ * bX) * d,
-      (aY * bX + aZ * bW - aW * bZ - aX * bY) * d,
-      (aW * bW + aX * bX + aY * bY + aZ * bZ) * d];
+    (aX * bW - aW * bX - aY * bZ + aZ * bY) * d,
+    (aX * bZ - aW * bY + aY * bW - aZ * bX) * d,
+    (aY * bX + aZ * bW - aW * bZ - aX * bY) * d,
+    (aW * bW + aX * bX + aY * bY + aZ * bZ) * d,
+  ];
 };
 
 /**
@@ -236,7 +231,7 @@ tdl.quaternions.divQuaternionQuaternion = function(a, b) {
  * @param {number} k The scalar.
  * @return {!tdl.quaternions.Quaternion} q The quaternion q divided by k.
  */
-tdl.quaternions.divQuaternionScalar = function(q, k) {
+tdl.quaternions.divQuaternionScalar = function (q, k) {
   return [q[0] / k, q[1] / k, q[2] / k, q[3] / k];
 };
 
@@ -246,7 +241,7 @@ tdl.quaternions.divQuaternionScalar = function(q, k) {
  * @param {!tdl.quaternions.Quaternion} b Operand quaternion.
  * @return {!tdl.quaternions.Quaternion} The quaternion product.
  */
-tdl.quaternions.divScalarQuaternion = function(a, b) {
+tdl.quaternions.divScalarQuaternion = function (a, b) {
   var b0 = b[0];
   var b1 = b[1];
   var b2 = b[2];
@@ -261,7 +256,7 @@ tdl.quaternions.divScalarQuaternion = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.quaternions.Quaternion} The multiplicative inverse of q.
  */
-tdl.quaternions.inverse = function(q) {
+tdl.quaternions.inverse = function (q) {
   var q0 = q[0];
   var q1 = q[1];
   var q2 = q[2];
@@ -277,9 +272,10 @@ tdl.quaternions.inverse = function(q) {
  * @param {(!tdl.quaternions.Quaternion|number)} b Operand.
  * @return {(!tdl.quaternions.Quaternion|number)} The product of a and b.
  */
-tdl.quaternions.mul = function(a, b) {
-  return tdl.quaternions['mul' + tdl.quaternions.mathType(a) +
-      tdl.quaternions.mathType(b)](a, b);
+tdl.quaternions.mul = function (a, b) {
+  return tdl.quaternions[
+    "mul" + tdl.quaternions.mathType(a) + tdl.quaternions.mathType(b)
+  ](a, b);
 };
 
 /**
@@ -288,9 +284,10 @@ tdl.quaternions.mul = function(a, b) {
  * @param {(!tdl.quaternions.Quaternion|number)} b Operand.
  * @return {(!tdl.quaternions.Quaternion|number)} The quotient of a and b.
  */
-tdl.quaternions.div = function(a, b) {
-  return tdl.quaternions['div' + tdl.quaternions.mathType(a) +
-      tdl.quaternions.mathType(b)](a, b);
+tdl.quaternions.div = function (a, b) {
+  return tdl.quaternions[
+    "div" + tdl.quaternions.mathType(a) + tdl.quaternions.mathType(b)
+  ](a, b);
 };
 
 /**
@@ -299,9 +296,10 @@ tdl.quaternions.div = function(a, b) {
  * @param {(!tdl.quaternions.Quaternion|number)} b Operand.
  * @return {(!tdl.quaternions.Quaternion|number)} The sum of a and b.
  */
-tdl.quaternions.add = function(a, b) {
-  return tdl.quaternions['add' + tdl.quaternions.mathType(a) +
-      tdl.quaternions.mathType(b)](a, b);
+tdl.quaternions.add = function (a, b) {
+  return tdl.quaternions[
+    "add" + tdl.quaternions.mathType(a) + tdl.quaternions.mathType(b)
+  ](a, b);
 };
 
 /**
@@ -310,9 +308,10 @@ tdl.quaternions.add = function(a, b) {
  * @param {(!tdl.quaternions.Quaternion|number)} b Operand.
  * @return {(!tdl.quaternions.Quaternion|number)} The difference of a and b.
  */
-tdl.quaternions.sub = function(a, b) {
-  return tdl.quaternions['sub' + tdl.quaternions.mathType(a) +
-      tdl.quaternions.mathType(b)](a, b);
+tdl.quaternions.sub = function (a, b) {
+  return tdl.quaternions[
+    "sub" + tdl.quaternions.mathType(a) + tdl.quaternions.mathType(b)
+  ](a, b);
 };
 
 /**
@@ -321,7 +320,7 @@ tdl.quaternions.sub = function(a, b) {
  * @param {!tdl.quaternions.Quaternion} a The Quaternion.
  * @return {number} The length of a.
  */
-tdl.quaternions.length = function(a) {
+tdl.quaternions.length = function (a) {
   return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3]);
 };
 
@@ -331,7 +330,7 @@ tdl.quaternions.length = function(a) {
  * @param {!tdl.quaternions.Quaternion} a The quaternion.
  * @return {number} The square of the length of a.
  */
-tdl.quaternions.lengthSquared = function(a) {
+tdl.quaternions.lengthSquared = function (a) {
   return a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3];
 };
 
@@ -341,7 +340,7 @@ tdl.quaternions.lengthSquared = function(a) {
  * @return {!tdl.quaternions.Quaternion} A unit length quaternion pointing in
  *     the same direction as a.
  */
-tdl.quaternions.normalize = function(a) {
+tdl.quaternions.normalize = function (a) {
   var d = 1 / Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3]);
   return [a[0] * d, a[1] * d, a[2] * d, a[3] * d];
 };
@@ -351,17 +350,16 @@ tdl.quaternions.normalize = function(a) {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.quaternions.Quaternion} The conjugate of q.
  */
-tdl.quaternions.conjugate = function(q) {
+tdl.quaternions.conjugate = function (q) {
   return [-q[0], -q[1], -q[2], q[3]];
 };
-
 
 /**
  * Creates a quaternion which rotates around the x-axis by the given angle.
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.quaternions.Quaternion} The quaternion.
  */
-tdl.quaternions.rotationX = function(angle) {
+tdl.quaternions.rotationX = function (angle) {
   return [Math.sin(angle / 2), 0, 0, Math.cos(angle / 2)];
 };
 
@@ -370,7 +368,7 @@ tdl.quaternions.rotationX = function(angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.quaternions.Quaternion} The quaternion.
  */
-tdl.quaternions.rotationY = function(angle) {
+tdl.quaternions.rotationY = function (angle) {
   return [0, Math.sin(angle / 2), 0, Math.cos(angle / 2)];
 };
 
@@ -379,7 +377,7 @@ tdl.quaternions.rotationY = function(angle) {
  * @param {number} angle The angle by which to rotate (in radians).
  * @return {!tdl.quaternions.Quaternion} The quaternion.
  */
-tdl.quaternions.rotationZ = function(angle) {
+tdl.quaternions.rotationZ = function (angle) {
   return [0, 0, Math.sin(angle / 2), Math.cos(angle / 2)];
 };
 
@@ -391,10 +389,9 @@ tdl.quaternions.rotationZ = function(angle) {
  * @return {!tdl.quaternions.Quaternion} A quaternion which rotates angle
  *     radians around the axis.
  */
-tdl.quaternions.axisRotation = function(axis, angle) {
-  var d = 1 / Math.sqrt(axis[0] * axis[0] +
-                        axis[1] * axis[1] +
-                        axis[2] * axis[2]);
+tdl.quaternions.axisRotation = function (axis, angle) {
+  var d =
+    1 / Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
   var sin = Math.sin(angle / 2);
   var cos = Math.cos(angle / 2);
   return [sin * axis[0] * d, sin * axis[1] * d, sin * axis[2] * d, cos];
@@ -409,7 +406,7 @@ tdl.quaternions.axisRotation = function(axis, angle) {
  * @param {!tdl.quaternions.Quaternion} q The quaternion.
  * @return {!tdl.math.Matrix4} A 4-by-4 rotation matrix.
  */
-tdl.quaternions.quaternionToRotation = function(q) {
+tdl.quaternions.quaternionToRotation = function (q) {
   var qX = q[0];
   var qY = q[1];
   var qZ = q[2];
@@ -435,16 +432,26 @@ tdl.quaternions.quaternionToRotation = function(q) {
   var d = qWqW + qXqX + qYqY + qZqZ;
 
   return [
-    [(qWqW + qXqX - qYqY - qZqZ) / d,
-     2 * (qWqZ + qXqY) / d,
-     2 * (qXqZ - qWqY) / d, 0],
-    [2 * (qXqY - qWqZ) / d,
-     (qWqW - qXqX + qYqY - qZqZ) / d,
-     2 * (qWqX + qYqZ) / d, 0],
-    [2 * (qWqY + qXqZ) / d,
-     2 * (qYqZ - qWqX) / d,
-     (qWqW - qXqX - qYqY + qZqZ) / d, 0],
-    [0, 0, 0, 1]];
+    [
+      (qWqW + qXqX - qYqY - qZqZ) / d,
+      (2 * (qWqZ + qXqY)) / d,
+      (2 * (qXqZ - qWqY)) / d,
+      0,
+    ],
+    [
+      (2 * (qXqY - qWqZ)) / d,
+      (qWqW - qXqX + qYqY - qZqZ) / d,
+      (2 * (qWqX + qYqZ)) / d,
+      0,
+    ],
+    [
+      (2 * (qWqY + qXqZ)) / d,
+      (2 * (qYqZ - qWqX)) / d,
+      (qWqW - qXqX - qYqY + qZqZ) / d,
+      0,
+    ],
+    [0, 0, 0, 1],
+  ];
 };
 
 /**
@@ -454,7 +461,7 @@ tdl.quaternions.quaternionToRotation = function(q) {
  * @return {!tdl.quaternions.Quaternion} A quaternion q such that
  *     quaternions.quaternionToRotation(q) is m.
  */
-tdl.quaternions.rotationToQuaternion = function(m) {
+tdl.quaternions.rotationToQuaternion = function (m) {
   var u;
   var v;
   var w;
@@ -478,10 +485,9 @@ tdl.quaternions.rotationToQuaternion = function(m) {
   var r = Math.sqrt(1 + m[u][u] - m[v][v] - m[w][w]);
   var q = [];
   q[u] = 0.5 * r;
-  q[v] = 0.5 * (m[v][u] + m[u][v]) / r;
-  q[w] = 0.5 * (m[u][w] + m[w][u]) / r;
-  q[3] = 0.5 * (m[v][w] - m[w][v]) / r;
+  q[v] = (0.5 * (m[v][u] + m[u][v])) / r;
+  q[w] = (0.5 * (m[u][w] + m[w][u])) / r;
+  q[3] = (0.5 * (m[v][w] - m[w][v])) / r;
 
   return q;
 };
-

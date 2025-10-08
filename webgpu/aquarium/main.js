@@ -34,11 +34,16 @@ async function boot() {
     globals: structuredClone(defaultGlobals),
     fish: structuredClone(defaultFish),
     innerConst: structuredClone(defaultInnerConst),
-    options: Object.fromEntries(optionDefinitions.map((opt) => [opt.id, opt.defaultValue])),
+    options: Object.fromEntries(
+      optionDefinitions.map((opt) => [opt.id, opt.defaultValue]),
+    ),
     fishCount: fishCountPresets[2],
   });
 
-  const assetPackage = await loadAquariumAssets({ ...aquariumConfig, aquariumRoot: AQUARIUM_BASE }, context.device);
+  const assetPackage = await loadAquariumAssets(
+    { ...aquariumConfig, aquariumRoot: AQUARIUM_BASE },
+    context.device,
+  );
 
   const renderer = new AquariumRenderer({
     context,

@@ -29,13 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains objects to measure frames
  *               per second.
  */
 
-tdl.provide('tdl.fps');
+tdl.provide("tdl.fps");
 
 /**
  * A module for fps.
@@ -53,7 +52,7 @@ tdl.fps.NUM_FRAMES_TO_AVERAGE = 16;
  * Measures frames per second.
  * @constructor
  */
-tdl.fps.FPSTimer = function() {
+tdl.fps.FPSTimer = function () {
   // total time spent for last N frames.
   this.totalTime_ = tdl.fps.NUM_FRAMES_TO_AVERAGE;
 
@@ -76,7 +75,7 @@ tdl.fps.FPSTimer = function() {
  * @param {number} elapsedTime The elasped time in seconds
  *     since the last frame.
  */
-tdl.fps.FPSTimer.prototype.update = function(elapsedTime) {
+tdl.fps.FPSTimer.prototype.update = function (elapsedTime) {
   // Keep the total time and total active time for the last N frames.
   this.totalTime_ += elapsedTime - this.timeTable_[this.timeTableCursor_];
 
@@ -91,8 +90,6 @@ tdl.fps.FPSTimer.prototype.update = function(elapsedTime) {
 
   this.instantaneousFPS = Math.floor(1.0 / elapsedTime + 0.5);
   this.averageFPS = Math.floor(
-      (1.0 / (this.totalTime_ / tdl.fps.NUM_FRAMES_TO_AVERAGE)) + 0.5);
+    1.0 / (this.totalTime_ / tdl.fps.NUM_FRAMES_TO_AVERAGE) + 0.5,
+  );
 };
-
-
-

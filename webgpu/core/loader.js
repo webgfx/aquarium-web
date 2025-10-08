@@ -49,9 +49,13 @@ export async function loadAquariumAssets(config, device) {
 
   const scenes = await Promise.all(scenePromises);
 
-  const placementResponse = await fetch(new URL("assets/PropPlacement.js", baseUrl));
+  const placementResponse = await fetch(
+    new URL("assets/PropPlacement.js", baseUrl),
+  );
   if (!placementResponse.ok) {
-    throw new Error(`Failed to load PropPlacement.js: ${placementResponse.status}`);
+    throw new Error(
+      `Failed to load PropPlacement.js: ${placementResponse.status}`,
+    );
   }
   const placementData = await placementResponse.json();
 

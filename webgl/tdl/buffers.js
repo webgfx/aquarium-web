@@ -29,13 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains objects to deal with WebGL
  *               buffers.
  */
 
-tdl.provide('tdl.buffers');
+tdl.provide("tdl.buffers");
 
 /**
  * A module for buffers.
@@ -43,7 +42,7 @@ tdl.provide('tdl.buffers');
  */
 tdl.buffers = tdl.buffers || {};
 
-tdl.buffers.Buffer = function(array, opt_target) {
+tdl.buffers.Buffer = function (array, opt_target) {
   var target = opt_target || gl.ARRAY_BUFFER;
   var buf = gl.createBuffer();
   this.target = target;
@@ -68,50 +67,48 @@ tdl.buffers.Buffer = function(array, opt_target) {
     this.type_ = gl.SHORT;
     this.normalize_ = true;
   } else {
-    throw("unhandled type:" + (typeof array.buffer));
+    throw "unhandled type:" + typeof array.buffer;
   }
 };
 
-tdl.buffers.Buffer.prototype.set = function(array, opt_usage) {
+tdl.buffers.Buffer.prototype.set = function (array, opt_usage) {
   gl.bindBuffer(this.target, this.buf);
   gl.bufferData(this.target, array.buffer, opt_usage || gl.STATIC_DRAW);
-}
+};
 
-tdl.buffers.Buffer.prototype.setRange = function(array, offset) {
+tdl.buffers.Buffer.prototype.setRange = function (array, offset) {
   gl.bindBuffer(this.target, this.buf);
   gl.bufferSubData(this.target, offset, array);
-}
+};
 
-tdl.buffers.Buffer.prototype.type = function() {
+tdl.buffers.Buffer.prototype.type = function () {
   return this.type_;
 };
 
-tdl.buffers.Buffer.prototype.numComponents = function() {
+tdl.buffers.Buffer.prototype.numComponents = function () {
   return this.numComponents_;
 };
 
-tdl.buffers.Buffer.prototype.numElements = function() {
+tdl.buffers.Buffer.prototype.numElements = function () {
   return this.numElements_;
 };
 
-tdl.buffers.Buffer.prototype.totalComponents = function() {
+tdl.buffers.Buffer.prototype.totalComponents = function () {
   return this.totalComponents_;
 };
 
-tdl.buffers.Buffer.prototype.buffer = function() {
+tdl.buffers.Buffer.prototype.buffer = function () {
   return this.buf;
 };
 
-tdl.buffers.Buffer.prototype.stride = function() {
+tdl.buffers.Buffer.prototype.stride = function () {
   return 0;
 };
 
-tdl.buffers.Buffer.prototype.normalize = function() {
+tdl.buffers.Buffer.prototype.normalize = function () {
   return this.normalize_;
-}
-
-tdl.buffers.Buffer.prototype.offset = function() {
-  return 0;
 };
 
-
+tdl.buffers.Buffer.prototype.offset = function () {
+  return 0;
+};

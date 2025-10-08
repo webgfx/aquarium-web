@@ -1,13 +1,20 @@
 import { PipelineBuilder } from "./base-pipeline.js";
 import { loadShaderModule } from "../shader-loader.js";
 
-export async function createInnerPipeline(device, {
-  frameLayout,
-  modelLayout,
-  materialLayout,
-}, colorFormat, vertexBuffers, baseUrl) {
+export async function createInnerPipeline(
+  device,
+  { frameLayout, modelLayout, materialLayout },
+  colorFormat,
+  vertexBuffers,
+  baseUrl,
+) {
   const pipelineBuilder = new PipelineBuilder(device);
-  const shaderModule = await loadShaderModule(device, "shaders/inner.wgsl", "inner-tank", baseUrl);
+  const shaderModule = await loadShaderModule(
+    device,
+    "shaders/inner.wgsl",
+    "inner-tank",
+    baseUrl,
+  );
 
   const layout = device.createPipelineLayout({
     bindGroupLayouts: [frameLayout, modelLayout, materialLayout],

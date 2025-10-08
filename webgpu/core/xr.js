@@ -1,4 +1,9 @@
-export async function tryStartXR({ sessionMode = "immersive-vr", requiredFeatures = ["local-floor"], optionalFeatures = ["bounded-floor", "hand-tracking", "layers"], device }) {
+export async function tryStartXR({
+  sessionMode = "immersive-vr",
+  requiredFeatures = ["local-floor"],
+  optionalFeatures = ["bounded-floor", "hand-tracking", "layers"],
+  device,
+}) {
   if (!navigator.xr) {
     return null;
   }
@@ -17,7 +22,9 @@ export async function tryStartXR({ sessionMode = "immersive-vr", requiredFeature
     }
 
     if (!window.XRWebGPULayer) {
-      console.warn("XRWebGPULayer not available; falling back to WebGL-based layer");
+      console.warn(
+        "XRWebGPULayer not available; falling back to WebGL-based layer",
+      );
       await session.end();
       return null;
     }

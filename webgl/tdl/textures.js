@@ -29,14 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains objects to manage textures.
  */
 
-tdl.provide('tdl.textures');
+tdl.provide("tdl.textures");
 
-tdl.require('tdl.webgl');
+tdl.require("tdl.webgl");
 
 /**
  * A module for textures.
@@ -54,18 +53,20 @@ tdl.textures = tdl.textures || {};
  * @param {boolean} opt_flipY Flip the texture in Y?
  * @param {function} opt_callback Function to execute when texture is loaded.
  */
-tdl.textures.loadTexture = function(arg, opt_flipY, opt_callback) {
+tdl.textures.loadTexture = function (arg, opt_flipY, opt_callback) {
   var id;
-  if (typeof arg == 'string') {
+  if (typeof arg == "string") {
     td = arg;
-  } else if (arg.length == 4 && typeof arg[0] == 'number') {
+  } else if (arg.length == 4 && typeof arg[0] == "number") {
     id = arg.toString();
-  } else if ((arg.length == 1 || arg.length == 6) &&
-             typeof arg[0] == 'string') {
+  } else if (
+    (arg.length == 1 || arg.length == 6) &&
+    typeof arg[0] == "string"
+  ) {
     id = arg.toString();
-  } else if (arg.tagName == 'CANVAS') {
+  } else if (arg.tagName == "CANVAS") {
     id = undefined;
-  } else if (arg.tagName == 'IMG') {
+  } else if (arg.tagName == "IMG") {
     id = arg.src;
   } else if (arg.width) {
     id = undefined;
@@ -81,14 +82,16 @@ tdl.textures.loadTexture = function(arg, opt_flipY, opt_callback) {
   if (texture) {
     return texture;
   }
-  if (typeof arg == 'string') {
+  if (typeof arg == "string") {
     texture = new tdl.textures.Texture2D(arg, opt_flipY, opt_callback);
-  } else if (arg.length == 4 && typeof arg[0] == 'number') {
+  } else if (arg.length == 4 && typeof arg[0] == "number") {
     texture = new tdl.textures.SolidTexture(arg);
-  } else if ((arg.length == 1 || arg.length == 6) &&
-             typeof arg[0] == 'string') {
+  } else if (
+    (arg.length == 1 || arg.length == 6) &&
+    typeof arg[0] == "string"
+  ) {
     texture = new tdl.textures.CubeMap(arg);
-  } else if (arg.tagName == 'CANVAS' || arg.tagName == 'IMG') {
+  } else if (arg.tagName == "CANVAS" || arg.tagName == "IMG") {
     texture = new tdl.textures.Texture2D(arg, opt_flipY);
   } else if (arg.width) {
     texture = new tdl.textures.ColorTexture2D(arg);
@@ -99,33 +102,40 @@ tdl.textures.loadTexture = function(arg, opt_flipY, opt_callback) {
   return texture;
 };
 
-tdl.textures.addLoadingImage_ = function(img) {
+tdl.textures.addLoadingImage_ = function (img) {
   tdl.textures.init_(gl);
   gl.tdl.textures.loadingImages.push(img);
 };
 
-tdl.textures.removeLoadingImage_ = function(img) {
-  gl.tdl.textures.loadingImages.splice(gl.tdl.textures.loadingImages.indexOf(img), 1);
+tdl.textures.removeLoadingImage_ = function (img) {
+  gl.tdl.textures.loadingImages.splice(
+    gl.tdl.textures.loadingImages.indexOf(img),
+    1,
+  );
 };
 
-tdl.textures.init_ = function(gl) {
+tdl.textures.init_ = function (gl) {
   if (!gl.tdl.textures) {
-    gl.tdl.textures = { };
+    gl.tdl.textures = {};
     gl.tdl.textures.loadingImages = [];
     tdl.webgl.registerContextLostHandler(
-        gl.canvas, tdl.textures.handleContextLost_, true);
+      gl.canvas,
+      tdl.textures.handleContextLost_,
+      true,
+    );
   }
   if (!gl.tdl.textures.maxTextureSize) {
     gl.tdl.textures.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
     gl.tdl.textures.maxCubeMapSize = gl.getParameter(
-        gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+      gl.MAX_CUBE_MAP_TEXTURE_SIZE,
+    );
   }
   if (!gl.tdl.textures.db) {
-    gl.tdl.textures.db = { };
+    gl.tdl.textures.db = {};
   }
 };
 
-tdl.textures.handleContextLost_ = function() {
+tdl.textures.handleContextLost_ = function () {
   if (gl.tdl && gl.tdl.textures) {
     delete gl.tdl.textures.db;
     var imgs = gl.tdl.textures.loadingImages;
@@ -136,19 +146,19 @@ tdl.textures.handleContextLost_ = function() {
   }
 };
 
-tdl.textures.Texture = function(target) {
+tdl.textures.Texture = function (target) {
   this.target = target;
   this.texture = gl.createTexture();
-  this.params = { };
+  this.params = {};
 };
 
-tdl.textures.Texture.prototype.setParameter = function(pname, value) {
+tdl.textures.Texture.prototype.setParameter = function (pname, value) {
   this.params[pname] = value;
   gl.bindTexture(this.target, this.texture);
   gl.texParameteri(this.target, pname, value);
 };
 
-tdl.textures.Texture.prototype.recoverFromLostContext = function() {
+tdl.textures.Texture.prototype.recoverFromLostContext = function () {
   this.texture = gl.createTexture();
   gl.bindTexture(this.target, this.texture);
   for (var pname in this.params) {
@@ -161,7 +171,7 @@ tdl.textures.Texture.prototype.recoverFromLostContext = function() {
  * @constructor
  * @param {!tdl.math.vector4} color.
  */
-tdl.textures.SolidTexture = function(color) {
+tdl.textures.SolidTexture = function (color) {
   tdl.textures.Texture.call(this, gl.TEXTURE_2D);
   this.color = color.slice(0, 4);
   this.uploadTexture();
@@ -169,19 +179,28 @@ tdl.textures.SolidTexture = function(color) {
 
 tdl.base.inherit(tdl.textures.SolidTexture, tdl.textures.Texture);
 
-tdl.textures.SolidTexture.prototype.uploadTexture = function() {
+tdl.textures.SolidTexture.prototype.uploadTexture = function () {
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   var pixel = new Uint8Array(this.color);
   gl.texImage2D(
-    gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    1,
+    1,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    pixel,
+  );
 };
 
-tdl.textures.SolidTexture.prototype.recoverFromLostContext = function() {
+tdl.textures.SolidTexture.prototype.recoverFromLostContext = function () {
   tdl.textures.Texture.recoverFromLostContext.call(this);
   this.uploadTexture();
 };
 
-tdl.textures.SolidTexture.prototype.bindToUnit = function(unit) {
+tdl.textures.SolidTexture.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
 };
@@ -192,9 +211,9 @@ tdl.textures.SolidTexture.prototype.bindToUnit = function(unit) {
  * @param {number} width
  * @param {number} height
  */
-tdl.textures.DepthTexture = function(width, height) {
+tdl.textures.DepthTexture = function (width, height) {
   if (!gl.tdl.depthTexture) {
-    throw("depth textures not supported");
+    throw "depth textures not supported";
   }
   tdl.textures.Texture.call(this, gl.TEXTURE_2D);
   this.width = width;
@@ -204,23 +223,31 @@ tdl.textures.DepthTexture = function(width, height) {
 
 tdl.base.inherit(tdl.textures.DepthTexture, tdl.textures.Texture);
 
-tdl.textures.DepthTexture.prototype.uploadTexture = function() {
+tdl.textures.DepthTexture.prototype.uploadTexture = function () {
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   gl.texImage2D(
-    gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, this.width, this.height, 0,
-    gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, null);
+    gl.TEXTURE_2D,
+    0,
+    gl.DEPTH_COMPONENT,
+    this.width,
+    this.height,
+    0,
+    gl.DEPTH_COMPONENT,
+    gl.UNSIGNED_INT,
+    null,
+  );
   this.setParameter(gl.TEXTURE_MIN_FILTER, gl.NEAREST);
   this.setParameter(gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   this.setParameter(gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   this.setParameter(gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 };
 
-tdl.textures.DepthTexture.prototype.recoverFromLostContext = function() {
+tdl.textures.DepthTexture.prototype.recoverFromLostContext = function () {
   tdl.textures.Texture.recoverFromLostContext.call(this);
   this.uploadTexture();
 };
 
-tdl.textures.DepthTexture.prototype.bindToUnit = function(unit) {
+tdl.textures.DepthTexture.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
 };
@@ -231,33 +258,41 @@ tdl.textures.DepthTexture.prototype.bindToUnit = function(unit) {
  * @param {!{width: number, height: number: pixels:
  *        !Array.<number>} data.
  */
-tdl.textures.ColorTexture = function(data, opt_format, opt_type) {
+tdl.textures.ColorTexture = function (data, opt_format, opt_type) {
   tdl.textures.Texture.call(this, gl.TEXTURE_2D);
   this.format = opt_format || gl.RGBA;
-  this.type   = opt_type || gl.UNSIGNED_BYTE;
+  this.type = opt_type || gl.UNSIGNED_BYTE;
   if (data.pixels instanceof Array) {
     data.pixels = new Uint8Array(data.pixels);
   }
-  this.data   = data;
+  this.data = data;
   this.uploadTexture();
 };
 
 tdl.base.inherit(tdl.textures.ColorTexture, tdl.textures.Texture);
 
-tdl.textures.ColorTexture.prototype.uploadTexture = function() {
+tdl.textures.ColorTexture.prototype.uploadTexture = function () {
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
   gl.texImage2D(
-    gl.TEXTURE_2D, 0, this.format, this.data.width, this.data.height,
-    0, this.format, this.type, this.data.pixels);
+    gl.TEXTURE_2D,
+    0,
+    this.format,
+    this.data.width,
+    this.data.height,
+    0,
+    this.format,
+    this.type,
+    this.data.pixels,
+  );
 };
 
-tdl.textures.ColorTexture.prototype.recoverFromLostContext = function() {
+tdl.textures.ColorTexture.prototype.recoverFromLostContext = function () {
   tdl.textures.Texture.recoverFromLostContext.call(this);
   this.uploadTexture();
 };
 
-tdl.textures.ColorTexture.prototype.bindToUnit = function(unit) {
+tdl.textures.ColorTexture.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
 };
@@ -267,22 +302,22 @@ tdl.textures.ColorTexture.prototype.bindToUnit = function(unit) {
  * @param {{string|!Element}} url URL of image to load into texture.
  * @param {function} opt_callback Function to execute when texture is loaded.
  */
-tdl.textures.Texture2D = function(url, opt_flipY, opt_callback) {
+tdl.textures.Texture2D = function (url, opt_flipY, opt_callback) {
   tdl.textures.Texture.call(this, gl.TEXTURE_2D);
   this.flipY = opt_flipY || false;
   var that = this;
   var img;
   // Handle dataURLs?
-  if (typeof url !== 'string') {
+  if (typeof url !== "string") {
     img = url;
     this.loaded = true;
     if (opt_callback) {
       opt_callback();
     }
   } else {
-    img = document.createElement('img');
+    img = document.createElement("img");
     tdl.textures.addLoadingImage_(img);
-    img.onload = function() {
+    img.onload = function () {
       tdl.textures.removeLoadingImage_(img);
       //tdl.log("loaded image: ", url);
       that.updateTexture();
@@ -290,7 +325,7 @@ tdl.textures.Texture2D = function(url, opt_flipY, opt_callback) {
         opt_callback();
       }
     };
-    img.onerror = function() {
+    img.onerror = function () {
       tdl.log("could not load image: ", url);
     };
   }
@@ -304,11 +339,11 @@ tdl.textures.Texture2D = function(url, opt_flipY, opt_callback) {
 
 tdl.base.inherit(tdl.textures.Texture2D, tdl.textures.Texture);
 
-tdl.textures.isPowerOf2 = function(value) {
+tdl.textures.isPowerOf2 = function (value) {
   return (value & (value - 1)) == 0;
 };
 
-tdl.textures.Texture2D.prototype.uploadTexture = function() {
+tdl.textures.Texture2D.prototype.uploadTexture = function () {
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   if (this.loaded) {
@@ -317,16 +352,27 @@ tdl.textures.Texture2D.prototype.uploadTexture = function() {
   } else {
     var pixel = new Uint8Array([255, 255, 255, 255]);
     gl.texImage2D(
-        gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      1,
+      1,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      pixel,
+    );
   }
 };
 
-tdl.textures.Texture2D.prototype.setTexture = function(element) {
+tdl.textures.Texture2D.prototype.setTexture = function (element) {
   // TODO(gman): use texSubImage2D if the size is the same.
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
-  if (tdl.textures.isPowerOf2(element.width) &&
-      tdl.textures.isPowerOf2(element.height)) {
+  if (
+    tdl.textures.isPowerOf2(element.width) &&
+    tdl.textures.isPowerOf2(element.height)
+  ) {
     this.setParameter(gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
     gl.generateMipmap(gl.TEXTURE_2D);
   } else {
@@ -336,17 +382,17 @@ tdl.textures.Texture2D.prototype.setTexture = function(element) {
   }
 };
 
-tdl.textures.Texture2D.prototype.updateTexture = function() {
+tdl.textures.Texture2D.prototype.updateTexture = function () {
   this.loaded = true;
   this.uploadTexture();
 };
 
-tdl.textures.Texture2D.prototype.recoverFromLostContext = function() {
+tdl.textures.Texture2D.prototype.recoverFromLostContext = function () {
   tdl.textures.Texture.recoverFromLostContext.call(this);
   this.uploadTexture();
 };
 
-tdl.textures.Texture2D.prototype.bindToUnit = function(unit) {
+tdl.textures.Texture2D.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, this.texture);
 };
@@ -356,26 +402,25 @@ tdl.textures.Texture2D.prototype.bindToUnit = function(unit) {
  * @constructor
  * @param {string} type GL enum for texture type.
  */
-tdl.textures.ExternalTexture = function(type) {
+tdl.textures.ExternalTexture = function (type) {
   tdl.textures.Texture.call(this, type);
   this.type = type;
 };
 
 tdl.base.inherit(tdl.textures.ExternalTexture, tdl.textures.Texture);
 
-tdl.textures.ExternalTexture.prototype.recoverFromLostContext = function() {
-};
+tdl.textures.ExternalTexture.prototype.recoverFromLostContext = function () {};
 
-tdl.textures.ExternalTexture.prototype.bindToUnit = function(unit) {
+tdl.textures.ExternalTexture.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(this.type, this.texture);
-}
+};
 
 /**
  * Create a 2D texture to be managed externally.
  * @constructor
  */
-tdl.textures.ExternalTexture2D = function() {
+tdl.textures.ExternalTexture2D = function () {
   tdl.textures.ExternalTexture.call(this, gl.TEXTURE_2D);
 };
 
@@ -397,7 +442,7 @@ tdl.base.inherit(tdl.textures.ExternalTexture2D, tdl.textures.ExternalTexture);
  *     |  |NY|  |  |
  *     +--+--+--+--+
  */
-tdl.textures.CubeMap = function(urls) {
+tdl.textures.CubeMap = function (urls) {
   tdl.textures.init_(gl);
   tdl.textures.Texture.call(this, gl.TEXTURE_CUBE_MAP);
   // TODO(gman): make this global.
@@ -408,14 +453,16 @@ tdl.textures.CubeMap = function(urls) {
       gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
       gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
       gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-      gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
+      gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    ];
     tdl.textures.CubeMap.offsets = [
       [2, 1],
       [0, 1],
       [1, 0],
       [1, 2],
       [1, 1],
-      [3, 1]];
+      [3, 1],
+    ];
   }
   var faceTargets = tdl.textures.CubeMap.faceTargets;
   gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
@@ -430,23 +477,23 @@ tdl.textures.CubeMap = function(urls) {
     this.numUrls = urls.length;
     var that = this;
     for (var ff = 0; ff < urls.length; ++ff) {
-      var face = { };
+      var face = {};
       this.faces[ff] = face;
-      var img = document.createElement('img');
+      var img = document.createElement("img");
       tdl.textures.addLoadingImage_(img);
       face.img = img;
-      img.onload = function(faceIndex) {
-        return function() {
+      img.onload = (function (faceIndex) {
+        return function () {
           tdl.textures.removeLoadingImage_(img);
           tdl.log("loaded image: ", urls[faceIndex]);
           that.updateTexture(faceIndex);
-        }
-      } (ff);
-      img.onerror = function(url) {
-        return function() {
+        };
+      })(ff);
+      img.onerror = (function (url) {
+        return function () {
           tdl.log("could not load image: ", url);
-        }
-      }(urls[ff]);
+        };
+      })(urls[ff]);
       img.src = urls[ff];
     }
   }
@@ -459,7 +506,7 @@ tdl.base.inherit(tdl.textures.CubeMap, tdl.textures.Texture);
  * Check if all faces are loaded.
  * @return {boolean} true if all faces are loaded.
  */
-tdl.textures.CubeMap.prototype.loaded = function() {
+tdl.textures.CubeMap.prototype.loaded = function () {
   for (var ff = 0; ff < this.faces.length; ++ff) {
     if (!this.faces[ff].loaded) {
       return false;
@@ -468,29 +515,36 @@ tdl.textures.CubeMap.prototype.loaded = function() {
   return true;
 };
 
-tdl.textures.clampToMaxSize = function(element, maxSize) {
+tdl.textures.clampToMaxSize = function (element, maxSize) {
   if (element.width <= maxSize && element.height <= maxSize) {
     return element;
   }
   var maxDimension = Math.max(element.width, element.height);
-  var newWidth = Math.floor(element.width * maxSize / maxDimension);
-  var newHeight = Math.floor(element.height * maxSize / maxDimension);
+  var newWidth = Math.floor((element.width * maxSize) / maxDimension);
+  var newHeight = Math.floor((element.height * maxSize) / maxDimension);
 
-  var canvas = document.createElement('canvas');
+  var canvas = document.createElement("canvas");
   canvas.width = newWidth;
   canvas.height = newHeight;
   var ctx = canvas.getContext("2d");
   ctx.drawImage(
-      element,
-      0, 0, element.width, element.height,
-      0, 0, newWidth, newHeight);
+    element,
+    0,
+    0,
+    element.width,
+    element.height,
+    0,
+    0,
+    newWidth,
+    newHeight,
+  );
   return canvas;
 };
 
 /**
  * Uploads the images to the texture.
  */
-tdl.textures.CubeMap.prototype.uploadTextures = function() {
+tdl.textures.CubeMap.prototype.uploadTextures = function () {
   var allFacesLoaded = this.loaded();
   var faceTargets = tdl.textures.CubeMap.faceTargets;
   for (var faceIndex = 0; faceIndex < 6; ++faceIndex) {
@@ -503,11 +557,18 @@ tdl.textures.CubeMap.prototype.uploadTextures = function() {
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
         if (this.faces.length == 6) {
           gl.texImage2D(
-              target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-              tdl.textures.clampToMaxSize(
-                  face.img, gl.tdl.textures.maxCubeMapSize));
+            target,
+            0,
+            gl.RGBA,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            tdl.textures.clampToMaxSize(
+              face.img,
+              gl.tdl.textures.maxCubeMapSize,
+            ),
+          );
         } else {
-          var canvas = document.createElement('canvas');
+          var canvas = document.createElement("canvas");
           var width = face.img.width / 4;
           var height = face.img.height / 3;
           canvas.width = width;
@@ -517,27 +578,43 @@ tdl.textures.CubeMap.prototype.uploadTextures = function() {
           var sy = tdl.textures.CubeMap.offsets[faceIndex][1] * height;
           ctx.drawImage(face.img, sx, sy, width, height, 0, 0, width, height);
           gl.texImage2D(
-              target, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE,
-              tdl.textures.clampToMaxSize(
-                  canvas, gl.tdl.textures.maxCubeMapSize));
+            target,
+            0,
+            gl.RGBA,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            tdl.textures.clampToMaxSize(canvas, gl.tdl.textures.maxCubeMapSize),
+          );
         }
         uploaded = true;
       }
     }
     if (!uploaded) {
-      var pixel = new Uint8Array([100,100,255,255]);
-      gl.texImage2D(target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+      var pixel = new Uint8Array([100, 100, 255, 255]);
+      gl.texImage2D(
+        target,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        pixel,
+      );
     }
   }
   var genMips = false;
   if (this.faces.length) {
     var faceImg = this.faces[0].img;
     if (this.faces.length == 6) {
-      genMips = tdl.textures.isPowerOf2(faceImg.width) &&
-                tdl.textures.isPowerOf2(faceImg.height);
+      genMips =
+        tdl.textures.isPowerOf2(faceImg.width) &&
+        tdl.textures.isPowerOf2(faceImg.height);
     } else {
-      genMips = tdl.textures.isPowerOf2(faceImg.width / 4) &&
-                tdl.textures.isPowerOf2(faceImg.height / 3);
+      genMips =
+        tdl.textures.isPowerOf2(faceImg.width / 4) &&
+        tdl.textures.isPowerOf2(faceImg.height / 3);
     }
   }
   if (genMips) {
@@ -551,7 +628,7 @@ tdl.textures.CubeMap.prototype.uploadTextures = function() {
 /**
  * Recover from lost context.
  */
-tdl.textures.CubeMap.prototype.recoverFromLostContext = function() {
+tdl.textures.CubeMap.prototype.recoverFromLostContext = function () {
   tdl.textures.Texture.recoverFromLostContext.call(this);
   this.uploadTextures();
 };
@@ -560,7 +637,7 @@ tdl.textures.CubeMap.prototype.recoverFromLostContext = function() {
  * Update a just downloaded loaded texture.
  * @param {number} faceIndex index of face.
  */
-tdl.textures.CubeMap.prototype.updateTexture = function(faceIndex) {
+tdl.textures.CubeMap.prototype.updateTexture = function (faceIndex) {
   // mark the face as loaded
   var face = this.faces[faceIndex];
   face.loaded = true;
@@ -575,10 +652,7 @@ tdl.textures.CubeMap.prototype.updateTexture = function(faceIndex) {
  * Binds the CubeMap to a texture unit
  * @param {number} unit The texture unit.
  */
-tdl.textures.CubeMap.prototype.bindToUnit = function(unit) {
+tdl.textures.CubeMap.prototype.bindToUnit = function (unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
 };
-
-
-

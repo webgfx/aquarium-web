@@ -29,17 +29,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains objects to sync app settings across
  * browsers.
  */
 
-tdl.provide('tdl.sync');
+tdl.provide("tdl.sync");
 
-tdl.require('tdl.log');
-tdl.require('tdl.io');
-tdl.require('tdl.misc');
+tdl.require("tdl.log");
+tdl.require("tdl.io");
+tdl.require("tdl.misc");
 
 /**
  * A module for sync.
@@ -56,15 +55,15 @@ tdl.sync = tdl.sync || {};
  * @param {!Object} settings The object that contains the settings you
  *     want kept in sync.
  */
-tdl.sync.SyncManager = function(settings, opt_callback) {
+tdl.sync.SyncManager = function (settings, opt_callback) {
   this.settings = settings;
   this.putCount = 0;
   this.getCount = 0;
-  this.callback = opt_callback || function() {};
+  this.callback = opt_callback || function () {};
 
   // This probably should not be here.
   tdl.misc.applyUrlSettings(settings);
-}
+};
 
 /**
  * Initialize the sync manager to start syncing settings with a server.
@@ -73,14 +72,14 @@ tdl.sync.SyncManager = function(settings, opt_callback) {
  * @param {boolean} slave true if this page is a slave. Slaves only receive
  *     settings from the server. Non slaves send settings the server.
  */
-tdl.sync.SyncManager.prototype.init = function(url, slave) {
+tdl.sync.SyncManager.prototype.init = function (url, slave) {
   var that = this;
   this.sync = true;
   this.slave = slave;
   this.socket = new WebSocket(url);
   this.opened = false;
   this.queued = [];
-  this.socket.onopen = function(event) {
+  this.socket.onopen = function (event) {
     tdl.log("SOCKET OPENED!");
     that.opened = true;
     for (var ii = 0; ii < that.queued.length; ++ii) {
@@ -92,13 +91,13 @@ tdl.sync.SyncManager.prototype.init = function(url, slave) {
     }
     that.queued = [];
   };
-  this.socket.onerror = function(event) {
+  this.socket.onerror = function (event) {
     tdl.log("SOCKET ERROR!");
   };
-  this.socket.onclose = function(event) {
+  this.socket.onclose = function (event) {
     tdl.log("SOCKET CLOSED!");
   };
-  this.socket.onmessage = function(event) {
+  this.socket.onmessage = function (event) {
     ++that.getCount;
     tdl.log("--GET:[", that.getCount, ":", event.type, "]-------------");
     var obj = JSON.parse(event.data);
@@ -116,7 +115,7 @@ tdl.sync.SyncManager.prototype.init = function(url, slave) {
  *
  * @param {!Object} settings Object with new settings.
  */
-tdl.sync.SyncManager.prototype.setSettings = function(settings) {
+tdl.sync.SyncManager.prototype.setSettings = function (settings) {
   if (this.sync) {
     if (!this.slave) {
       if (this.socket) {
@@ -135,5 +134,3 @@ tdl.sync.SyncManager.prototype.setSettings = function(settings) {
     this.callback(settings);
   }
 };
-
-

@@ -15,7 +15,9 @@ export class FishSchool {
     let remaining = Math.max(0, totalFish | 0);
 
     const assignForType = (type) => {
-      const matching = this.speciesState.filter((state) => state.def.name.startsWith(type));
+      const matching = this.speciesState.filter((state) =>
+        state.def.name.startsWith(type),
+      );
       if (matching.length === 0) {
         return;
       }
@@ -96,9 +98,11 @@ export class FishSchool {
         const speed = fishInstance.speedFactor;
         const clock = (baseClock + i * fishConfig.fishOffset) * speed;
 
-        const xRadius = species.radius + fishInstance.radiusJitterX * species.radiusRange;
+        const xRadius =
+          species.radius + fishInstance.radiusJitterX * species.radiusRange;
         const yRadius = 2 + fishInstance.radiusJitterY * heightRange;
-        const zRadius = species.radius + fishInstance.radiusJitterZ * species.radiusRange;
+        const zRadius =
+          species.radius + fishInstance.radiusJitterZ * species.radiusRange;
 
         const xClock = clock * fishConfig.fishXClock;
         const yClock = clock * fishConfig.fishYClock;
@@ -108,13 +112,21 @@ export class FishSchool {
         fishInstance.position[1] = Math.sin(yClock) * yRadius + heightBase;
         fishInstance.position[2] = Math.cos(zClock) * zRadius;
 
-        fishInstance.target[0] = Math.sin(xClock - TAIL_DIRECTION_DELTA) * xRadius;
-        fishInstance.target[1] = Math.sin(yClock - TARGET_HEIGHT_DELTA) * yRadius + heightBase;
-        fishInstance.target[2] = Math.cos(zClock - TAIL_DIRECTION_DELTA) * zRadius;
+        fishInstance.target[0] =
+          Math.sin(xClock - TAIL_DIRECTION_DELTA) * xRadius;
+        fishInstance.target[1] =
+          Math.sin(yClock - TARGET_HEIGHT_DELTA) * yRadius + heightBase;
+        fishInstance.target[2] =
+          Math.cos(zClock - TAIL_DIRECTION_DELTA) * zRadius;
 
         fishInstance.scale = 1 + fishInstance.scaleJitter;
 
-        const tailBase = (globalClock + i) * fishConfig.fishTailSpeed * species.tailSpeed * speed + fishInstance.tailPhase;
+        const tailBase =
+          (globalClock + i) *
+            fishConfig.fishTailSpeed *
+            species.tailSpeed *
+            speed +
+          fishInstance.tailPhase;
         const wrapped = tailBase % (Math.PI * 2);
         fishInstance.tailTime = wrapped < 0 ? wrapped + Math.PI * 2 : wrapped;
       }

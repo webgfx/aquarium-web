@@ -6,8 +6,8 @@
 
 // Get the directory containing this script
 const scriptUrl = new URL(import.meta.url);
-export const AQUARIUM_BASE = new URL('./', scriptUrl).href;
-export const CORE_BASE = new URL('../core/', scriptUrl).href;
+export const AQUARIUM_BASE = new URL("./", scriptUrl).href;
+export const CORE_BASE = new URL("../core/", scriptUrl).href;
 
 /**
  * Resolve a path relative to the aquarium folder

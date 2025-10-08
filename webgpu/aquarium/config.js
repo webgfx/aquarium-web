@@ -41,11 +41,13 @@ export const optionDefinitions = [
   { id: "museum", label: "Museum", defaultValue: true },
   { id: "fog", label: "Fog", defaultValue: true },
   { id: "bubbles", label: "Bubbles", defaultValue: true },
-  { id: "lightRays", label: "Light Rays", defaultValue: true },
+  { id: "lightRays", label: "Light Rays", defaultValue: false },
   { id: "lasers", label: "Lasers", defaultValue: false },
 ];
 
-export const fishCountPresets = [1, 100, 500, 1000, 5000, 10000, 15000, 20000, 25000, 30000];
+export const fishCountPresets = [
+  1, 100, 500, 1000, 5000, 10000, 15000, 20000, 25000, 30000,
+];
 
 export const viewPresets = [
   {

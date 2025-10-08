@@ -29,13 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains misc functions to deal with
  *               fullscreen.
  */
 
-tdl.provide('tdl.fullscreen');
+tdl.provide("tdl.fullscreen");
 
 /**
  * A module for misc.
@@ -43,7 +42,7 @@ tdl.provide('tdl.fullscreen');
  */
 tdl.fullscreen = tdl.fullscreen || {};
 
-tdl.fullscreen.requestFullScreen = function(element) {
+tdl.fullscreen.requestFullScreen = function (element) {
   if (element.requestFullscreen) {
     element.requestFullscreen();
   } else if (element.msRequestFullscreen) {
@@ -55,7 +54,7 @@ tdl.fullscreen.requestFullScreen = function(element) {
   }
 };
 
-tdl.fullscreen.cancelFullScreen = function(element) {
+tdl.fullscreen.cancelFullScreen = function (element) {
   if (document.exitFullscreen) {
     document.exitFullscreen();
   } else if (document.msExitFullscreen) {
@@ -67,21 +66,24 @@ tdl.fullscreen.cancelFullScreen = function(element) {
   }
 };
 
-tdl.fullscreen.onFullScreenChange = function(element, callback) {
-  var isFullScreen = function() {
-    return document.fullscreenElement || document.mozFullScreenElement ||
-           document.webkitFullscreenElement || document.msFullscreenElement ||
-           document.mozFullScreen || document.webkitIsFullScreen;
+tdl.fullscreen.onFullScreenChange = function (element, callback) {
+  var isFullScreen = function () {
+    return (
+      document.fullscreenElement ||
+      document.mozFullScreenElement ||
+      document.webkitFullscreenElement ||
+      document.msFullscreenElement ||
+      document.mozFullScreen ||
+      document.webkitIsFullScreen
+    );
   };
-  document.addEventListener('fullscreenchange', function(event) {
-      callback(isFullScreen());
-    });
-  element.addEventListener('webkitfullscreenchange', function(event) {
-      callback(isFullScreen());
-    });
-  document.addEventListener('mozfullscreenchange', function(event) {
-      callback(isFullScreen());
-    });
+  document.addEventListener("fullscreenchange", function (event) {
+    callback(isFullScreen());
+  });
+  element.addEventListener("webkitfullscreenchange", function (event) {
+    callback(isFullScreen());
+  });
+  document.addEventListener("mozfullscreenchange", function (event) {
+    callback(isFullScreen());
+  });
 };
-
-

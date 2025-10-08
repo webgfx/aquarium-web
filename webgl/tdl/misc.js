@@ -29,14 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains misc functions that don't fit elsewhere.
  */
 
-tdl.provide('tdl.misc');
+tdl.provide("tdl.misc");
 
-tdl.require('tdl.log');
+tdl.require("tdl.log");
 
 /**
  * A module for misc.
@@ -44,14 +43,14 @@ tdl.require('tdl.log');
  */
 tdl.misc = tdl.misc || {};
 
-tdl.misc.parseUnquotedJSObjectString = function(str) {
+tdl.misc.parseUnquotedJSObjectString = function (str) {
   // NOTE: does not handle strings with : in them.
-  var quoted = str.replace(/([a-zA-Z0-9_]+):/g,'"$1":')
+  var quoted = str.replace(/([a-zA-Z0-9_]+):/g, '"$1":');
   return JSON.parse(quoted);
 };
 
-tdl.misc.applyUrlSettings = function(obj, opt_argumentName) {
-  var argumentName = opt_argumentName || 'settings';
+tdl.misc.applyUrlSettings = function (obj, opt_argumentName) {
+  var argumentName = opt_argumentName || "settings";
   try {
     var s = window.location.href;
     var q = s.indexOf("?");
@@ -69,12 +68,12 @@ tdl.misc.applyUrlSettings = function(obj, opt_argumentName) {
       var value = decodeURIComponent(keyValue[1]);
       //tdl.log(ii, ":", key, "=", value);
       switch (key) {
-      case argumentName:
-        //tdl.log(value);
-        var settings = tdl.misc.parseUnquotedJSObjectString(value)
-        //tdl.log("settings:", settings);
-        tdl.misc.copyProperties(settings, obj);
-        break;
+        case argumentName:
+          //tdl.log(value);
+          var settings = tdl.misc.parseUnquotedJSObjectString(value);
+          //tdl.log("settings:", settings);
+          tdl.misc.copyProperties(settings, obj);
+          break;
       }
     }
   } catch (e) {
@@ -90,7 +89,7 @@ tdl.misc.applyUrlSettings = function(obj, opt_argumentName) {
  * @param {!Object} obj Object with new settings.
  * @param {!Object} dst Object to receive new settings.
  */
-tdl.misc.copyProperties = function(obj, dst) {
+tdl.misc.copyProperties = function (obj, dst) {
   for (var name in obj) {
     var value = obj[name];
     if (value instanceof Array) {
@@ -101,7 +100,7 @@ tdl.misc.copyProperties = function(obj, dst) {
         dst[name] = newDst;
       }
       tdl.misc.copyProperties(value, newDst);
-    } else if (typeof value == 'object') {
+    } else if (typeof value == "object") {
       //tdl.log("apply->: ", name);
       var newDst = dst[name];
       if (!newDst) {
@@ -115,5 +114,3 @@ tdl.misc.copyProperties = function(obj, dst) {
     }
   }
 };
-
-

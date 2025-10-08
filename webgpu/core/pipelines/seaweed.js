@@ -1,14 +1,21 @@
 import { PipelineBuilder } from "./base-pipeline.js";
 import { loadShaderModule } from "../shader-loader.js";
 
-export async function createSeaweedPipeline(device, {
-  frameLayout,
-  modelLayout,
-  materialLayout,
-}, colorFormat, vertexBuffers, baseUrl) {
+export async function createSeaweedPipeline(
+  device,
+  { frameLayout, modelLayout, materialLayout },
+  colorFormat,
+  vertexBuffers,
+  baseUrl,
+) {
   const pipelineBuilder = new PipelineBuilder(device);
 
-  const shaderModule = await loadShaderModule(device, "shaders/seaweed.wgsl", "seaweed", baseUrl);
+  const shaderModule = await loadShaderModule(
+    device,
+    "shaders/seaweed.wgsl",
+    "seaweed",
+    baseUrl,
+  );
 
   const layout = device.createPipelineLayout({
     bindGroupLayouts: [frameLayout, modelLayout, materialLayout],

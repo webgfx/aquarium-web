@@ -52,7 +52,7 @@ export class TextureCache {
     this.device.queue.copyExternalImageToTexture(
       { source: imageBitmap },
       { texture },
-      [imageBitmap.width, imageBitmap.height]
+      [imageBitmap.width, imageBitmap.height],
     );
 
     if (options.generateMipmaps) {
@@ -79,20 +79,26 @@ export class TextureCache {
       return this.cache.get(key);
     }
 
-    const responses = await Promise.all(urls.map(async (url) => {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to load cube texture ${url}: ${response.status}`);
-      }
-      return response;
-    }));
+    const responses = await Promise.all(
+      urls.map(async (url) => {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load cube texture ${url}: ${response.status}`,
+          );
+        }
+        return response;
+      }),
+    );
 
-    const bitmaps = await Promise.all(responses.map(async (response) => {
-      const blob = await response.blob();
-      return createImageBitmap(blob, {
-        premultiplyAlpha: options.premultiplyAlpha ?? "premultiply",
-      });
-    }));
+    const bitmaps = await Promise.all(
+      responses.map(async (response) => {
+        const blob = await response.blob();
+        return createImageBitmap(blob, {
+          premultiplyAlpha: options.premultiplyAlpha ?? "premultiply",
+        });
+      }),
+    );
 
     const width = bitmaps[0].width;
     const height = bitmaps[0].height;
@@ -116,7 +122,7 @@ export class TextureCache {
       this.device.queue.copyExternalImageToTexture(
         { source: bitmap },
         { texture, origin: [0, 0, layer] },
-        [width, height]
+        [width, height],
       );
     });
 

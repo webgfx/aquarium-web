@@ -29,17 +29,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains various functions and classes for rendering
  * gpu based particles.
  */
 
-tdl.provide('tdl.particles');
+tdl.provide("tdl.particles");
 
-tdl.require('tdl.math');
+tdl.require("tdl.math");
 
-tdl.require('tdl.shader');
+tdl.require("tdl.shader");
 
 /**
  * A Module with various io functions and classes.
@@ -57,7 +56,8 @@ tdl.particles.ParticleStateIds = {
   BLEND_PREMULTIPLY: 2,
   BLEND_NO_ALPHA: 3,
   SUBTRACT: 4,
-  INVERSE: 5};
+  INVERSE: 5,
+};
 
 /**
  * Vertex and fragment program strings for 2D and 3D particles.
@@ -66,185 +66,185 @@ tdl.particles.ParticleStateIds = {
  */
 tdl.particles.SHADER_STRINGS = [
   // 3D (oriented) vertex shader
-  'uniform mat4 viewProjection;\n' +
-  'uniform mat4 world;\n' +
-  'uniform vec3 worldVelocity;\n' +
-  'uniform vec3 worldAcceleration;\n' +
-  'uniform float timeRange;\n' +
-  'uniform float time;\n' +
-  'uniform float timeOffset;\n' +
-  'uniform float frameDuration;\n' +
-  'uniform float numFrames;\n' +
-  '\n' +
-  '// Incoming vertex attributes\n' +
-  'attribute vec4 uvLifeTimeFrameStart; // uv, lifeTime, frameStart\n' +
-  'attribute vec4 positionStartTime;    // position.xyz, startTime\n' +
-  'attribute vec4 velocityStartSize;    // velocity.xyz, startSize\n' +
-  'attribute vec4 accelerationEndSize;  // acceleration.xyz, endSize\n' +
-  'attribute vec4 spinStartSpinSpeed;   // spinStart.x, spinSpeed.y\n' +
-  'attribute vec4 orientation;          // orientation quaternion\n' +
-  'attribute vec4 colorMult;            // multiplies color and ramp textures\n' +
-  '\n' +
-  '// Outgoing variables to fragment shader\n' +
-  'varying vec2 outputTexcoord;\n' +
-  'varying float outputPercentLife;\n' +
-  'varying vec4 outputColorMult;\n' +
-  '\n' +
-  'void main() {\n' +
-  '  vec2 uv = uvLifeTimeFrameStart.xy;\n' +
-  '  float lifeTime = uvLifeTimeFrameStart.z;\n' +
-  '  float frameStart = uvLifeTimeFrameStart.w;\n' +
-  '  vec3 position = positionStartTime.xyz;\n' +
-  '  float startTime = positionStartTime.w;\n' +
-  '  vec3 velocity = (world * vec4(velocityStartSize.xyz,\n' +
-  '                                0.)).xyz + worldVelocity;\n' +
-  '  float startSize = velocityStartSize.w;\n' +
-  '  vec3 acceleration = (world * vec4(accelerationEndSize.xyz,\n' +
-  '                                    0)).xyz + worldAcceleration;\n' +
-  '  float endSize = accelerationEndSize.w;\n' +
-  '  float spinStart = spinStartSpinSpeed.x;\n' +
-  '  float spinSpeed = spinStartSpinSpeed.y;\n' +
-  '\n' +
-  '  float localTime = mod((time - timeOffset - startTime), timeRange);\n' +
-  '  float percentLife = localTime / lifeTime;\n' +
-  '\n' +
-  '  float frame = mod(floor(localTime / frameDuration + frameStart),\n' +
-  '                    numFrames);\n' +
-  '  float uOffset = frame / numFrames;\n' +
-  '  float u = uOffset + (uv.x + 0.5) * (1. / numFrames);\n' +
-  '\n' +
-  '  outputTexcoord = vec2(u, uv.y + 0.5);\n' +
-  '  outputColorMult = colorMult;\n' +
-  '\n' +
-  '  float size = mix(startSize, endSize, percentLife);\n' +
-  '  size = (percentLife < 0. || percentLife > 1.) ? 0. : size;\n' +
-  '  float s = sin(spinStart + spinSpeed * localTime);\n' +
-  '  float c = cos(spinStart + spinSpeed * localTime);\n' +
-  '\n' +
-  '  vec4 rotatedPoint = vec4((uv.x * c + uv.y * s) * size, 0., \n' +
-  '                           (uv.x * s - uv.y * c) * size, 1.);\n' +
-  '  vec3 center = velocity * localTime +\n' +
-  '                acceleration * localTime * localTime + \n' +
-  '                position;\n' +
-  '\n' +
-  '  vec4 q2 = orientation + orientation;\n' +
-  '  vec4 qx = orientation.xxxw * q2.xyzx;\n' +
-  '  vec4 qy = orientation.xyyw * q2.xyzy;\n' +
-  '  vec4 qz = orientation.xxzw * q2.xxzz;\n' +
-  '\n' +
-  '  mat4 localMatrix = mat4(\n' +
-  '      (1.0 - qy.y) - qz.z, \n' +
-  '      qx.y + qz.w, \n' +
-  '      qx.z - qy.w,\n' +
-  '      0,\n' +
-  '\n' +
-  '      qx.y - qz.w, \n' +
-  '      (1.0 - qx.x) - qz.z, \n' +
-  '      qy.z + qx.w,\n' +
-  '      0,\n' +
-  '\n' +
-  '      qx.z + qy.w, \n' +
-  '      qy.z - qx.w, \n' +
-  '      (1.0 - qx.x) - qy.y,\n' +
-  '      0,\n' +
-  '\n' +
-  '      center.x, center.y, center.z, 1);\n' +
-  '  rotatedPoint = localMatrix * rotatedPoint;\n' +
-  '  outputPercentLife = percentLife;\n' +
-  '  gl_Position = viewProjection * world * rotatedPoint;\n' +
-  '}\n',
+  "uniform mat4 viewProjection;\n" +
+    "uniform mat4 world;\n" +
+    "uniform vec3 worldVelocity;\n" +
+    "uniform vec3 worldAcceleration;\n" +
+    "uniform float timeRange;\n" +
+    "uniform float time;\n" +
+    "uniform float timeOffset;\n" +
+    "uniform float frameDuration;\n" +
+    "uniform float numFrames;\n" +
+    "\n" +
+    "// Incoming vertex attributes\n" +
+    "attribute vec4 uvLifeTimeFrameStart; // uv, lifeTime, frameStart\n" +
+    "attribute vec4 positionStartTime;    // position.xyz, startTime\n" +
+    "attribute vec4 velocityStartSize;    // velocity.xyz, startSize\n" +
+    "attribute vec4 accelerationEndSize;  // acceleration.xyz, endSize\n" +
+    "attribute vec4 spinStartSpinSpeed;   // spinStart.x, spinSpeed.y\n" +
+    "attribute vec4 orientation;          // orientation quaternion\n" +
+    "attribute vec4 colorMult;            // multiplies color and ramp textures\n" +
+    "\n" +
+    "// Outgoing variables to fragment shader\n" +
+    "varying vec2 outputTexcoord;\n" +
+    "varying float outputPercentLife;\n" +
+    "varying vec4 outputColorMult;\n" +
+    "\n" +
+    "void main() {\n" +
+    "  vec2 uv = uvLifeTimeFrameStart.xy;\n" +
+    "  float lifeTime = uvLifeTimeFrameStart.z;\n" +
+    "  float frameStart = uvLifeTimeFrameStart.w;\n" +
+    "  vec3 position = positionStartTime.xyz;\n" +
+    "  float startTime = positionStartTime.w;\n" +
+    "  vec3 velocity = (world * vec4(velocityStartSize.xyz,\n" +
+    "                                0.)).xyz + worldVelocity;\n" +
+    "  float startSize = velocityStartSize.w;\n" +
+    "  vec3 acceleration = (world * vec4(accelerationEndSize.xyz,\n" +
+    "                                    0)).xyz + worldAcceleration;\n" +
+    "  float endSize = accelerationEndSize.w;\n" +
+    "  float spinStart = spinStartSpinSpeed.x;\n" +
+    "  float spinSpeed = spinStartSpinSpeed.y;\n" +
+    "\n" +
+    "  float localTime = mod((time - timeOffset - startTime), timeRange);\n" +
+    "  float percentLife = localTime / lifeTime;\n" +
+    "\n" +
+    "  float frame = mod(floor(localTime / frameDuration + frameStart),\n" +
+    "                    numFrames);\n" +
+    "  float uOffset = frame / numFrames;\n" +
+    "  float u = uOffset + (uv.x + 0.5) * (1. / numFrames);\n" +
+    "\n" +
+    "  outputTexcoord = vec2(u, uv.y + 0.5);\n" +
+    "  outputColorMult = colorMult;\n" +
+    "\n" +
+    "  float size = mix(startSize, endSize, percentLife);\n" +
+    "  size = (percentLife < 0. || percentLife > 1.) ? 0. : size;\n" +
+    "  float s = sin(spinStart + spinSpeed * localTime);\n" +
+    "  float c = cos(spinStart + spinSpeed * localTime);\n" +
+    "\n" +
+    "  vec4 rotatedPoint = vec4((uv.x * c + uv.y * s) * size, 0., \n" +
+    "                           (uv.x * s - uv.y * c) * size, 1.);\n" +
+    "  vec3 center = velocity * localTime +\n" +
+    "                acceleration * localTime * localTime + \n" +
+    "                position;\n" +
+    "\n" +
+    "  vec4 q2 = orientation + orientation;\n" +
+    "  vec4 qx = orientation.xxxw * q2.xyzx;\n" +
+    "  vec4 qy = orientation.xyyw * q2.xyzy;\n" +
+    "  vec4 qz = orientation.xxzw * q2.xxzz;\n" +
+    "\n" +
+    "  mat4 localMatrix = mat4(\n" +
+    "      (1.0 - qy.y) - qz.z, \n" +
+    "      qx.y + qz.w, \n" +
+    "      qx.z - qy.w,\n" +
+    "      0,\n" +
+    "\n" +
+    "      qx.y - qz.w, \n" +
+    "      (1.0 - qx.x) - qz.z, \n" +
+    "      qy.z + qx.w,\n" +
+    "      0,\n" +
+    "\n" +
+    "      qx.z + qy.w, \n" +
+    "      qy.z - qx.w, \n" +
+    "      (1.0 - qx.x) - qy.y,\n" +
+    "      0,\n" +
+    "\n" +
+    "      center.x, center.y, center.z, 1);\n" +
+    "  rotatedPoint = localMatrix * rotatedPoint;\n" +
+    "  outputPercentLife = percentLife;\n" +
+    "  gl_Position = viewProjection * world * rotatedPoint;\n" +
+    "}\n",
 
   // 2D (billboarded) vertex shader
-  'uniform mat4 viewProjection;\n' +
-  'uniform mat4 world;\n' +
-  'uniform mat4 viewInverse;\n' +
-  'uniform vec3 worldVelocity;\n' +
-  'uniform vec3 worldAcceleration;\n' +
-  'uniform float timeRange;\n' +
-  'uniform float time;\n' +
-  'uniform float timeOffset;\n' +
-  'uniform float frameDuration;\n' +
-  'uniform float numFrames;\n' +
-  '\n' +
-  '// Incoming vertex attributes\n' +
-  'attribute vec4 uvLifeTimeFrameStart; // uv, lifeTime, frameStart\n' +
-  'attribute vec4 positionStartTime;    // position.xyz, startTime\n' +
-  'attribute vec4 velocityStartSize;    // velocity.xyz, startSize\n' +
-  'attribute vec4 accelerationEndSize;  // acceleration.xyz, endSize\n' +
-  'attribute vec4 spinStartSpinSpeed;   // spinStart.x, spinSpeed.y\n' +
-  'attribute vec4 colorMult;            // multiplies color and ramp textures\n' +
-  '\n' +
-  '// Outgoing variables to fragment shader\n' +
-  'varying vec2 outputTexcoord;\n' +
-  'varying float outputPercentLife;\n' +
-  'varying vec4 outputColorMult;\n' +
-  '\n' +
-  'void main() {\n' +
-  '  vec2 uv = uvLifeTimeFrameStart.xy;\n' +
-  '  float lifeTime = uvLifeTimeFrameStart.z;\n' +
-  '  float frameStart = uvLifeTimeFrameStart.w;\n' +
-  '  vec3 position = positionStartTime.xyz;\n' +
-//  '  vec3 position = (world * vec4(positionStartTime.xyz, 1.0)).xyz;\n' +
-  '  float startTime = positionStartTime.w;\n' +
-  '  vec3 velocity = (world * vec4(velocityStartSize.xyz,\n' +
-  '                                0.)).xyz + worldVelocity;\n' +
-  '  float startSize = velocityStartSize.w;\n' +
-  '  vec3 acceleration = (world * vec4(accelerationEndSize.xyz,\n' +
-  '                                    0)).xyz + worldAcceleration;\n' +
-  '  float endSize = accelerationEndSize.w;\n' +
-  '  float spinStart = spinStartSpinSpeed.x;\n' +
-  '  float spinSpeed = spinStartSpinSpeed.y;\n' +
-  '\n' +
-  '  float localTime = mod((time - timeOffset - startTime), timeRange);\n' +
-  '  float percentLife = localTime / lifeTime;\n' +
-  '\n' +
-  '  float frame = mod(floor(localTime / frameDuration + frameStart),\n' +
-  '                    numFrames);\n' +
-  '  float uOffset = frame / numFrames;\n' +
-  '  float u = uOffset + (uv.x + 0.5) * (1. / numFrames);\n' +
-  '\n' +
-  '  outputTexcoord = vec2(u, uv.y + 0.5);\n' +
-  '  outputColorMult = colorMult;\n' +
-  '\n' +
-  '  vec3 basisX = viewInverse[0].xyz;\n' +
-  '  vec3 basisZ = viewInverse[1].xyz;\n' +
-  '\n' +
-  '  float size = mix(startSize, endSize, percentLife);\n' +
-  '  size = (percentLife < 0. || percentLife > 1.) ? 0. : size;\n' +
-  '  float s = sin(spinStart + spinSpeed * localTime);\n' +
-  '  float c = cos(spinStart + spinSpeed * localTime);\n' +
-  '\n' +
-  '  vec2 rotatedPoint = vec2(uv.x * c + uv.y * s, \n' +
-  '                           -uv.x * s + uv.y * c);\n' +
-  '  vec3 localPosition = vec3(basisX * rotatedPoint.x +\n' +
-  '                            basisZ * rotatedPoint.y) * size +\n' +
-  '                       velocity * localTime +\n' +
-  '                       acceleration * localTime * localTime + \n' +
-  '                       position;\n' +
-  '\n' +
-  '  outputPercentLife = percentLife;\n' +
-  '  gl_Position = viewProjection * vec4(localPosition + world[3].xyz, 1.);\n' +
-  '}\n',
+  "uniform mat4 viewProjection;\n" +
+    "uniform mat4 world;\n" +
+    "uniform mat4 viewInverse;\n" +
+    "uniform vec3 worldVelocity;\n" +
+    "uniform vec3 worldAcceleration;\n" +
+    "uniform float timeRange;\n" +
+    "uniform float time;\n" +
+    "uniform float timeOffset;\n" +
+    "uniform float frameDuration;\n" +
+    "uniform float numFrames;\n" +
+    "\n" +
+    "// Incoming vertex attributes\n" +
+    "attribute vec4 uvLifeTimeFrameStart; // uv, lifeTime, frameStart\n" +
+    "attribute vec4 positionStartTime;    // position.xyz, startTime\n" +
+    "attribute vec4 velocityStartSize;    // velocity.xyz, startSize\n" +
+    "attribute vec4 accelerationEndSize;  // acceleration.xyz, endSize\n" +
+    "attribute vec4 spinStartSpinSpeed;   // spinStart.x, spinSpeed.y\n" +
+    "attribute vec4 colorMult;            // multiplies color and ramp textures\n" +
+    "\n" +
+    "// Outgoing variables to fragment shader\n" +
+    "varying vec2 outputTexcoord;\n" +
+    "varying float outputPercentLife;\n" +
+    "varying vec4 outputColorMult;\n" +
+    "\n" +
+    "void main() {\n" +
+    "  vec2 uv = uvLifeTimeFrameStart.xy;\n" +
+    "  float lifeTime = uvLifeTimeFrameStart.z;\n" +
+    "  float frameStart = uvLifeTimeFrameStart.w;\n" +
+    "  vec3 position = positionStartTime.xyz;\n" +
+    //  '  vec3 position = (world * vec4(positionStartTime.xyz, 1.0)).xyz;\n' +
+    "  float startTime = positionStartTime.w;\n" +
+    "  vec3 velocity = (world * vec4(velocityStartSize.xyz,\n" +
+    "                                0.)).xyz + worldVelocity;\n" +
+    "  float startSize = velocityStartSize.w;\n" +
+    "  vec3 acceleration = (world * vec4(accelerationEndSize.xyz,\n" +
+    "                                    0)).xyz + worldAcceleration;\n" +
+    "  float endSize = accelerationEndSize.w;\n" +
+    "  float spinStart = spinStartSpinSpeed.x;\n" +
+    "  float spinSpeed = spinStartSpinSpeed.y;\n" +
+    "\n" +
+    "  float localTime = mod((time - timeOffset - startTime), timeRange);\n" +
+    "  float percentLife = localTime / lifeTime;\n" +
+    "\n" +
+    "  float frame = mod(floor(localTime / frameDuration + frameStart),\n" +
+    "                    numFrames);\n" +
+    "  float uOffset = frame / numFrames;\n" +
+    "  float u = uOffset + (uv.x + 0.5) * (1. / numFrames);\n" +
+    "\n" +
+    "  outputTexcoord = vec2(u, uv.y + 0.5);\n" +
+    "  outputColorMult = colorMult;\n" +
+    "\n" +
+    "  vec3 basisX = viewInverse[0].xyz;\n" +
+    "  vec3 basisZ = viewInverse[1].xyz;\n" +
+    "\n" +
+    "  float size = mix(startSize, endSize, percentLife);\n" +
+    "  size = (percentLife < 0. || percentLife > 1.) ? 0. : size;\n" +
+    "  float s = sin(spinStart + spinSpeed * localTime);\n" +
+    "  float c = cos(spinStart + spinSpeed * localTime);\n" +
+    "\n" +
+    "  vec2 rotatedPoint = vec2(uv.x * c + uv.y * s, \n" +
+    "                           -uv.x * s + uv.y * c);\n" +
+    "  vec3 localPosition = vec3(basisX * rotatedPoint.x +\n" +
+    "                            basisZ * rotatedPoint.y) * size +\n" +
+    "                       velocity * localTime +\n" +
+    "                       acceleration * localTime * localTime + \n" +
+    "                       position;\n" +
+    "\n" +
+    "  outputPercentLife = percentLife;\n" +
+    "  gl_Position = viewProjection * vec4(localPosition + world[3].xyz, 1.);\n" +
+    "}\n",
 
   // Fragment shader used by both 2D and 3D vertex shaders
-  'precision mediump float;\n' +
-  'uniform sampler2D rampSampler;\n' +
-  'uniform sampler2D colorSampler;\n' +
-  '\n' +
-  '// Incoming variables from vertex shader\n' +
-  'varying vec2 outputTexcoord;\n' +
-  'varying float outputPercentLife;\n' +
-  'varying vec4 outputColorMult;\n' +
-  '\n' +
-  'void main() {\n' +
-  '  vec4 colorMult = texture2D(rampSampler, \n' +
-  '                             vec2(outputPercentLife, 0.5)) *\n' +
-  '                   outputColorMult;\n' +
-  '  gl_FragColor = texture2D(colorSampler, outputTexcoord) * colorMult;\n' +
-  // For debugging: requires setup of some uniforms and vertex
-  // attributes to be commented out to avoid GL errors
-  //  '  gl_FragColor = vec4(1., 0., 0., 1.);\n' +
-  '}\n'
+  "precision mediump float;\n" +
+    "uniform sampler2D rampSampler;\n" +
+    "uniform sampler2D colorSampler;\n" +
+    "\n" +
+    "// Incoming variables from vertex shader\n" +
+    "varying vec2 outputTexcoord;\n" +
+    "varying float outputPercentLife;\n" +
+    "varying vec4 outputColorMult;\n" +
+    "\n" +
+    "void main() {\n" +
+    "  vec4 colorMult = texture2D(rampSampler, \n" +
+    "                             vec2(outputPercentLife, 0.5)) *\n" +
+    "                   outputColorMult;\n" +
+    "  gl_FragColor = texture2D(colorSampler, outputTexcoord) * colorMult;\n" +
+    // For debugging: requires setup of some uniforms and vertex
+    // attributes to be commented out to avoid GL errors
+    //  '  gl_FragColor = vec4(1., 0., 0., 1.);\n' +
+    "}\n",
 ];
 
 /**
@@ -256,7 +256,8 @@ tdl.particles.CORNERS_ = [
   [-0.5, -0.5],
   [+0.5, -0.5],
   [+0.5, +0.5],
-  [-0.5, +0.5]];
+  [-0.5, +0.5],
+];
 
 /**
  * Creates a particle system.
@@ -273,97 +274,121 @@ tdl.particles.CORNERS_ = [
  *     a random number between 0.0 and 1.0. This allows you to pass in a
  *     pseudo random function if you need particles that are reproducible.
  */
-tdl.particles.ParticleSystem = function(gl,
-                                          opt_clock,
-                                          opt_randomFunction,
-                                          opt_vrSupported) {
+tdl.particles.ParticleSystem = function (
+  gl,
+  opt_clock,
+  opt_randomFunction,
+  opt_vrSupported,
+) {
   this.gl = gl;
 
   // Entities which can be drawn -- emitters or OneShots
   this.drawables_ = [];
 
   var shaders = [];
-  shaders.push(new tdl.shader.Shader(gl,
-                                     tdl.particles.SHADER_STRINGS[0],
-                                     tdl.particles.SHADER_STRINGS[2]));
-  shaders.push(new tdl.shader.Shader(gl,
-                                     tdl.particles.SHADER_STRINGS[1],
-                                     tdl.particles.SHADER_STRINGS[2]));
+  shaders.push(
+    new tdl.shader.Shader(
+      gl,
+      tdl.particles.SHADER_STRINGS[0],
+      tdl.particles.SHADER_STRINGS[2],
+    ),
+  );
+  shaders.push(
+    new tdl.shader.Shader(
+      gl,
+      tdl.particles.SHADER_STRINGS[1],
+      tdl.particles.SHADER_STRINGS[2],
+    ),
+  );
 
-  var makeShaderSourceMultiview = function(shaderType, shaderString) {
+  var makeShaderSourceMultiview = function (shaderType, shaderString) {
     // Replace shader code to get ESSL3 shader code and enable multiview (huge hack, do not do this at home kids)
     var prefix = ["#version 300 es"];
     prefix.push("#extension GL_OVR_multiview2 : require");
-    if (shaderType == 'vs') {
+    if (shaderType == "vs") {
       prefix.push("layout(num_views = 2) in;");
     } else {
       prefix.push("out mediump vec4 my_FragColor;");
     }
-    prefix.push('\n');
-    shaderString = prefix.join('\n') + shaderString;
+    prefix.push("\n");
+    shaderString = prefix.join("\n") + shaderString;
 
-    var addToMain = '';
-    if (shaderString.indexOf('uniform mat4 viewProjection;') >= 0) {
-      shaderString = shaderString.replace('uniform mat4 viewProjection;', 'uniform mat4 viewProjectionArray[2];\nmat4 viewProjection;');
-      addToMain += 'viewProjection = viewProjectionArray[gl_ViewID_OVR];';
+    var addToMain = "";
+    if (shaderString.indexOf("uniform mat4 viewProjection;") >= 0) {
+      shaderString = shaderString.replace(
+        "uniform mat4 viewProjection;",
+        "uniform mat4 viewProjectionArray[2];\nmat4 viewProjection;",
+      );
+      addToMain += "viewProjection = viewProjectionArray[gl_ViewID_OVR];";
     }
 
     if (addToMain.length > 0) {
-      shaderString = shaderString.replace('void main() {', 'void main() {\n' + addToMain);
+      shaderString = shaderString.replace(
+        "void main() {",
+        "void main() {\n" + addToMain,
+      );
     }
 
-    if (shaderType == 'vs') {
-      shaderString = shaderString.replace(/attribute/g, 'in');
-      shaderString = shaderString.replace(/varying/g, 'out');
+    if (shaderType == "vs") {
+      shaderString = shaderString.replace(/attribute/g, "in");
+      shaderString = shaderString.replace(/varying/g, "out");
     } else {
-      shaderString = shaderString.replace(/varying/g, 'in');
-      shaderString = shaderString.replace(/gl_FragColor/g, 'my_FragColor');
+      shaderString = shaderString.replace(/varying/g, "in");
+      shaderString = shaderString.replace(/gl_FragColor/g, "my_FragColor");
     }
 
-    shaderString = shaderString.replace(/textureCube\(/g, 'texture(');
-    shaderString = shaderString.replace(/texture2D\(/g, 'texture(');
+    shaderString = shaderString.replace(/textureCube\(/g, "texture(");
+    shaderString = shaderString.replace(/texture2D\(/g, "texture(");
     return shaderString;
   };
 
   var multiviewShaders = [];
-  if (opt_vrSupported && gl.getExtension('OVR_multiview2')) {
-    multiviewShaders.push(new tdl.shader.Shader(gl,
-                                                makeShaderSourceMultiview('vs', tdl.particles.SHADER_STRINGS[0]),
-                                                makeShaderSourceMultiview('fs', tdl.particles.SHADER_STRINGS[2])));
-    multiviewShaders.push(new tdl.shader.Shader(gl,
-                                                makeShaderSourceMultiview('vs', tdl.particles.SHADER_STRINGS[1]),
-                                                makeShaderSourceMultiview('fs', tdl.particles.SHADER_STRINGS[2])));
+  if (opt_vrSupported && gl.getExtension("OVR_multiview2")) {
+    multiviewShaders.push(
+      new tdl.shader.Shader(
+        gl,
+        makeShaderSourceMultiview("vs", tdl.particles.SHADER_STRINGS[0]),
+        makeShaderSourceMultiview("fs", tdl.particles.SHADER_STRINGS[2]),
+      ),
+    );
+    multiviewShaders.push(
+      new tdl.shader.Shader(
+        gl,
+        makeShaderSourceMultiview("vs", tdl.particles.SHADER_STRINGS[1]),
+        makeShaderSourceMultiview("fs", tdl.particles.SHADER_STRINGS[2]),
+      ),
+    );
   }
 
   var blendFuncs = {};
   blendFuncs[tdl.particles.ParticleStateIds.BLEND] = {
-    src:  gl.SRC_ALPHA,
-    dest: gl.ONE_MINUS_SRC_ALPHA
+    src: gl.SRC_ALPHA,
+    dest: gl.ONE_MINUS_SRC_ALPHA,
   };
   blendFuncs[tdl.particles.ParticleStateIds.ADD] = {
-    src:  gl.SRC_ALPHA,
-    dest: gl.ONE
+    src: gl.SRC_ALPHA,
+    dest: gl.ONE,
   };
   blendFuncs[tdl.particles.ParticleStateIds.BLEND_PREMULTIPLY] = {
-    src:  gl.ONE,
-    dest: gl.ONE_MINUS_SRC_ALPHA
+    src: gl.ONE,
+    dest: gl.ONE_MINUS_SRC_ALPHA,
   };
   blendFuncs[tdl.particles.ParticleStateIds.BLEND_NO_ALPHA] = {
-    src:  gl.SRC_COLOR,
-    dest: gl.ONE_MINUS_SRC_COLOR
+    src: gl.SRC_COLOR,
+    dest: gl.ONE_MINUS_SRC_COLOR,
   };
   blendFuncs[tdl.particles.ParticleStateIds.SUBTRACT] = {
-    src:  gl.SRC_ALPHA,
+    src: gl.SRC_ALPHA,
     dest: gl.ONE_MINUS_SRC_ALPHA,
-    eq:   gl.FUNC_REVERSE_SUBTRACT
+    eq: gl.FUNC_REVERSE_SUBTRACT,
   };
   blendFuncs[tdl.particles.ParticleStateIds.INVERSE] = {
-    src:  gl.ONE_MINUS_DST_COLOR,
-    dest: gl.ONE_MINUS_SRC_COLOR
+    src: gl.ONE_MINUS_DST_COLOR,
+    dest: gl.ONE_MINUS_SRC_COLOR,
   };
   this.blendFuncs_ = blendFuncs;
 
-  var pixelBase = [0, 0.20, 0.70, 1, 0.70, 0.20, 0, 0];
+  var pixelBase = [0, 0.2, 0.7, 1, 0.7, 0.2, 0, 0];
   var pixels = [];
   for (var yy = 0; yy < 8; ++yy) {
     for (var xx = 0; xx < 8; ++xx) {
@@ -374,8 +399,11 @@ tdl.particles.ParticleSystem = function(gl,
   var colorTexture = this.createTextureFromFloats(8, 8, pixels);
   // Note difference in texture size from O3D sample to avoid NPOT
   // texture creation
-  var rampTexture = this.createTextureFromFloats(2, 1, [1, 1, 1, 1,
-                                                        1, 1, 1, 0]);
+  var rampTexture = this.createTextureFromFloats(
+    2,
+    1,
+    [1, 1, 1, 1, 1, 1, 1, 0],
+  );
 
   this.now_ = new Date();
   this.timeBase_ = new Date();
@@ -385,9 +413,11 @@ tdl.particles.ParticleSystem = function(gl,
     this.timeSource_ = tdl.particles.createDefaultClock_(this);
   }
 
-  this.randomFunction_ = opt_randomFunction || function() {
-        return Math.random();
-      };
+  this.randomFunction_ =
+    opt_randomFunction ||
+    function () {
+      return Math.random();
+    };
 
   // This FloatArray is used to store a single particle's data
   // in the VBO. As of this writing there wasn't a way to store less
@@ -415,19 +445,24 @@ tdl.particles.ParticleSystem = function(gl,
   this.defaultRampTexture = rampTexture;
 };
 
-tdl.particles.createDefaultClock_ = function(particleSystem) {
-  return function() {
+tdl.particles.createDefaultClock_ = function (particleSystem) {
+  return function () {
     var now = particleSystem.now_;
     var base = particleSystem.timeBase_;
     return (now.getTime() - base.getTime()) / 1000.0;
-  }
-}
+  };
+};
 
 /**
  * Creates an OpenGL texture from an array of floating point values.
  * @private
  */
-tdl.particles.ParticleSystem.prototype.createTextureFromFloats = function(width, height, pixels, opt_texture) {
+tdl.particles.ParticleSystem.prototype.createTextureFromFloats = function (
+  width,
+  height,
+  pixels,
+  opt_texture,
+) {
   var gl = this.gl;
   var texture = null;
   if (opt_texture != null) {
@@ -447,12 +482,22 @@ tdl.particles.ParticleSystem.prototype.createTextureFromFloats = function(width,
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   var data = new Uint8Array(pixels.length);
   for (var i = 0; i < pixels.length; i++) {
-    var t = pixels[i] * 255.;
+    var t = pixels[i] * 255;
     data[i] = t;
   }
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    width,
+    height,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    data,
+  );
   return texture;
-}
+};
 
 /**
  * A ParticleSpec specifies how to emit particles.
@@ -490,7 +535,7 @@ tdl.particles.ParticleSystem.prototype.createTextureFromFloats = function(width,
  *
  * @constructor
  */
-tdl.particles.ParticleSpec = function() {
+tdl.particles.ParticleSpec = function () {
   /**
    * The number of particles to emit.
    * @type {number}
@@ -680,8 +725,10 @@ tdl.particles.ParticleSpec = function() {
  *     the emitter.
  * @return {!tdl.particles.ParticleEmitter} The new emitter.
  */
-tdl.particles.ParticleSystem.prototype.createParticleEmitter =
-    function(opt_texture, opt_clock) {
+tdl.particles.ParticleSystem.prototype.createParticleEmitter = function (
+  opt_texture,
+  opt_clock,
+) {
   var emitter = new tdl.particles.ParticleEmitter(this, opt_texture, opt_clock);
   this.drawables_.push(emitter);
   return emitter;
@@ -706,19 +753,21 @@ tdl.particles.ParticleSystem.prototype.createParticleEmitter =
  *     the emitter.
  * @return {!tdl.particles.Trail} A Trail object.
  */
-tdl.particles.ParticleSystem.prototype.createTrail = function(
+tdl.particles.ParticleSystem.prototype.createTrail = function (
+  maxParticles,
+  parameters,
+  opt_texture,
+  opt_perParticleParamSetter,
+  opt_clock,
+) {
+  var trail = new tdl.particles.Trail(
+    this,
     maxParticles,
     parameters,
     opt_texture,
     opt_perParticleParamSetter,
-    opt_clock) {
-  var trail = new tdl.particles.Trail(
-      this,
-      maxParticles,
-      parameters,
-      opt_texture,
-      opt_perParticleParamSetter,
-      opt_clock);
+    opt_clock,
+  );
   this.drawables_.push(trail);
   return trail;
 };
@@ -735,7 +784,12 @@ tdl.particles.ParticleSystem.prototype.createTrail = function(
  * @param {!Matrix4x4} viewInverse The viewInverse matrix.
  * @param {bool} useMultiview Set to true when multiview rendering is in use.
  */
-tdl.particles.ParticleSystem.prototype.draw = function(viewProjection, world, viewInverse, useMultiview) {
+tdl.particles.ParticleSystem.prototype.draw = function (
+  viewProjection,
+  world,
+  viewInverse,
+  useMultiview,
+) {
   // Update notion of current time
   this.now_ = new Date();
   // Set up global state
@@ -748,28 +802,18 @@ tdl.particles.ParticleSystem.prototype.draw = function(viewProjection, world, vi
   var shader = shaders[0];
   shader.bind();
   if (useMultiview) {
-    gl.uniformMatrix4fv(shader.viewProjectionArrayLoc,
-                        false,
-                        viewProjection);
+    gl.uniformMatrix4fv(shader.viewProjectionArrayLoc, false, viewProjection);
   } else {
-    gl.uniformMatrix4fv(shader.viewProjectionLoc,
-                        false,
-                        viewProjection);
+    gl.uniformMatrix4fv(shader.viewProjectionLoc, false, viewProjection);
   }
   var shader = shaders[1];
   shader.bind();
   if (useMultiview) {
-    gl.uniformMatrix4fv(shader.viewProjectionArrayLoc,
-                        false,
-                        viewProjection);
+    gl.uniformMatrix4fv(shader.viewProjectionArrayLoc, false, viewProjection);
   } else {
-    gl.uniformMatrix4fv(shader.viewProjectionLoc,
-                        false,
-                        viewProjection);
+    gl.uniformMatrix4fv(shader.viewProjectionLoc, false, viewProjection);
   }
-  gl.uniformMatrix4fv(shader.viewInverseLoc,
-                      false,
-                      viewInverse);
+  gl.uniformMatrix4fv(shader.viewInverseLoc, false, viewInverse);
   // Draw all emitters
   // FIXME: this is missing O3D's z-sorting logic from the
   // zOrderedDrawList
@@ -803,9 +847,11 @@ tdl.particles.LAST_IDX = 28;
  A function, returning
  *     seconds elapsed, to be the time source for the emitter.
  */
-tdl.particles.ParticleEmitter = function(particleSystem,
-                                           opt_texture,
-                                           opt_clock) {
+tdl.particles.ParticleEmitter = function (
+  particleSystem,
+  opt_texture,
+  opt_clock,
+) {
   opt_clock = opt_clock || particleSystem.timeSource_;
 
   this.gl = particleSystem.gl;
@@ -861,7 +907,7 @@ tdl.particles.ParticleEmitter = function(particleSystem,
  * Sets the world translation for this ParticleEmitter.
  * @param {!tdl.math.Vector3} translation The translation for this emitter.
  */
-tdl.particles.ParticleEmitter.prototype.setTranslation = function(x, y, z) {
+tdl.particles.ParticleEmitter.prototype.setTranslation = function (x, y, z) {
   this.translation_[0] = x;
   this.translation_[1] = y;
   this.translation_[2] = z;
@@ -872,7 +918,7 @@ tdl.particles.ParticleEmitter.prototype.setTranslation = function(x, y, z) {
  * You can use this to set the emitter to draw with BLEND, ADD, SUBTRACT, etc.
  * @param {ParticleStateIds} stateId The state you want.
  */
-tdl.particles.ParticleEmitter.prototype.setState = function(stateId) {
+tdl.particles.ParticleEmitter.prototype.setState = function (stateId) {
   this.blendFunc_ = this.particleSystem.blendFuncs_[stateId];
 };
 
@@ -895,10 +941,10 @@ tdl.particles.ParticleEmitter.prototype.setState = function(stateId) {
  * @param {!Array.<number>} colorRamp An array of color values in
  *     the form RGBA.
  */
-tdl.particles.ParticleEmitter.prototype.setColorRamp = function(colorRamp) {
+tdl.particles.ParticleEmitter.prototype.setColorRamp = function (colorRamp) {
   var width = colorRamp.length / 4;
   if (width % 1 != 0) {
-    throw 'colorRamp must have multiple of 4 entries';
+    throw "colorRamp must have multiple of 4 entries";
   }
 
   var gl = this.gl;
@@ -907,23 +953,29 @@ tdl.particles.ParticleEmitter.prototype.setColorRamp = function(colorRamp) {
     this.rampTexture_ = null;
   }
 
-  this.rampTexture_ = this.particleSystem.createTextureFromFloats(width, 1, colorRamp, this.rampTexture_);
+  this.rampTexture_ = this.particleSystem.createTextureFromFloats(
+    width,
+    1,
+    colorRamp,
+    this.rampTexture_,
+  );
 };
 
 /**
  * Validates and adds missing particle parameters.
  * @param {!tdl.particles.ParticleSpec} parameters The parameters to validate.
  */
-tdl.particles.ParticleEmitter.prototype.validateParameters = function(
-    parameters) {
+tdl.particles.ParticleEmitter.prototype.validateParameters = function (
+  parameters,
+) {
   var defaults = new tdl.particles.ParticleSpec();
   for (var key in parameters) {
-    if (typeof defaults[key] === 'undefined') {
+    if (typeof defaults[key] === "undefined") {
       throw 'unknown particle parameter "' + key + '"';
     }
   }
   for (var key in defaults) {
-    if (typeof parameters[key] === 'undefined') {
+    if (typeof parameters[key] === "undefined") {
       parameters[key] = defaults[key];
     }
   }
@@ -943,11 +995,12 @@ tdl.particles.ParticleEmitter.prototype.validateParameters = function(
  *     20 this value will be 0 to 19. The ParticleSpec is a spec for this
  *     particular particle. You can set any per particle value before returning.
  */
-tdl.particles.ParticleEmitter.prototype.createParticles_ = function(
-    firstParticleIndex,
-    numParticles,
-    parameters,
-    opt_perParticleParamSetter) {
+tdl.particles.ParticleEmitter.prototype.createParticles_ = function (
+  firstParticleIndex,
+  numParticles,
+  parameters,
+  opt_perParticleParamSetter,
+) {
   var singleParticleArray = this.particleSystem.singleParticleArray_;
   var gl = this.gl;
 
@@ -956,21 +1009,25 @@ tdl.particles.ParticleEmitter.prototype.createParticles_ = function(
   this.timeRange_ = parameters.timeRange;
   this.numFrames_ = parameters.numFrames;
   this.frameDuration_ = parameters.frameDuration;
-  this.worldVelocity_ = [ parameters.worldVelocity[0],
-                          parameters.worldVelocity[1],
-                          parameters.worldVelocity[2] ];
-  this.worldAcceleration_ = [ parameters.worldAcceleration[0],
-                              parameters.worldAcceleration[1],
-                              parameters.worldAcceleration[2] ];
+  this.worldVelocity_ = [
+    parameters.worldVelocity[0],
+    parameters.worldVelocity[1],
+    parameters.worldVelocity[2],
+  ];
+  this.worldAcceleration_ = [
+    parameters.worldAcceleration[0],
+    parameters.worldAcceleration[1],
+    parameters.worldAcceleration[2],
+  ];
 
   var random = this.particleSystem.randomFunction_;
 
-  var plusMinus = function(range) {
+  var plusMinus = function (range) {
     return (random() - 0.5) * range * 2;
   };
 
   // TODO: change to not allocate.
-  var plusMinusVector = function(range) {
+  var plusMinusVector = function (range) {
     var v = [];
     for (var ii = 0; ii < range.length; ++ii) {
       v.push(plusMinus(range[ii]));
@@ -985,25 +1042,34 @@ tdl.particles.ParticleEmitter.prototype.createParticles_ = function(
       opt_perParticleParamSetter(ii, parameters);
     }
     var pLifeTime = parameters.lifeTime;
-    var pStartTime = (parameters.startTime === null) ?
-        (ii * parameters.lifeTime / numParticles) : parameters.startTime;
+    var pStartTime =
+      parameters.startTime === null
+        ? (ii * parameters.lifeTime) / numParticles
+        : parameters.startTime;
     var pFrameStart =
-        parameters.frameStart + plusMinus(parameters.frameStartRange);
+      parameters.frameStart + plusMinus(parameters.frameStartRange);
     var pPosition = tdl.math.addVector(
-        parameters.position, plusMinusVector(parameters.positionRange));
+      parameters.position,
+      plusMinusVector(parameters.positionRange),
+    );
     var pVelocity = tdl.math.addVector(
-        parameters.velocity, plusMinusVector(parameters.velocityRange));
+      parameters.velocity,
+      plusMinusVector(parameters.velocityRange),
+    );
     var pAcceleration = tdl.math.addVector(
-        parameters.acceleration,
-        plusMinusVector(parameters.accelerationRange));
+      parameters.acceleration,
+      plusMinusVector(parameters.accelerationRange),
+    );
     var pColorMult = tdl.math.addVector(
-        parameters.colorMult, plusMinusVector(parameters.colorMultRange));
+      parameters.colorMult,
+      plusMinusVector(parameters.colorMultRange),
+    );
     var pSpinStart =
-        parameters.spinStart + plusMinus(parameters.spinStartRange);
+      parameters.spinStart + plusMinus(parameters.spinStartRange);
     var pSpinSpeed =
-        parameters.spinSpeed + plusMinus(parameters.spinSpeedRange);
+      parameters.spinSpeed + plusMinus(parameters.spinSpeedRange);
     var pStartSize =
-        parameters.startSize + plusMinus(parameters.startSizeRange);
+      parameters.startSize + plusMinus(parameters.startSizeRange);
     var pEndSize = parameters.endSize + plusMinus(parameters.endSizeRange);
     var pOrientation = parameters.orientation;
 
@@ -1014,47 +1080,81 @@ tdl.particles.ParticleEmitter.prototype.createParticles_ = function(
       var offset2 = offset0 + 2;
       var offset3 = offset0 + 3;
 
-      singleParticleArray[tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset0] = tdl.particles.CORNERS_[jj][0];
-      singleParticleArray[tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset1] = tdl.particles.CORNERS_[jj][1];
-      singleParticleArray[tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset2] = pLifeTime;
-      singleParticleArray[tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset3] = pFrameStart;
+      singleParticleArray[
+        tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset0
+      ] = tdl.particles.CORNERS_[jj][0];
+      singleParticleArray[
+        tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset1
+      ] = tdl.particles.CORNERS_[jj][1];
+      singleParticleArray[
+        tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset2
+      ] = pLifeTime;
+      singleParticleArray[
+        tdl.particles.UV_LIFE_TIME_FRAME_START_IDX + offset3
+      ] = pFrameStart;
 
-      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset0] = pPosition[0];
-      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset1] = pPosition[1];
-      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset2] = pPosition[2];
-      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset3] = pStartTime;
+      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset0] =
+        pPosition[0];
+      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset1] =
+        pPosition[1];
+      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset2] =
+        pPosition[2];
+      singleParticleArray[tdl.particles.POSITION_START_TIME_IDX + offset3] =
+        pStartTime;
 
-      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset0] = pVelocity[0];
-      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset1] = pVelocity[1];
-      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset2] = pVelocity[2];
-      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset3] = pStartSize;
+      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset0] =
+        pVelocity[0];
+      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset1] =
+        pVelocity[1];
+      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset2] =
+        pVelocity[2];
+      singleParticleArray[tdl.particles.VELOCITY_START_SIZE_IDX + offset3] =
+        pStartSize;
 
-      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset0] = pAcceleration[0];
-      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset1] = pAcceleration[1];
-      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset2] = pAcceleration[2];
-      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset3] = pEndSize;
+      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset0] =
+        pAcceleration[0];
+      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset1] =
+        pAcceleration[1];
+      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset2] =
+        pAcceleration[2];
+      singleParticleArray[tdl.particles.ACCELERATION_END_SIZE_IDX + offset3] =
+        pEndSize;
 
-      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset0] = pSpinStart;
-      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset1] = pSpinSpeed;
-      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset2] = 0;
-      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset3] = 0;
+      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset0] =
+        pSpinStart;
+      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset1] =
+        pSpinSpeed;
+      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset2] =
+        0;
+      singleParticleArray[tdl.particles.SPIN_START_SPIN_SPEED_IDX + offset3] =
+        0;
 
-      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset0] = pOrientation[0];
-      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset1] = pOrientation[1];
-      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset2] = pOrientation[2];
-      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset3] = pOrientation[3];
+      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset0] =
+        pOrientation[0];
+      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset1] =
+        pOrientation[1];
+      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset2] =
+        pOrientation[2];
+      singleParticleArray[tdl.particles.ORIENTATION_IDX + offset3] =
+        pOrientation[3];
 
-      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset0] = pColorMult[0];
-      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset1] = pColorMult[1];
-      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset2] = pColorMult[2];
-      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset3] = pColorMult[3];
+      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset0] =
+        pColorMult[0];
+      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset1] =
+        pColorMult[1];
+      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset2] =
+        pColorMult[2];
+      singleParticleArray[tdl.particles.COLOR_MULT_IDX + offset3] =
+        pColorMult[3];
     }
 
     // Upload this particle's information into the VBO.
     // FIXME: probably want to make fewer bufferSubData calls
-    gl.bufferSubData(gl.ARRAY_BUFFER,
-                       singleParticleArray.byteLength * (ii + firstParticleIndex),
-                       singleParticleArray);
+    gl.bufferSubData(
+      gl.ARRAY_BUFFER,
+      singleParticleArray.byteLength * (ii + firstParticleIndex),
+      singleParticleArray,
+    );
   }
 
   this.createdParticles_ = true;
@@ -1065,14 +1165,17 @@ tdl.particles.ParticleEmitter.prototype.createParticles_ = function(
  * @private
  * @param {number} numParticles Number of particles to allocate.
  */
-tdl.particles.ParticleEmitter.prototype.allocateParticles_ = function(
-    numParticles) {
+tdl.particles.ParticleEmitter.prototype.allocateParticles_ = function (
+  numParticles,
+) {
   if (this.numParticles_ != numParticles) {
     var gl = this.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.particleBuffer_);
-    gl.bufferData(gl.ARRAY_BUFFER,
-                  numParticles * this.particleSystem.singleParticleArray_.byteLength,
-                  gl.DYNAMIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      numParticles * this.particleSystem.singleParticleArray_.byteLength,
+      gl.DYNAMIC_DRAW,
+    );
     var numIndices = 6 * numParticles;
     if (numIndices > 65536) {
       throw "can't have more than 10922 particles per emitter";
@@ -1089,11 +1192,8 @@ tdl.particles.ParticleEmitter.prototype.allocateParticles_ = function(
       indices[idx++] = startIndex + 2;
       indices[idx++] = startIndex + 3;
     }
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,
-                    this.indexBuffer_);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
-                    indices,
-                    gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer_);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
     this.numParticles_ = numParticles;
   }
 };
@@ -1125,22 +1225,28 @@ tdl.particles.ParticleEmitter.prototype.allocateParticles_ = function(
  *     20 this value will be 0 to 19. The ParticleSpec is a spec for this
  *     particular particle. You can set any per particle value before returning.
  */
-tdl.particles.ParticleEmitter.prototype.setParameters = function(
-    parameters,
-    opt_perParticleParamSetter) {
+tdl.particles.ParticleEmitter.prototype.setParameters = function (
+  parameters,
+  opt_perParticleParamSetter,
+) {
   this.validateParameters(parameters);
 
   var numParticles = parameters.numParticles;
 
   this.allocateParticles_(numParticles);
   this.createParticles_(
-      0,
-      numParticles,
-      parameters,
-      opt_perParticleParamSetter);
+    0,
+    numParticles,
+    parameters,
+    opt_perParticleParamSetter,
+  );
 };
 
-tdl.particles.ParticleEmitter.prototype.draw = function(world, timeOffset, shaders) {
+tdl.particles.ParticleEmitter.prototype.draw = function (
+  world,
+  timeOffset,
+  shaders,
+) {
   if (!this.createdParticles_) {
     return;
   }
@@ -1164,18 +1270,20 @@ tdl.particles.ParticleEmitter.prototype.draw = function(world, timeOffset, shade
   tdl.fast.matrix4.copy(tmpWorld, world);
 
   tdl.fast.matrix4.translate(tmpWorld, this.translation_);
-  gl.uniformMatrix4fv(shader.worldLoc,
-                      false,
-                      tmpWorld);
+  gl.uniformMatrix4fv(shader.worldLoc, false, tmpWorld);
 
-  gl.uniform3f(shader.worldVelocityLoc,
-               this.worldVelocity_[0],
-               this.worldVelocity_[1],
-               this.worldVelocity_[2]);
-  gl.uniform3f(shader.worldAccelerationLoc,
-               this.worldAcceleration_[0],
-               this.worldAcceleration_[1],
-               this.worldAcceleration_[2]);
+  gl.uniform3f(
+    shader.worldVelocityLoc,
+    this.worldVelocity_[0],
+    this.worldVelocity_[1],
+    this.worldVelocity_[2],
+  );
+  gl.uniform3f(
+    shader.worldAccelerationLoc,
+    this.worldAcceleration_[0],
+    this.worldAcceleration_[1],
+    this.worldAcceleration_[2],
+  );
   gl.uniform1f(shader.timeRangeLoc, this.timeRange_);
   gl.uniform1f(shader.numFramesLoc, this.numFrames_);
   gl.uniform1f(shader.frameDurationLoc, this.frameDuration_);
@@ -1199,35 +1307,76 @@ tdl.particles.ParticleEmitter.prototype.draw = function(world, timeOffset, shade
   var sizeofFloat = 4;
   var stride = sizeofFloat * tdl.particles.LAST_IDX;
   gl.bindBuffer(gl.ARRAY_BUFFER, this.particleBuffer_);
-  gl.vertexAttribPointer(shader.uvLifeTimeFrameStartLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.UV_LIFE_TIME_FRAME_START_IDX);
+  gl.vertexAttribPointer(
+    shader.uvLifeTimeFrameStartLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.UV_LIFE_TIME_FRAME_START_IDX,
+  );
   gl.enableVertexAttribArray(shader.uvLifeTimeFrameStartLoc);
-  gl.vertexAttribPointer(shader.positionStartTimeLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.POSITION_START_TIME_IDX);
+  gl.vertexAttribPointer(
+    shader.positionStartTimeLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.POSITION_START_TIME_IDX,
+  );
   gl.enableVertexAttribArray(shader.positionStartTimeLoc);
-  gl.vertexAttribPointer(shader.velocityStartSizeLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.VELOCITY_START_SIZE_IDX);
+  gl.vertexAttribPointer(
+    shader.velocityStartSizeLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.VELOCITY_START_SIZE_IDX,
+  );
   gl.enableVertexAttribArray(shader.velocityStartSizeLoc);
-  gl.vertexAttribPointer(shader.accelerationEndSizeLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.ACCELERATION_END_SIZE_IDX);
+  gl.vertexAttribPointer(
+    shader.accelerationEndSizeLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.ACCELERATION_END_SIZE_IDX,
+  );
   gl.enableVertexAttribArray(shader.accelerationEndSizeLoc);
-  gl.vertexAttribPointer(shader.spinStartSpinSpeedLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.SPIN_START_SPIN_SPEED_IDX);
+  gl.vertexAttribPointer(
+    shader.spinStartSpinSpeedLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.SPIN_START_SPIN_SPEED_IDX,
+  );
   gl.enableVertexAttribArray(shader.spinStartSpinSpeedLoc);
   // Only for non-billboarded, i.e., 3D, particles
   if (shader.orientationLoc != undefined) {
-    gl.vertexAttribPointer(shader.orientationLoc, 4, gl.FLOAT, false, stride,
-                           sizeofFloat * tdl.particles.ORIENTATION_IDX);
+    gl.vertexAttribPointer(
+      shader.orientationLoc,
+      4,
+      gl.FLOAT,
+      false,
+      stride,
+      sizeofFloat * tdl.particles.ORIENTATION_IDX,
+    );
     gl.enableVertexAttribArray(shader.orientationLoc);
   }
   // NOTE: comment out the next two calls if using debug shader which
   // only outputs red.
-  gl.vertexAttribPointer(shader.colorMultLoc, 4, gl.FLOAT, false, stride,
-                         sizeofFloat * tdl.particles.COLOR_MULT_IDX);
+  gl.vertexAttribPointer(
+    shader.colorMultLoc,
+    4,
+    gl.FLOAT,
+    false,
+    stride,
+    sizeofFloat * tdl.particles.COLOR_MULT_IDX,
+  );
   gl.enableVertexAttribArray(shader.colorMultLoc);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer_);
-  gl.drawElements(gl.TRIANGLES, this.numParticles_ * 6,
-                  gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, this.numParticles_ * 6, gl.UNSIGNED_SHORT, 0);
 
   gl.disableVertexAttribArray(shader.uvLifeTimeFrameStartLoc);
   gl.disableVertexAttribArray(shader.positionStartTimeLoc);
@@ -1246,7 +1395,7 @@ tdl.particles.ParticleEmitter.prototype.draw = function(world, timeOffset, shade
  * You can use this for dust puffs, explosions, fireworks, etc...
  * @return {!tdl.particles.OneShot} A OneShot object.
  */
-tdl.particles.ParticleEmitter.prototype.createOneShot = function() {
+tdl.particles.ParticleEmitter.prototype.createOneShot = function () {
   return new tdl.particles.OneShot(this);
 };
 
@@ -1262,7 +1411,7 @@ tdl.particles.ParticleEmitter.prototype.createOneShot = function() {
  *     one shot.
  * @param {!o3d.Transform} opt_parent The parent for this one shot.
  */
-tdl.particles.OneShot = function(emitter) {
+tdl.particles.OneShot = function (emitter) {
   this.emitter_ = emitter;
 
   /**
@@ -1270,7 +1419,10 @@ tdl.particles.OneShot = function(emitter) {
    * @type {!tdl.math.Vector3}
    */
   this.world_ = tdl.fast.matrix4.translation(new Float32Array(16), [0, 0, 0]);
-  this.tempWorld_ = tdl.fast.matrix4.translation(new Float32Array(16), [0, 0, 0]);
+  this.tempWorld_ = tdl.fast.matrix4.translation(
+    new Float32Array(16),
+    [0, 0, 0],
+  );
   this.timeOffset_ = 0;
   this.visible_ = false;
 
@@ -1293,9 +1445,9 @@ tdl.particles.OneShot = function(emitter) {
  * @param {!tdl.math.Vector3} opt_position The position of the one shot
  *     relative to its parent.
  */
-tdl.particles.OneShot.prototype.trigger = function(opt_world) {
+tdl.particles.OneShot.prototype.trigger = function (opt_world) {
   if (opt_world) {
-    this.world_.set(opt_world)
+    this.world_.set(opt_world);
   }
   this.visible_ = true;
   this.timeOffset_ = this.emitter_.timeSource_();
@@ -1306,7 +1458,7 @@ tdl.particles.OneShot.prototype.trigger = function(opt_world) {
  *
  * @private
  */
-tdl.particles.OneShot.prototype.draw = function(world, timeOffset, shaders) {
+tdl.particles.OneShot.prototype.draw = function (world, timeOffset, shaders) {
   if (this.visible_) {
     tdl.fast.matrix4.mul(this.tempWorld_, this.world_, world);
     this.emitter_.draw(this.tempWorld_, this.timeOffset_, shaders);
@@ -1334,15 +1486,20 @@ tdl.particles.OneShot.prototype.draw = function(world, timeOffset, shaders) {
  * @param {!function(): number} opt_clock A function to be the clock for
  *     the emitter.
  */
-tdl.particles.Trail = function(
-    particleSystem,
-    maxParticles,
-    parameters,
-    opt_texture,
-    opt_perParticleParamSetter,
-    opt_clock) {
+tdl.particles.Trail = function (
+  particleSystem,
+  maxParticles,
+  parameters,
+  opt_texture,
+  opt_perParticleParamSetter,
+  opt_clock,
+) {
   tdl.particles.ParticleEmitter.call(
-      this, particleSystem, opt_texture, opt_clock);
+    this,
+    particleSystem,
+    opt_texture,
+    opt_clock,
+  );
 
   this.allocateParticles_(maxParticles);
   this.validateParameters(parameters);
@@ -1359,41 +1516,44 @@ tdl.base.inherit(tdl.particles.Trail, tdl.particles.ParticleEmitter);
  * Births particles from this Trail.
  * @param {!tdl.math.Vector3} position Position to birth particles at.
  */
-tdl.particles.Trail.prototype.birthParticles = function(position) {
+tdl.particles.Trail.prototype.birthParticles = function (position) {
   var numParticles = this.parameters.numParticles;
   this.parameters.startTime = this.timeSource_();
   this.parameters.position = position;
   while (this.birthIndex_ + numParticles >= this.maxParticles_) {
     var numParticlesToEnd = this.maxParticles_ - this.birthIndex_;
-    this.createParticles_(this.birthIndex_,
-                          numParticlesToEnd,
-                          this.parameters,
-                          this.perParticleParamSetter);
+    this.createParticles_(
+      this.birthIndex_,
+      numParticlesToEnd,
+      this.parameters,
+      this.perParticleParamSetter,
+    );
     numParticles -= numParticlesToEnd;
     this.birthIndex_ = 0;
   }
-  this.createParticles_(this.birthIndex_,
-                        numParticles,
-                        this.parameters,
-                        this.perParticleParamSetter);
+  this.createParticles_(
+    this.birthIndex_,
+    numParticles,
+    this.parameters,
+    this.perParticleParamSetter,
+  );
   this.birthIndex_ += numParticles;
 };
 
-tdl.particles.OneShotManager = function(emitter, numOneshots) {
+tdl.particles.OneShotManager = function (emitter, numOneshots) {
   this.numOneshots = numOneshots;
   this.oneshotIndex = 0;
   this.oneshots = [];
   for (var ii = 0; ii < numOneshots; ++ii) {
-     this.oneshots.push(emitter.createOneShot());
+    this.oneshots.push(emitter.createOneShot());
   }
 };
 
-tdl.particles.OneShotManager.prototype.startOneShot = function(worldMatrix) {
+tdl.particles.OneShotManager.prototype.startOneShot = function (worldMatrix) {
   this.oneshots[this.oneshotIndex].trigger(worldMatrix);
   this.oneshotIndex = (this.oneshotIndex + 1) % this.numOneshots;
 };
 
-tdl.particles.createOneShotManager = function(emitter, numOneshots) {
+tdl.particles.createOneShotManager = function (emitter, numOneshots) {
   return new tdl.particles.OneShotManager(emitter, numOneshots);
 };
-

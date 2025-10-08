@@ -29,15 +29,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 /**
  * @fileoverview This file contains a loader class for helping to load
  *     muliple assets in an asynchronous manner.
  */
 
-tdl.provide('tdl.loader');
+tdl.provide("tdl.loader");
 
-tdl.require('tdl.io');
+tdl.require("tdl.io");
 
 /**
  * A Module with a loader class for helping to load muliple assets in an
@@ -52,7 +51,7 @@ tdl.loader = tdl.loader || {};
  * @param {!function(): void} onFinished Function to call when final item has
  *        loaded.
  */
-tdl.loader.Loader = function(onFinished)  {
+tdl.loader.Loader = function (onFinished) {
   this.count_ = 1;
   this.onFinished_ = onFinished;
 
@@ -79,11 +78,11 @@ tdl.loader.Loader = function(onFinished)  {
  * The loader guarantees that myFinishedCallback will be called after
  * all the items have been loaded.
  *
-* @param {!function(): void} onFinished Function to call when final item has
-*        loaded.
-* @return {!tdl.loader.Loader} A Loader Object.
+ * @param {!function(): void} onFinished Function to call when final item has
+ *        loaded.
+ * @return {!tdl.loader.Loader} A Loader Object.
  */
-tdl.loader.createLoader = function(onFinished) {
+tdl.loader.createLoader = function (onFinished) {
   return new tdl.loader.Loader(onFinished);
 };
 
@@ -94,10 +93,10 @@ tdl.loader.createLoader = function(onFinished) {
  *     the file is loaded. It will be passed the contents of the file as a
  *     string and an exception which is null on success.
  */
-tdl.loader.Loader.prototype.loadTextFile = function(url, onTextLoaded) {
-  var that = this;  // so the function below can see "this".
+tdl.loader.Loader.prototype.loadTextFile = function (url, onTextLoaded) {
+  var that = this; // so the function below can see "this".
   ++this.count_;
-  var loadInfo = tdl.io.loadTextFile(url, function(string, exception) {
+  var loadInfo = tdl.io.loadTextFile(url, function (string, exception) {
     onTextLoaded(string, exception);
     that.countDown_();
   });
@@ -111,12 +110,12 @@ tdl.loader.Loader.prototype.loadTextFile = function(url, onTextLoaded) {
  *      loaded with this loader has finished.
  * @return {!tdl.loader.Loader} The new Loader.
  */
-tdl.loader.Loader.prototype.createLoader = function(onFinished) {
+tdl.loader.Loader.prototype.createLoader = function (onFinished) {
   var that = this;
   ++this.count_;
-  var loader = tdl.loader.createLoader(function() {
-      onFinished();
-      that.countDown_();
+  var loader = tdl.loader.createLoader(function () {
+    onFinished();
+    that.countDown_();
   });
   this.loadInfo.addChild(loader.loadInfo);
   return loader;
@@ -126,7 +125,7 @@ tdl.loader.Loader.prototype.createLoader = function(onFinished) {
  * Counts down the internal count and if it gets to zero calls the callback.
  * @private
  */
-tdl.loader.Loader.prototype.countDown_ = function() {
+tdl.loader.Loader.prototype.countDown_ = function () {
   --this.count_;
   if (this.count_ === 0) {
     this.onFinished_();
@@ -137,8 +136,6 @@ tdl.loader.Loader.prototype.countDown_ = function() {
  * Finishes the loading process.
  * Actually this just calls countDown_ to account for the count starting at 1.
  */
-tdl.loader.Loader.prototype.finish = function() {
+tdl.loader.Loader.prototype.finish = function () {
   this.countDown_();
 };
-
-

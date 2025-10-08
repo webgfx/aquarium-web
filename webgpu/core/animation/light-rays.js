@@ -10,7 +10,17 @@ export class LightRayController {
     rotLerp = 0.2,
     height = 50,
   } = {}) {
-    this.params = { count, durationMin, durationRange, speed, spread, posRange, rotRange, rotLerp, height };
+    this.params = {
+      count,
+      durationMin,
+      durationRange,
+      speed,
+      spread,
+      posRange,
+      rotRange,
+      rotLerp,
+      height,
+    };
     this.rays = new Array(count).fill(null).map(() => this.createLightRay());
   }
 
@@ -42,7 +52,8 @@ export class LightRayController {
       }
       const t = Math.max(0, Math.min(1, ray.timer / ray.duration));
       ray.intensity = Math.sin(t * Math.PI);
-      ray.rotation = ray.rotation + (Math.random() - 0.5) * rotLerp * deltaSeconds;
+      ray.rotation =
+        ray.rotation + (Math.random() - 0.5) * rotLerp * deltaSeconds;
       ray.y = Math.max(70, Math.min(120, height + globals.eyeHeight));
     }
   }
